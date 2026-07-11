@@ -1,11 +1,13 @@
 site_name: NAVIER-CFD
 site_description: Neural and Agentic Verification, Integration, Evaluation, and Recommendation for CFD
-site_url: https://samsomyajit.github.io/NAVIER-CFD/
+site_url: https://samsomyajit.github.io/NAVIER-CFD/docs/
 repo_url: https://github.com/Samsomyajit/NAVIER-CFD
 repo_name: Samsomyajit/NAVIER-CFD
 
 theme:
   name: material
+  logo: assets/navier-cfd-icon.svg
+  favicon: assets/navier-cfd-icon.svg
   features:
     - navigation.tabs
     - navigation.sections
@@ -36,6 +38,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Recommender: RECOMMENDER.md
   - Platform:
       - Architecture: ARCHITECTURE.md
       - Model Catalog: MODEL_CATALOG.md
