@@ -1,0 +1,14 @@
+[
+  {
+    "model": "Persistence",
+    "score": 100.0,
+    "evidence": "45% field + 25% spectrum + 20% divergence + 10% latency",
+    "rank": 1
+  },
+  {
+    "model": "TinyCNN",
+    "score": 0.0,
+    "evidence": "45% field + 25% spectrum + 20% divergence + 10% latency",
+    "rank": 2
+  }
+]
