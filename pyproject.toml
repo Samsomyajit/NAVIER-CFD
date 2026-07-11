@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "navier-cfd"
-version = "0.1.0"
-description = "CFD-first neural solver registry, Hugging Face data hub, benchmark toolkit, task recommender, and agentic experiment planner."
+version = "0.2.0"
+description = "CFD-first neural solver registry, Hugging Face data hub, benchmark toolkit, evidence-aware task recommender, and agentic experiment planner."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
@@ -40,7 +40,7 @@ Issues = "https://github.com/Samsomyajit/NAVIER-CFD/issues"
 packages = ["src/navier_cfd"]
 
 [tool.hatch.build]
-include = ["src/navier_cfd/**/*.py"]
+include = ["src/navier_cfd/**/*.py", "src/navier_cfd/**/*.json"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
