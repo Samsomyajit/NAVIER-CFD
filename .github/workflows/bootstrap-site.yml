@@ -20,7 +20,10 @@ jobs:
       - name: Reconstruct website source
         shell: bash
         run: |
-          base64 --decode bootstrap/site_patch.tar.gz.b64 > /tmp/navier-site-patch.tar.gz
+          cat bootstrap/chunks/part_*.txt > /tmp/navier-site-patch.tar.gz.b64
+          test "$(wc -c < /tmp/navier-site-patch.tar.gz.b64)" -eq 28168
+          base64 --decode /tmp/navier-site-patch.tar.gz.b64 > /tmp/navier-site-patch.tar.gz
+          test "$(wc -c < /tmp/navier-site-patch.tar.gz)" -eq 21124
           tar --extract --gzip --file /tmp/navier-site-patch.tar.gz --directory .
           rm -rf bootstrap
           rm -f .github/workflows/bootstrap-site.yml
