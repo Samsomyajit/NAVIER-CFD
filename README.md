@@ -2,7 +2,25 @@
 
 **Neural and Agentic Verification, Integration, Evaluation, and Recommendation for Computational Fluid Dynamics**
 
+[![Version](https://img.shields.io/badge/version-0.1.0-2f6f9f.svg)](https://github.com/Samsomyajit/NAVIER-CFD/releases)
+[![PyPI](https://img.shields.io/pypi/v/navier-cfd.svg?label=PyPI)](https://pypi.org/project/navier-cfd/)
+[![Python](https://img.shields.io/pypi/pyversions/navier-cfd.svg)](https://pypi.org/project/navier-cfd/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-4c8c6b.svg)](LICENSE)
+[![CI](https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml/badge.svg)](https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-6b7280.svg)](https://samsomyajit.github.io/NAVIER-CFD/)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-Hugging%20Face-f2c94c.svg)](https://huggingface.co/datasets)
+[![Models](https://img.shields.io/badge/models-55-7c6aa6.svg)](#registered-model-families)
+[![Datasets](https://img.shields.io/badge/datasets-11-5d8f72.svg)](#why-navier-cfd)
+
 NAVIER-CFD is a CFD-first, uniform Python platform for neural PDE solvers, hybrid numerical acceleration, benchmark datasets, task-aware model recommendation, and agentic experiment planning.
+
+## Scientific pipeline
+
+<p align="center">
+  <img src="docs/assets/navier_pipeline.svg" alt="NAVIER-CFD scientific pipeline from CFD task definition and Hugging Face data acquisition to model recommendation, execution, numerical verification and agentic feedback" width="100%">
+</p>
+
+The workflow keeps the numerical role of learning explicit—surrogate, closure, corrector, preconditioner, inverse model, controller, or generator—and connects every experiment to versioned data, a traceable model card, CFD-aware metrics, and a reproducible run manifest.
 
 ## Why NAVIER-CFD
 
@@ -18,8 +36,19 @@ Neural-solver repositories commonly provide selected architectures and benchmark
 
 ## Installation
 
+From PyPI:
+
 ```bash
+pip install navier-cfd
+```
+
+From source:
+
+```bash
+git clone https://github.com/Samsomyajit/NAVIER-CFD.git
+cd NAVIER-CFD
 pip install -e .
+
 # development, testing and documentation
 pip install -e ".[dev,docs]"
 ```
@@ -129,13 +158,24 @@ docs/              MkDocs site, model atlas and dataset cards
 
 Eight study guides cover PDEBench Navier–Stokes, CFDBench cavity and cylinder flow, RealPDEBench cylinder and FSI, AirfRANS geometry generalization, three-dimensional automotive aerodynamics, and hybrid neural-numerical acceleration.
 
+## Packaging and PyPI
+
+- Package name: `navier-cfd`
+- Import namespace: `navier_cfd`
+- Current version: `0.1.0`
+- Build backend: Hatchling
+- Publication: PyPI Trusted Publishing through `.github/workflows/publish-pypi.yml`
+
+A GitHub Release builds, validates, and publishes the wheel and source distribution using OpenID Connect. The PyPI project must authorize this repository and the `pypi` GitHub environment as a trusted publisher before the first release.
+
 ## Documentation and CI
 
-- Documentation target: https://samsomyajit.github.io/NAVIER-CFD/
+- Documentation: https://samsomyajit.github.io/NAVIER-CFD/
 - CI validates Python 3.10–3.12.
 - Tagged releases build wheel and source distributions.
 - GitHub Pages deployment is defined under `.github/workflows/docs.yml`.
+- PyPI publication is defined under `.github/workflows/publish-pypi.yml`.
 
 ## License
 
-Apache-2.0. Cite NAVIER-CFD and the original model, dataset, upstream implementation, and numerical-solver references used in each experiment.
+Licensed under the [Apache License 2.0](LICENSE). Cite NAVIER-CFD and the original model, dataset, upstream implementation, and numerical-solver references used in each experiment.
