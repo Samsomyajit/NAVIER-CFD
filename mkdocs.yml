@@ -38,7 +38,9 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Recommender: RECOMMENDER.md
+  - Recommender:
+      - Overview: RECOMMENDER.md
+      - Evidence Scoring: EVIDENCE_SCORING.md
   - Platform:
       - Architecture: ARCHITECTURE.md
       - Model Catalog: MODEL_CATALOG.md
