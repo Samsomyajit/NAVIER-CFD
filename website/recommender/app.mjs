@@ -1,17 +1,53 @@
-
 import {recommendModels, recommendDatasets, buildManifest} from "./recommender-core.mjs";
 import {models, datasets} from "../data/catalog.mjs";
 
 const $ = id => document.getElementById(id);
 const form = $("task-form");
+const state = {pyodide: null, exact: false, health: null, modelResults: [], datasetResults: []};
 
 const presets = {
-  cylinder: {problem:"cylinder_wake",task_type:"forecasting",dimension:2,mesh_type:"structured",temporal_mode:"autoregressive",geometry_mode:"fixed",physics:"incompressible_navier_stokes",memory:24,requires_long_rollout:true},
-  vehicle: {problem:"3d_vehicle_aerodynamics",task_type:"surrogate",dimension:3,mesh_type:"point_cloud",temporal_mode:"steady",geometry_mode:"varying",physics:"aerodynamics",memory:80,requires_geometry_transfer:true,requires_mesh_transfer:true},
-  acceleration: {problem:"unsteady_3d_cfd_acceleration",task_type:"acceleration",dimension:3,mesh_type:"unstructured",temporal_mode:"autoregressive",geometry_mode:"varying",physics:"incompressible_navier_stokes",memory:80,requires_conservation:true,requires_long_rollout:true,requires_geometry_transfer:true},
-  multiphase: {problem:"particle_multiphase_flow",task_type:"surrogate",dimension:3,mesh_type:"particle",temporal_mode:"autoregressive",geometry_mode:"fixed",physics:"granular",memory:48,requires_conservation:true,requires_long_rollout:true},
-  inverse: {problem:"sparse_flow_reconstruction",task_type:"inverse",dimension:2,mesh_type:"structured",temporal_mode:"unsteady",geometry_mode:"fixed",physics:"fluid_dynamics",memory:24,requires_uncertainty:true}
+  cylinder: {problem:"real_cylinder_wake",task_type:"forecasting",dimension:2,mesh_type:"structured",temporal_mode:"autoregressive",geometry_mode:"fixed",physics:"incompressible_navier_stokes",fidelity:"experiment",memory:24,requires_long_rollout:true},
+  vehicle: {problem:"vehicle_drag",task_type:"surrogate",dimension:3,mesh_type:"point_cloud",temporal_mode:"steady",geometry_mode:"varying",physics:"aerodynamics",fidelity:"rans",memory:80,requires_geometry_transfer:true,requires_mesh_transfer:true},
+  acceleration: {problem:"unsteady_3d_cfd_acceleration",task_type:"acceleration",dimension:3,mesh_type:"unstructured",temporal_mode:"autoregressive",geometry_mode:"varying",physics:"incompressible_navier_stokes",fidelity:"les",memory:80,requires_conservation:true,requires_long_rollout:true,requires_geometry_transfer:true},
+  multiphase: {problem:"particle_multiphase_flow",task_type:"surrogate",dimension:3,mesh_type:"particle",temporal_mode:"autoregressive",geometry_mode:"fixed",physics:"granular",fidelity:"simulation",memory:48,requires_conservation:true,requires_long_rollout:true},
+  inverse: {problem:"sparse_flow_reconstruction",task_type:"inverse",dimension:2,mesh_type:"structured",temporal_mode:"unsteady",geometry_mode:"fixed",physics:"fluid_dynamics",fidelity:"experiment",memory:24,requires_uncertainty:true}
 };
+
+function setEngineStatus(title, detail) {
+  $("engine-status").textContent = title;
+  $("engine-detail").textContent = detail;
+}
+
+async function initialiseEngine() {
+  try {
+    if (typeof globalThis.loadPyodide !== "function") throw new Error("Pyodide loader unavailable");
+    setEngineStatus("Loading exact Python evidence engine…", "Downloading the small NAVIER-CFD browser runtime.");
+    const pyodide = await globalThis.loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.27.7/full/"});
+    const response = await fetch("../runtime/navier_runtime.zip", {cache:"no-store"});
+    if (!response.ok) throw new Error(`runtime download failed (${response.status})`);
+    pyodide.unpackArchive(new Uint8Array(await response.arrayBuffer()), "zip");
+    await pyodide.runPythonAsync(
+      "import sys\n" +
+      "sys.path.insert(0, '.')\n" +
+      "from navier_web_bridge import recommend_json, health_json\n"
+    );
+    const health = JSON.parse(pyodide.runPython("health_json()"));
+    state.pyodide = pyodide;
+    state.exact = true;
+    state.health = health;
+    setEngineStatus(
+      "Exact evidence engine ready",
+      `${health.models} models, ${health.datasets} datasets, and ${health.evidence_records} paper-result records loaded locally.`
+    );
+  } catch (error) {
+    console.warn("Exact Python evidence engine unavailable; using architecture fallback", error);
+    state.exact = false;
+    setEngineStatus(
+      "Architecture fallback active",
+      "The paper-evidence runtime could not load. Model rankings below use only the transparent compatibility fallback; dataset ranking remains available."
+    );
+  }
+}
 
 function taskFromForm() {
   return {
@@ -22,7 +58,7 @@ function taskFromForm() {
     temporal_mode: $("temporal_mode").value,
     geometry_mode: $("geometry_mode").value,
     physics: [$("physics").value],
-    fidelity: "unknown",
+    fidelity: $("fidelity").value,
     requires_conservation: $("requires_conservation").checked,
     requires_uncertainty: $("requires_uncertainty").checked,
     requires_geometry_transfer: $("requires_geometry_transfer").checked,
@@ -32,6 +68,13 @@ function taskFromForm() {
     preferred_framework: $("framework").value || null,
     notes: "Generated by the NAVIER-CFD browser recommender."
   };
+}
+
+async function exactRecommendations(task, topK=10) {
+  state.pyodide.globals.set("task_json_from_js", JSON.stringify(task));
+  state.pyodide.globals.set("top_k_from_js", topK);
+  const result = await state.pyodide.runPythonAsync("recommend_json(task_json_from_js, top_k_from_js)");
+  return JSON.parse(result);
 }
 
 function applyPreset(preset) {
@@ -50,50 +93,110 @@ function applyPreset(preset) {
 }
 
 function tag(text){ return `<span class="pill">${escapeHtml(text)}</span>`; }
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
+function escapeHtml(value){ return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
+function safeUrl(value){ return /^https:\/\//.test(String(value || "")) ? escapeHtml(value) : ""; }
 
 function renderModels(results) {
   $("result-count").textContent = `${results.length} models`;
-  $("model-results").innerHTML = results.length ? results.map((r,i)=>`
-    <article class="result-card">
-      <div class="result-top">
-        <div><div class="small">#${i+1} · ${escapeHtml(r.model.reference || "Reference pending")}</div><h3>${escapeHtml(r.model.name)}</h3></div>
-        <div class="score">${r.score.toFixed(0)}</div>
-      </div>
-      <div class="meta">${(r.model.categories||[]).slice(0,4).map(tag).join("")}${tag(r.model.integration)}</div>
-      <p class="reason"><strong>Architecture:</strong> ${escapeHtml(r.model.architecture)}</p>
-      ${r.reasons.slice(0,4).map(x=>`<p class="reason">✓ ${escapeHtml(x)}</p>`).join("")}
-      ${r.cautions.slice(0,3).map(x=>`<p class="caution">△ ${escapeHtml(x)}</p>`).join("")}
-      ${r.model.repository ? `<p class="small"><a href="${escapeHtml(r.model.repository)}" target="_blank" rel="noopener">Upstream implementation ↗</a></p>` : ""}
-    </article>`).join("") : `<div class="empty">No compatible models passed the hard filters. Relax mesh, dimension, transfer, or memory constraints.</div>`;
+  $("model-results").innerHTML = results.length ? results.map((r,i)=>{
+    const confidence = Number(r.evidence_confidence || 0);
+    const coverage = Number(r.evidence_coverage || 0);
+    const evidenceScore = Number(r.evidence_score ?? 50);
+    const finalScore = Number(r.score || 0);
+    const matches = r.evidence?.matches || [];
+    const sources = matches.slice(0,3).map(match => {
+      const record = match.record || {};
+      const url = safeUrl(record.source_url);
+      const label = `${record.paper_title || "Paper"} — ${record.benchmark || "benchmark"}, ${record.metric || "metric"}=${record.value ?? "n/a"}`;
+      return url ? `<li><a href="${url}" target="_blank" rel="noopener">${escapeHtml(label)} ↗</a></li>` : `<li>${escapeHtml(label)}</li>`;
+    }).join("");
+    return `
+      <article class="result-card">
+        <div class="result-top">
+          <div><div class="small">#${i+1} · ${escapeHtml(r.model.reference || "Reference pending")}</div><h3>${escapeHtml(r.model.name)}</h3></div>
+          <div class="score">${finalScore.toFixed(1)}</div>
+        </div>
+        <div class="meta">${(r.model.categories||[]).slice(0,4).map(tag).join("")}${tag(r.model.integration)}</div>
+        <p class="reason"><strong>Architecture:</strong> ${escapeHtml(r.model.architecture)}</p>
+        <p class="reason"><strong>Evidence:</strong> ${evidenceScore.toFixed(1)}/100 · confidence ${(100*confidence).toFixed(0)}% · metric coverage ${(100*coverage).toFixed(0)}% · ${r.evidence_count || 0} matched records</p>
+        ${(r.reasons||[]).slice(0,6).map(x=>`<p class="reason">✓ ${escapeHtml(x)}</p>`).join("")}
+        ${(r.cautions||[]).slice(0,5).map(x=>`<p class="caution">△ ${escapeHtml(x)}</p>`).join("")}
+        ${sources ? `<details><summary>Matched paper evidence</summary><ul class="reason">${sources}</ul></details>` : ""}
+        ${r.model.repository ? `<p class="small"><a href="${safeUrl(r.model.repository)}" target="_blank" rel="noopener">Upstream implementation ↗</a></p>` : ""}
+      </article>`;
+  }).join("") : `<div class="empty">No compatible models passed the hard filters. Relax mesh, dimension, transfer, or memory constraints.</div>`;
 }
 
 function renderDatasets(results) {
   $("dataset-results").innerHTML = results.map((r,i)=>`
     <article class="result-card">
-      <div class="result-top"><div><div class="small">#${i+1}</div><h3>${escapeHtml(r.dataset.name)}</h3></div><div class="score">${r.score.toFixed(0)}</div></div>
+      <div class="result-top"><div><div class="small">#${i+1}</div><h3>${escapeHtml(r.dataset.name)}</h3></div><div class="score">${Number(r.score).toFixed(0)}</div></div>
       <p class="reason">${escapeHtml(r.dataset.description)}</p>
       <div class="meta">${(r.dataset.scenarios||[]).slice(0,5).map(tag).join("")}</div>
-      ${r.reasons.slice(0,4).map(x=>`<p class="reason">✓ ${escapeHtml(x)}</p>`).join("")}
-      ${r.cautions.slice(0,2).map(x=>`<p class="caution">△ ${escapeHtml(x)}</p>`).join("")}
+      ${(r.reasons||[]).slice(0,4).map(x=>`<p class="reason">✓ ${escapeHtml(x)}</p>`).join("")}
+      ${(r.cautions||[]).slice(0,2).map(x=>`<p class="caution">△ ${escapeHtml(x)}</p>`).join("")}
       ${r.dataset.hf_repo_id ? `<p class="small"><a href="https://huggingface.co/datasets/${escapeHtml(r.dataset.hf_repo_id)}" target="_blank" rel="noopener">Open on Hugging Face ↗</a></p>` : ""}
     </article>`).join("");
 }
 
-function run() {
+function evidenceManifest(task, modelResults, datasetResults) {
+  const manifest = buildManifest(task, modelResults, datasetResults);
+  manifest.schema = "navier-cfd.run-manifest/v2";
+  manifest.recommender_version = state.health?.engine || (state.exact ? "0.2.0-evidence" : "0.1.0-fallback");
+  manifest.engine = state.exact ? "exact-python-evidence" : "architecture-fallback";
+  manifest.evidence_records_loaded = state.health?.evidence_records || 0;
+  manifest.recommended_models = modelResults.map((r,rank)=>({
+    rank:rank+1,
+    id:r.model.id,
+    name:r.model.name,
+    final_score:r.score,
+    architecture_score:r.architecture_score ?? r.score,
+    evidence_score:r.evidence_score ?? null,
+    evidence_confidence:r.evidence_confidence ?? 0,
+    evidence_coverage:r.evidence_coverage ?? 0,
+    evidence_count:r.evidence_count ?? 0,
+    reasons:r.reasons,
+    cautions:r.cautions,
+    matched_evidence:(r.evidence?.matches || []).map(m=>({
+      record_id:m.record?.id,
+      paper:m.record?.paper_title,
+      source_url:m.record?.source_url,
+      benchmark:m.record?.benchmark,
+      metric:m.record?.metric,
+      value:m.record?.value,
+      task_similarity:m.task_similarity,
+      quality:m.quality
+    }))
+  }));
+  manifest.validation_note = "Scores are task-specific evidence syntheses, not universal leaderboards. Validate shortlisted models on the target CFD discretization and QoIs.";
+  return manifest;
+}
+
+async function run() {
   if (!models.length) return;
   const task = taskFromForm();
-  const modelResults = recommendModels(task, models, {topK:10});
-  const datasetResults = recommendDatasets(task, datasets, {topK:6});
+  $("model-results").innerHTML = `<div class="empty">Ranking models and transferring paper evidence…</div>`;
+  let modelResults;
+  try {
+    modelResults = state.exact ? await exactRecommendations(task,10) : recommendModels(task,models,{topK:10});
+  } catch (error) {
+    console.error("Exact recommendation failed", error);
+    state.exact = false;
+    setEngineStatus("Architecture fallback active", `The Python evidence engine rejected this task: ${error.message}`);
+    modelResults = recommendModels(task,models,{topK:10});
+  }
+  const datasetResults = recommendDatasets(task,datasets,{topK:6});
+  state.modelResults = modelResults;
+  state.datasetResults = datasetResults;
   renderModels(modelResults);
   renderDatasets(datasetResults);
-  $("manifest").textContent = JSON.stringify(buildManifest(task, modelResults, datasetResults), null, 2);
+  $("manifest").textContent = JSON.stringify(evidenceManifest(task,modelResults,datasetResults),null,2);
 }
 
 form.addEventListener("submit", e => {e.preventDefault(); run();});
 $("preset").addEventListener("change", e => applyPreset(e.target.value));
 $("copy-config").addEventListener("click", async () => {
-  await navigator.clipboard.writeText(JSON.stringify(taskFromForm(), null, 2));
+  await navigator.clipboard.writeText(JSON.stringify(taskFromForm(),null,2));
   const old = $("copy-config").textContent; $("copy-config").textContent = "Copied";
   setTimeout(()=>$("copy-config").textContent=old,1200);
 });
@@ -101,7 +204,8 @@ $("reset").addEventListener("click", () => {form.reset(); $("problem").value="cy
 
 document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active")); btn.classList.add("active");
-  for (const name of ["models","datasets","config"]) $(`${name}-tab`).classList.toggle("hidden", name!==btn.dataset.tab);
+  for (const name of ["models","datasets","config"]) $(`${name}-tab`).classList.toggle("hidden",name!==btn.dataset.tab);
 }));
 
-run();
+await initialiseEngine();
+await run();
