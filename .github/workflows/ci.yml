@@ -14,7 +14,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - uses: actions/setup-node@v4
+        if: matrix.python-version == '3.12'
+        with:
+          node-version: "22"
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[dev]"
       - run: ruff check src tests
       - run: pytest --cov=navier_cfd --cov-report=term-missing
+      - name: Test browser recommender
+        if: matrix.python-version == '3.12'
+        run: node --test website/recommender/recommender-core.test.mjs
