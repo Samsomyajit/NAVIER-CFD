@@ -1,6 +1,6 @@
 """Build the static NAVIER-CFD web recommender assets.
 
-The generated browser runtime packages the same Python schemas, catalog, and
+The generated browser runtime packages the same Python specs, catalog, and
 recommender used by the library. Pyodide loads this zip in the website, so the
 interactive recommendations are produced by the project implementation rather
 than a separate opaque service.
@@ -8,9 +8,8 @@ than a separate opaque service.
 from __future__ import annotations
 
 import json
-import shutil
 import zipfile
-from dataclasses import asdict, fields, is_dataclass
+from dataclasses import fields, is_dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -50,7 +49,7 @@ BRIDGE = r'''from __future__ import annotations
 
 import inspect
 import json
-from dataclasses import MISSING, fields, is_dataclass
+from dataclasses import fields, is_dataclass
 from enum import Enum
 from typing import Any, get_args, get_origin, get_type_hints
 
@@ -84,7 +83,6 @@ def _coerce(annotation: Any, value: Any) -> Any:
             return origin(converted) if origin is not tuple else tuple(converted)
         if origin is dict:
             return value
-        # Optional and Union: try each non-None member.
         for candidate in args:
             if candidate is type(None):
                 continue
@@ -153,7 +151,7 @@ def write_runtime_zip() -> Path:
                 zf.writestr(
                     "navier_cfd/__init__.py",
                     "from .catalogs import Catalog\n"
-                    "from .schemas import TaskSpec\n"
+                    "from .specs import TaskSpec\n"
                     "from .recommender import recommend_models\n"
                     "__all__ = ['Catalog', 'TaskSpec', 'recommend_models']\n",
                 )
