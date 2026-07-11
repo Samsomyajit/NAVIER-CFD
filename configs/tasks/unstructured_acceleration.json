@@ -1,0 +1,19 @@
+{
+  "problem": "unsteady_3d_cfd",
+  "task_type": "acceleration",
+  "dimension": 3,
+  "mesh_type": "unstructured",
+  "temporal_mode": "autoregressive",
+  "geometry_mode": "varying",
+  "physics": [
+    "incompressible_navier_stokes",
+    "turbulence"
+  ],
+  "fidelity": "rans_les",
+  "requires_conservation": true,
+  "requires_uncertainty": true,
+  "requires_geometry_transfer": true,
+  "requires_mesh_transfer": true,
+  "requires_long_rollout": true,
+  "hardware_memory_gb": 80
+}

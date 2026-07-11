@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+title: NAVIER-CFD
+type: software
+authors:
+  - family-names: Chakraborty
+    given-names: Somyajit
+    email: chksomyajit@sjtu.edu.cn
+version: 0.1.0
+date-released: 2026-07-11
+license: Apache-2.0
+repository-code: https://github.com/Samsomyajit/NAVIER-CFD
+message: "Please cite this software and the original papers for every model and dataset used."

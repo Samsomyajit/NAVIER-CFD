@@ -1,0 +1,61 @@
+site_name: NAVIER-CFD
+site_description: Neural and Agentic Verification, Integration, Evaluation, and Recommendation for CFD
+site_url: https://samsomyajit.github.io/NAVIER-CFD/
+repo_url: https://github.com/Samsomyajit/NAVIER-CFD
+repo_name: Samsomyajit/NAVIER-CFD
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Platform:
+      - Architecture: ARCHITECTURE.md
+      - Model Catalog: MODEL_CATALOG.md
+      - Dataset Catalog: DATASET_CATALOG.md
+      - Agentic AI: AGENTIC_AI.md
+      - Roadmap: ROADMAP.md
+  - Model Atlas: models/README.md
+  - Dataset Cards:
+      - CFDBench: datasets/cfdbench.md
+      - RealPDEBench: datasets/realpdebench.md
+      - PDEBench: datasets/pdebench.md
+      - AirfRANS: datasets/airfrans.md
+      - The Well: datasets/the_well.md
+  - Case Studies:
+      - Overview: case_studies/README.md
+      - PDEBench Navier–Stokes: case_studies/pdebench_navier_stokes.md
+      - CFDBench Cavity: case_studies/cfdbench_cavity.md
+      - CFDBench Cylinder: case_studies/cfdbench_cylinder.md
+      - RealPDEBench Cylinder: case_studies/realpdebench_cylinder.md
+      - RealPDEBench FSI: case_studies/realpdebench_fsi.md
+      - AirfRANS Geometry: case_studies/airfrans_geometry.md
+      - Automotive 3D: case_studies/automotive_3d.md
+      - Hybrid Acceleration: case_studies/hybrid_acceleration.md

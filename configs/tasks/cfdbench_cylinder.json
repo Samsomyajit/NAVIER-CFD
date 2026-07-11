@@ -1,0 +1,18 @@
+{
+  "problem": "cylinder_wake",
+  "task_type": "surrogate",
+  "dimension": 2,
+  "mesh_type": "structured",
+  "temporal_mode": "autoregressive",
+  "geometry_mode": "varying",
+  "physics": [
+    "incompressible_navier_stokes"
+  ],
+  "fidelity": "cfdbench",
+  "requires_conservation": true,
+  "requires_uncertainty": false,
+  "requires_geometry_transfer": true,
+  "requires_mesh_transfer": false,
+  "requires_long_rollout": true,
+  "hardware_memory_gb": 24
+}
