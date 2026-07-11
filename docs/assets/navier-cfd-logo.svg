@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 682" role="img" aria-labelledby="title desc">
+<title id="title">NAVIER-CFD</title>
+<desc id="desc">A navy and cyan NAVIER-CFD logo combining fluid streamlines, a vortex, the letter N, and a neural mesh.</desc>
+<defs>
+  <linearGradient id="gN" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06185f"/><stop offset=".58" stop-color="#074f9f"/><stop offset="1" stop-color="#10bce5"/></linearGradient>
+  <linearGradient id="gC" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#06185f"/><stop offset=".67" stop-color="#071b67"/><stop offset=".68" stop-color="#0785d0"/><stop offset="1" stop-color="#10a7e2"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0b4f8d" flood-opacity=".10"/></filter>
+</defs>
+<rect width="2048" height="682" fill="#fff"/>
+<g transform="translate(62,70)" filter="url(#shadow)">
+  <path d="M100 260 C180 260 190 270 245 225 C315 168 372 66 530 35 C620 18 700 36 758 70" fill="none" stroke="#06185f" stroke-width="14" stroke-linecap="round"/>
+  <path d="M74 320 C190 320 230 318 290 286" fill="none" stroke="#0a6ab8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M95 354 C210 354 258 350 312 322" fill="none" stroke="#128fd0" stroke-width="6" stroke-linecap="round"/>
+  <path d="M125 389 C230 389 282 382 337 351" fill="none" stroke="#10b8dc" stroke-width="7" stroke-linecap="round"/>
+  <g fill="#0a3f91"><circle cx="75" cy="320" r="6"/><circle cx="94" cy="354" r="6"/><circle cx="124" cy="389" r="6"/></g>
+  <path d="M260 422 C320 380 355 315 388 226 L439 93 L535 93 L621 266 L659 136 C681 59 737 57 781 85 C736 83 711 103 699 152 L619 474 L527 474 L436 292 L407 384 C382 462 325 492 260 472 Z" fill="url(#gN)"/>
+  <path d="M352 468 C420 487 505 477 558 421 C611 365 617 301 585 254 C573 321 537 354 494 376 C451 399 420 422 419 452 C418 473 438 489 471 490 C522 492 570 467 610 421 C649 376 680 314 691 252 C715 321 700 409 636 480 C561 563 427 570 339 510 Z" fill="none" stroke="#0b82d0" stroke-width="22" stroke-linecap="round"/>
+  <path d="M374 466 C425 485 484 473 519 442 C542 422 554 397 551 372 C527 406 498 420 473 430 C446 441 428 453 429 468 C430 483 445 493 470 493 C512 493 555 467 588 427" fill="none" stroke="#12c5e8" stroke-width="17" stroke-linecap="round"/>
+  <g stroke="#91d7ef" stroke-width="2" fill="none" opacity=".9">
+    <path d="M615 90 C707 102 760 175 759 281 C758 382 716 448 639 484"/>
+    <path d="M640 105 C688 166 704 251 689 342 C681 389 662 434 637 474"/>
+    <path d="M605 148 C665 164 718 205 749 260"/>
+    <path d="M595 211 C658 222 712 253 753 301"/>
+    <path d="M593 278 C655 282 711 300 753 335"/>
+    <path d="M598 345 C655 341 706 347 746 369"/>
+    <path d="M608 411 C653 398 691 394 724 400"/>
+  </g>
+  <g stroke="#0b3f91" stroke-width="2" fill="#0b3f91">
+    <line x1="610" y1="145" x2="673" y2="184"/><line x1="673" y1="184" x2="724" y2="229"/>
+    <line x1="600" y1="211" x2="663" y2="240"/><line x1="663" y1="240" x2="733" y2="278"/>
+    <line x1="598" y1="280" x2="663" y2="303"/><line x1="663" y1="303" x2="733" y2="332"/>
+    <line x1="606" y1="346" x2="661" y2="361"/><line x1="661" y1="361" x2="719" y2="391"/>
+    <circle cx="610" cy="145" r="5"/><circle cx="673" cy="184" r="7"/><circle cx="724" cy="229" r="8" fill="#13bddc" stroke="none"/>
+    <circle cx="600" cy="211" r="5"/><circle cx="663" cy="240" r="7"/><circle cx="733" cy="278" r="7" fill="#13bddc" stroke="none"/>
+    <circle cx="598" cy="280" r="5"/><circle cx="663" cy="303" r="7"/><circle cx="733" cy="332" r="6" fill="#13bddc" stroke="none"/>
+    <circle cx="606" cy="346" r="5"/><circle cx="661" cy="361" r="7"/><circle cx="719" cy="391" r="6" fill="#13bddc" stroke="none"/>
+  </g>
+</g>
+<text x="765" y="400" font-family="Arial, Helvetica, sans-serif" font-size="160" font-weight="700" letter-spacing="8" fill="url(#gC)">NAVIER-CFD</text>
+</svg>

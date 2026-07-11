@@ -1,38 +1,52 @@
-# NAVIER-CFD
+<p align="center">
+  <img src="docs/assets/navier-cfd-logo.svg" alt="NAVIER-CFD logo" width="860">
+</p>
 
-**Neural and Agentic Verification, Integration, Evaluation, and Recommendation for Computational Fluid Dynamics**
+<h1 align="center">NAVIER-CFD</h1>
 
-[![Version](https://img.shields.io/badge/version-0.1.0-2f6f9f.svg)](https://github.com/Samsomyajit/NAVIER-CFD/releases)
-[![PyPI](https://img.shields.io/pypi/v/navier-cfd.svg?label=PyPI)](https://pypi.org/project/navier-cfd/)
-[![Python](https://img.shields.io/pypi/pyversions/navier-cfd.svg)](https://pypi.org/project/navier-cfd/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-4c8c6b.svg)](LICENSE)
-[![CI](https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml/badge.svg)](https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml)
-[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-6b7280.svg)](https://samsomyajit.github.io/NAVIER-CFD/)
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97-Hugging%20Face-f2c94c.svg)](https://huggingface.co/datasets)
-[![Models](https://img.shields.io/badge/models-55-7c6aa6.svg)](#registered-model-families)
-[![Datasets](https://img.shields.io/badge/datasets-11-5d8f72.svg)](#why-navier-cfd)
+<p align="center"><strong>Neural and Agentic Verification, Integration, Evaluation, and Recommendation for Computational Fluid Dynamics</strong></p>
 
-NAVIER-CFD is a CFD-first, uniform Python platform for neural PDE solvers, hybrid numerical acceleration, benchmark datasets, task-aware model recommendation, and agentic experiment planning.
+<p align="center">
+  <a href="https://github.com/Samsomyajit/NAVIER-CFD/releases"><img src="https://img.shields.io/badge/version-0.1.0-2f6f9f.svg" alt="Version"></a>
+  <a href="https://pypi.org/project/navier-cfd/"><img src="https://img.shields.io/pypi/v/navier-cfd.svg?label=PyPI" alt="PyPI"></a>
+  <a href="https://pypi.org/project/navier-cfd/"><img src="https://img.shields.io/pypi/pyversions/navier-cfd.svg" alt="Python"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-4c8c6b.svg" alt="Apache 2.0"></a>
+  <a href="https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml"><img src="https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://samsomyajit.github.io/NAVIER-CFD/"><img src="https://img.shields.io/badge/project-website-0d6fdc.svg" alt="Project website"></a>
+  <a href="https://samsomyajit.github.io/NAVIER-CFD/recommender/"><img src="https://img.shields.io/badge/tool-recommender-13b7d8.svg" alt="Interactive recommender"></a>
+  <img src="https://img.shields.io/badge/models-55-7c6aa6.svg" alt="55 models">
+  <img src="https://img.shields.io/badge/datasets-11-5d8f72.svg" alt="11 datasets">
+</p>
+
+NAVIER-CFD is a CFD-first Python platform and project website for neural PDE solvers, hybrid numerical acceleration, benchmark datasets, explainable task-aware recommendation, Hugging Face integration, and agentic experiment planning.
+
+## Project website and interactive tool
+
+- **Project website:** https://samsomyajit.github.io/NAVIER-CFD/
+- **Interactive model and dataset recommender:** https://samsomyajit.github.io/NAVIER-CFD/recommender/
+- **Technical documentation:** https://samsomyajit.github.io/NAVIER-CFD/docs/
+
+The web recommender runs entirely in the browser. It mirrors the Python ranking rules, applies hard compatibility filters, explains every score, recommends suitable benchmark datasets, and exports a reproducible run manifest.
+
+> The recommender is a deterministic architecture-compatibility decision-support system. It is functional and tested, but its ranking should be treated as a hypothesis to validate on the selected CFD benchmark, discretization, and quantities of interest—not as proof that one model is universally superior.
 
 ## Scientific pipeline
 
 <p align="center">
-  <img src="docs/assets/navier_pipeline.svg" alt="NAVIER-CFD scientific pipeline from CFD task definition and Hugging Face data acquisition to model recommendation, execution, numerical verification and agentic feedback" width="100%">
+  <img src="docs/assets/navier_pipeline.svg" alt="NAVIER-CFD scientific pipeline" width="100%">
 </p>
 
-The workflow keeps the numerical role of learning explicit—surrogate, closure, corrector, preconditioner, inverse model, controller, or generator—and connects every experiment to versioned data, a traceable model card, CFD-aware metrics, and a reproducible run manifest.
+The workflow keeps the learned numerical role explicit—surrogate, closure, corrector, preconditioner, inverse model, controller, or generator—and connects each experiment to versioned data, traceable model cards, CFD-aware metrics, and a reproducible run manifest.
 
 ## Why NAVIER-CFD
 
-Neural-solver repositories commonly provide selected architectures and benchmark scripts. NAVIER-CFD adds the workflow and numerical-accountability layer:
-
-- **55-model taxonomy:** acceleration frameworks, surrogates, general PDE solvers, specialized CFD, geometry/unstructured models, foundation models, inverse methods, uncertainty, particle/multiphase, and generative methods.
+- **55-model taxonomy:** acceleration frameworks, surrogates, general PDE solvers, specialized CFD, geometry and unstructured-mesh models, foundation models, inverse methods, uncertainty, particle and multiphase models, and generative methods.
 - **11 first-class datasets:** PDEBench, CFDBench, RealPDEBench, AirfRANS, DrivAerNet++, DrivAerML, The Well, APEBench, ScalarFlow, ShapeNet-Car, and EAGLE.
-- **Full Hugging Face support:** discovery, repository inspection, selective downloads, revision pinning, authentication, streaming, caching, and arbitrary CFD dataset IDs.
-- **Explainable model recommendation:** hard compatibility filters and transparent ranking by physics, dimension, mesh, geometry, temporal regime, numerical role, memory, conservation, uncertainty, and transfer requirements.
-- **Agentic AI:** deterministic offline planning plus a provider-neutral interface for external LLM agents.
+- **Full Hugging Face support:** discovery, inspection, selective downloads, revision pinning, authentication, streaming, caching, and arbitrary CFD dataset identifiers.
+- **Explainable recommendation:** compatibility filtering and transparent ranking by physics, dimension, mesh, geometry, temporal regime, numerical role, memory, conservation, uncertainty, and transfer requirements.
+- **Agentic AI:** deterministic offline planning and provider-neutral interfaces for external LLM agents.
 - **CFD-aware benchmarking:** field, spectral, rollout, conservation, OOD, quantity-of-interest, uncertainty, wall-clock, memory, and break-even metrics.
-- **Safe integration:** external repositories are metadata-first and are never executed automatically.
+- **Safe integration:** external repositories remain metadata-first and are never executed automatically.
 
 ## Installation
 
@@ -49,14 +63,14 @@ git clone https://github.com/Samsomyajit/NAVIER-CFD.git
 cd NAVIER-CFD
 pip install -e .
 
-# development, testing and documentation
+# development, tests, and documentation
 pip install -e ".[dev,docs]"
 ```
 
 ## Quick start
 
 ```bash
-# Explore the catalogs
+# Explore catalogs
 navier models list
 navier models list --category acceleration
 navier datasets list
@@ -64,12 +78,12 @@ navier datasets list
 # Search Hugging Face
 navier datasets discover "computational fluid dynamics" --limit 20
 
-# Download only the cylinder subset from CFDBench
+# Download a CFDBench subset
 navier datasets download cfdbench \
   --local-dir ./data/cfdbench \
   --pattern "cylinder/**"
 
-# Recommend models for an unsteady geometry-varying CFD task
+# Recommend models
 navier recommend \
   --problem cylinder_wake \
   --task surrogate \
@@ -80,7 +94,7 @@ navier recommend \
   --conservation \
   --top-k 10
 
-# Create a full agentic experiment plan
+# Generate an agentic experiment plan
 navier agent plan \
   "Benchmark RealPDEBench cylinder sim-to-real forecasting with 24 GB VRAM, conservation and uncertainty"
 ```
@@ -89,8 +103,6 @@ navier agent plan \
 
 ```python
 from navier_cfd import Catalog, TaskSpec, recommend_models
-from navier_cfd.datasets import HuggingFaceDatasetManager
-from navier_cfd.agents import AgentOrchestrator
 
 catalog = Catalog.load_builtin()
 task = TaskSpec(
@@ -107,75 +119,68 @@ task = TaskSpec(
 )
 
 for result in recommend_models(task, catalog.models, top_k=8):
-    print(result.model.name, result.score, result.reasons, result.cautions)
-
-hf = HuggingFaceDatasetManager()
-print(hf.discover("CFD fluid dynamics", limit=10))
-
-plan = AgentOrchestrator(catalog).plan(
-    "Accelerate unsteady 3D CFD on unstructured meshes with conservation and fallback"
-)
-print(plan.to_dict())
+    print(result.model.name, result.score)
+    print("reasons:", result.reasons)
+    print("cautions:", result.cautions)
 ```
 
 ## Registered model families
 
-- **Physics-informed:** PINN, NSFnets, PINNsFormer, PINO, PI-MFM, RiemannONet.
-- **Operator learning:** DeepONet, MIONet, Fourier-DeepONet, Fourier-MIONet, FNO, F-FNO, U-FNO, U-NO, LSM, MWT, Laplace NO, state-space NO.
-- **Geometry and transformer solvers:** Geo-FNO, GINO, GNOT, Transolver, UPT, MeshGraphNets, DoMINO, ReViT.
-- **CFD-specialized:** PIBERT, FourierFlow, P3D, AeroTransformer, NeuralDEM, DeepM&Mnet, Energy Transformer.
-- **Foundation/generative:** DPOT, Poseidon, PROSE-FD, BCAT, PDEformer-1, Tadpole, PDE-Refiner, FunDiff, Flow Matching for PDEs.
-- **Acceleration:** Solver-in-the-Loop, INC, PICT, diffSPH, NeuroSEM, neural-operator preconditioned Newton, geometry-aware neural preconditioning.
-- **Uncertainty/time adaptation:** Conformalized-DeepONet and TANTE.
+- **Physics-informed:** PINN, NSFnets, PINNsFormer, PINO, PI-MFM, and RiemannONet.
+- **Operator learning:** DeepONet, MIONet, Fourier-DeepONet, Fourier-MIONet, FNO, F-FNO, U-FNO, U-NO, LSM, MWT, Laplace NO, and state-space NO.
+- **Geometry and transformer solvers:** Geo-FNO, GINO, GNOT, Transolver, UPT, MeshGraphNets, DoMINO, and ReViT.
+- **CFD-specialized:** PIBERT, FourierFlow, P3D, AeroTransformer, NeuralDEM, DeepM&Mnet, and Energy Transformer.
+- **Foundation and generative:** DPOT, Poseidon, PROSE-FD, BCAT, PDEformer-1, Tadpole, PDE-Refiner, FunDiff, and Flow Matching for PDEs.
+- **Acceleration:** Solver-in-the-Loop, INC, PICT, diffSPH, NeuroSEM, neural-operator preconditioned Newton, and geometry-aware neural preconditioning.
+- **Uncertainty and adaptation:** Conformalized-DeepONet and TANTE.
 
-“Included” means represented through a uniform, executable model card. Official external implementations remain external so their licenses and upstream revisions are respected.
+“Included” means represented through a uniform model card and recommendation interface. Official implementations remain external so upstream licenses and revisions are respected.
 
 ## Repository map
 
 ```text
 src/navier_cfd/
   agents/          deterministic and LLM-ready planning
-  benchmarks/      CFD metrics and benchmark-plan generation
-  datasets/        Hugging Face discovery/download/streaming
+  benchmarks/      CFD metrics and benchmark plans
+  datasets/        Hugging Face discovery, download, streaming
   models/          safe adapter protocol
-  catalogs.py      55 models and 11 datasets
+  catalogs.py      model and dataset registries
   recommender.py   explainable task-to-model ranking
-case_studies/      eight detailed experimental study guides
+
+website/
+  index.html       standalone project website
+  recommender/     interactive browser recommender
+  data/            static model and dataset catalogs
+
+docs/              MkDocs technical documentation
+case_studies/      detailed benchmark study guides
 configs/tasks/     reusable task specifications
-docs/              MkDocs site, model atlas and dataset cards
 ```
 
-## Design principles
+## Recommender validation
 
-1. State the learned numerical role: surrogate, closure, corrector, preconditioner, inverse model, controller, or generator.
-2. Separate interpolation, parameter OOD, geometry transfer, mesh transfer, solver transfer, and sim-to-real transfer.
-3. Pin dataset, code, and checkpoint revisions.
-4. Keep recommendations explainable and overridable.
-5. Never execute third-party code automatically.
-6. Evaluate CFD quantities of interest, conservation, stability, and end-to-end cost—not field error alone.
+The Python recommender is covered by `pytest`; the browser engine is covered by Node's built-in test runner.
 
-## Case studies
+```bash
+pytest tests/test_recommender.py
+node --test website/recommender/recommender-core.test.mjs
+```
 
-Eight study guides cover PDEBench Navier–Stokes, CFDBench cavity and cylinder flow, RealPDEBench cylinder and FSI, AirfRANS geometry generalization, three-dimensional automotive aerodynamics, and hybrid neural-numerical acceleration.
+Canonical tests verify that geometry-varying 3D tasks surface geometry-aware models, hybrid acceleration tasks surface solver-coupled methods, and CFD benchmark tasks surface relevant datasets.
 
-## Packaging and PyPI
+## Packaging and deployment
 
-- Package name: `navier-cfd`
+- Package: `navier-cfd`
 - Import namespace: `navier_cfd`
 - Current version: `0.1.0`
 - Build backend: Hatchling
-- Publication: PyPI Trusted Publishing through `.github/workflows/publish-pypi.yml`
+- Website source: `website/`
+- Documentation source: `docs/`
+- GitHub Pages workflow: `.github/workflows/docs.yml`
+- PyPI Trusted Publishing workflow: `.github/workflows/publish-pypi.yml`
 
-A GitHub Release builds, validates, and publishes the wheel and source distribution using OpenID Connect. The PyPI project must authorize this repository and the `pypi` GitHub environment as a trusted publisher before the first release.
-
-## Documentation and CI
-
-- Documentation: https://samsomyajit.github.io/NAVIER-CFD/
-- CI validates Python 3.10–3.12.
-- Tagged releases build wheel and source distributions.
-- GitHub Pages deployment is defined under `.github/workflows/docs.yml`.
-- PyPI publication is defined under `.github/workflows/publish-pypi.yml`.
+The project website and documentation are deployed together as one dedicated NAVIER-CFD project site. GitHub Pages must be enabled once under **Settings → Pages → Source: GitHub Actions**.
 
 ## License
 
-Licensed under the [Apache License 2.0](LICENSE). Cite NAVIER-CFD and the original model, dataset, upstream implementation, and numerical-solver references used in each experiment.
+Licensed under the [Apache License 2.0](LICENSE). Cite NAVIER-CFD and the original model, dataset, upstream implementation, and numerical-solver references used in every experiment.

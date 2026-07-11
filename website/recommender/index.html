@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Interactive NAVIER-CFD model and dataset recommender.">
+  <title>NAVIER-CFD Recommender</title>
+  <link rel="icon" href="../assets/navier-cfd-icon.svg"><link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<header class="site-header"><div class="container nav">
+  <a class="brand" href="../"><img src="../assets/navier-cfd-icon.svg" alt="">NAVIER-CFD</a>
+  <nav class="nav-links"><a href="../">Project site</a><a href="../docs/">Documentation</a><a class="button" href="https://github.com/Samsomyajit/NAVIER-CFD">GitHub</a></nav>
+</div></header>
+<main class="container">
+  <section style="padding:54px 0 10px">
+    <span class="eyebrow">Interactive scientific tool</span>
+    <h1 style="font-size:clamp(2.5rem,5vw,4.8rem)">Task-aware CFD recommender</h1>
+    <p class="lead">Describe the numerical problem. NAVIER-CFD applies compatibility filters, ranks model families, recommends benchmark datasets, and exposes the reason for every score.</p>
+    <div class="badges"><span class="status">Client-side engine active</span><span class="badge">Algorithm v0.1.0</span><span class="badge">No data leaves your browser</span></div>
+  </section>
+
+  <div class="form-layout">
+    <section class="panel">
+      <h2 style="font-size:1.7rem">Task specification</h2>
+      <p class="small">Use a preset or define the task manually.</p>
+      <div class="field full" style="margin-bottom:14px"><label for="preset">Preset</label><select id="preset">
+        <option value="">Custom task</option><option value="cylinder">2D cylinder wake forecasting</option>
+        <option value="vehicle">3D vehicle aerodynamics</option><option value="acceleration">Hybrid CFD acceleration</option>
+        <option value="multiphase">Particle / multiphase flow</option><option value="inverse">Inverse flow reconstruction</option>
+      </select></div>
+      <form id="task-form">
+        <div class="form-grid">
+          <div class="field full"><label for="problem">Problem name</label><input id="problem" value="cylinder_wake" required></div>
+          <div class="field"><label for="task_type">Numerical role</label><select id="task_type">
+            <option value="surrogate">Surrogate</option><option value="forecasting">Forecasting</option><option value="acceleration">Acceleration</option>
+            <option value="corrector">Corrector</option><option value="preconditioner">Preconditioner</option><option value="inverse">Inverse model</option>
+          </select></div>
+          <div class="field"><label for="dimension">Dimension</label><select id="dimension"><option>1</option><option selected>2</option><option>3</option></select></div>
+          <div class="field"><label for="mesh_type">Mesh representation</label><select id="mesh_type">
+            <option value="structured">Structured grid</option><option value="unstructured">Unstructured mesh</option><option value="point_cloud">Point cloud</option><option value="meshfree">Mesh-free</option><option value="particle">Particles</option>
+          </select></div>
+          <div class="field"><label for="temporal_mode">Temporal mode</label><select id="temporal_mode"><option value="steady">Steady</option><option value="unsteady">Unsteady</option><option value="autoregressive" selected>Autoregressive</option></select></div>
+          <div class="field"><label for="geometry_mode">Geometry</label><select id="geometry_mode"><option value="fixed" selected>Fixed</option><option value="parameterized">Parameterized</option><option value="varying">Varying</option></select></div>
+          <div class="field"><label for="physics">Physics family</label><select id="physics">
+            <option value="fluid_dynamics">Fluid dynamics</option><option value="incompressible_navier_stokes" selected>Incompressible Navier–Stokes</option><option value="compressible_navier_stokes">Compressible Navier–Stokes</option>
+            <option value="aerodynamics">Aerodynamics</option><option value="fsi">Fluid–structure interaction</option><option value="combustion">Combustion</option><option value="particle">Particles</option><option value="granular">Granular flow</option><option value="general_pde">General PDE</option>
+          </select></div>
+          <div class="field"><label for="memory">Available accelerator memory (GB)</label><input id="memory" type="number" min="1" step="1" value="24"></div>
+          <div class="field"><label for="framework">Preferred framework</label><select id="framework"><option value="">No preference</option><option value="pytorch">PyTorch</option></select></div>
+          <div class="field full">
+            <label>Required capabilities</label>
+            <div class="checks">
+              <label class="check"><input id="requires_conservation" type="checkbox">Conservation pathway</label>
+              <label class="check"><input id="requires_uncertainty" type="checkbox">Uncertainty quantification</label>
+              <label class="check"><input id="requires_geometry_transfer" type="checkbox">Geometry transfer</label>
+              <label class="check"><input id="requires_mesh_transfer" type="checkbox">Mesh transfer</label>
+              <label class="check"><input id="requires_long_rollout" type="checkbox" checked>Long-horizon rollout</label>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar"><button class="button" type="submit">Recommend</button><button class="button secondary" id="copy-config" type="button">Copy task JSON</button><button class="button ghost" id="reset" type="button">Reset</button></div>
+      </form>
+      <div style="margin-top:18px"><div class="small"><strong>Interpretation:</strong> compatibility is architecture-level evidence from the catalog, not a guarantee of benchmark superiority. Always validate on the target discretization and quantities of interest.</div></div>
+    </section>
+
+    <section>
+      <div class="panel">
+        <div class="result-summary"><div><div class="kicker">Results</div><h2 style="font-size:1.85rem;margin:4px 0">Recommended candidates</h2></div><span id="result-count" class="badge">0 models</span></div>
+        <div class="tabs"><button class="tab active" data-tab="models">Models</button><button class="tab" data-tab="datasets">Datasets</button><button class="tab" data-tab="config">Run manifest</button></div>
+        <div id="models-tab"><div id="model-results" class="result-list"></div></div>
+        <div id="datasets-tab" class="hidden"><div id="dataset-results" class="result-list"></div></div>
+        <div id="config-tab" class="hidden"><pre id="manifest" class="codebox"></pre></div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer class="footer"><div class="container footer-row"><span>NAVIER-CFD recommender</span><span>Explainable, deterministic, reproducible</span></div></footer>
+<script type="module" src="./app.mjs"></script>
+</body></html>
