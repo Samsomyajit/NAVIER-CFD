@@ -1,0 +1,15 @@
+{
+  "grid": 64,
+  "train_samples": 512,
+  "test_samples": 128,
+  "epochs": 20,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "viscosity_min": 0.005,
+  "viscosity_max": 0.05,
+  "dt": 0.1,
+  "seed": 42,
+  "width": 20,
+  "modes": 12,
+  "output_dir": "results/rtx3060_demo"
+}
