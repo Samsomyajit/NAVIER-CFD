@@ -21,13 +21,14 @@ def test_web_runtime_exports_catalog_and_runs_exact_recommender() -> None:
     assert len(catalog["datasets"]) >= 8
 
     task = {
-        "problem": "cylinder_wake",
-        "task_type": "surrogate",
+        "problem": "real_cylinder_wake",
+        "task_type": "forecasting",
         "dimension": 2,
         "mesh_type": "structured",
         "temporal_mode": "autoregressive",
         "geometry_mode": "fixed",
-        "physics": ["incompressible_flow"],
+        "physics": ["incompressible_navier_stokes"],
+        "fidelity": "experiment",
         "requires_conservation": True,
         "requires_long_rollout": True,
         "hardware_memory_gb": 24,
@@ -39,9 +40,11 @@ from navier_web_bridge import health_json, recommend_json
 health = json.loads(health_json())
 assert health['status'] == 'ready'
 assert health['models'] >= 50
+assert health['evidence_records'] >= 20
 ranked = json.loads(recommend_json({json.dumps(json.dumps(task))}, 5))
 assert 1 <= len(ranked) <= 5
 assert all('score' in item for item in ranked)
+assert any(item.get('evidence_count', 0) > 0 for item in ranked)
 print(json.dumps({{'health': health, 'count': len(ranked)}}))
 """
     subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)
@@ -49,3 +52,5 @@ print(json.dumps({{'health': health, 'count': len(ranked)}}))
 
 def test_browser_javascript_has_valid_syntax() -> None:
     subprocess.run(["node", "--check", "website/app.js"], cwd=ROOT, check=True)
+    subprocess.run(["node", "--check", "website/recommender/app.mjs"], cwd=ROOT, check=True)
+    subprocess.run(["node", "--check", "website/recommender/recommender-core.mjs"], cwd=ROOT, check=True)

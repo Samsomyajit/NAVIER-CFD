@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Interactive NAVIER-CFD model and dataset recommender.">
-  <title>NAVIER-CFD Recommender</title>
+  <meta name="description" content="Interactive evidence-aware NAVIER-CFD model and dataset recommender.">
+  <title>NAVIER-CFD Evidence-Aware Recommender</title>
   <link rel="icon" href="../assets/navier-cfd-icon.svg"><link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
@@ -14,15 +14,16 @@
 <main class="container">
   <section style="padding:54px 0 10px">
     <span class="eyebrow">Interactive scientific tool</span>
-    <h1 style="font-size:clamp(2.5rem,5vw,4.8rem)">Task-aware CFD recommender</h1>
-    <p class="lead">Describe the numerical problem. NAVIER-CFD applies compatibility filters, ranks model families, recommends benchmark datasets, and exposes the reason for every score.</p>
-    <div class="badges"><span class="status">Client-side engine active</span><span class="badge">Algorithm v0.1.0</span><span class="badge">No data leaves your browser</span></div>
+    <h1 style="font-size:clamp(2.5rem,5vw,4.8rem)">Evidence-aware CFD recommender</h1>
+    <p class="lead">Describe the numerical problem. NAVIER-CFD applies hard compatibility filters, transfers quantitative evidence from relevant papers, reports confidence and metric coverage, and recommends benchmark datasets.</p>
+    <div class="badges"><span id="engine-status" class="status">Loading exact Python evidence engine…</span><span class="badge">Algorithm 0.2.0-evidence</span><span class="badge">No task data leaves your browser</span></div>
+    <p id="engine-detail" class="small">Loading the immutable model, dataset, and paper-evidence catalogs.</p>
   </section>
 
   <div class="form-layout">
     <section class="panel">
       <h2 style="font-size:1.7rem">Task specification</h2>
-      <p class="small">Use a preset or define the task manually.</p>
+      <p class="small">Use a preset or define the CFD task manually. Fidelity matters because evidence from DNS, LES, RANS, simulation, and experiment is not interchangeable.</p>
       <div class="field full" style="margin-bottom:14px"><label for="preset">Preset</label><select id="preset">
         <option value="">Custom task</option><option value="cylinder">2D cylinder wake forecasting</option>
         <option value="vehicle">3D vehicle aerodynamics</option><option value="acceleration">Hybrid CFD acceleration</option>
@@ -32,8 +33,8 @@
         <div class="form-grid">
           <div class="field full"><label for="problem">Problem name</label><input id="problem" value="cylinder_wake" required></div>
           <div class="field"><label for="task_type">Numerical role</label><select id="task_type">
-            <option value="surrogate">Surrogate</option><option value="forecasting">Forecasting</option><option value="acceleration">Acceleration</option>
-            <option value="corrector">Corrector</option><option value="preconditioner">Preconditioner</option><option value="inverse">Inverse model</option>
+            <option value="surrogate">Surrogate</option><option value="forecasting" selected>Forecasting</option><option value="acceleration">Acceleration</option>
+            <option value="corrector">Corrector</option><option value="preconditioner">Preconditioner</option><option value="inverse">Inverse model</option><option value="generative">Generative model</option>
           </select></div>
           <div class="field"><label for="dimension">Dimension</label><select id="dimension"><option>1</option><option selected>2</option><option>3</option></select></div>
           <div class="field"><label for="mesh_type">Mesh representation</label><select id="mesh_type">
@@ -45,6 +46,7 @@
             <option value="fluid_dynamics">Fluid dynamics</option><option value="incompressible_navier_stokes" selected>Incompressible Navier–Stokes</option><option value="compressible_navier_stokes">Compressible Navier–Stokes</option>
             <option value="aerodynamics">Aerodynamics</option><option value="fsi">Fluid–structure interaction</option><option value="combustion">Combustion</option><option value="particle">Particles</option><option value="granular">Granular flow</option><option value="general_pde">General PDE</option>
           </select></div>
+          <div class="field"><label for="fidelity">Evidence fidelity</label><select id="fidelity"><option value="unknown">Not specified</option><option value="experiment">Experiment / real data</option><option value="dns">DNS</option><option value="les">LES</option><option value="rans">RANS</option><option value="hybrid_rans_les">Hybrid RANS–LES</option><option value="simulation">General simulation</option></select></div>
           <div class="field"><label for="memory">Available accelerator memory (GB)</label><input id="memory" type="number" min="1" step="1" value="24"></div>
           <div class="field"><label for="framework">Preferred framework</label><select id="framework"><option value="">No preference</option><option value="pytorch">PyTorch</option></select></div>
           <div class="field full">
@@ -60,7 +62,7 @@
         </div>
         <div class="toolbar"><button class="button" type="submit">Recommend</button><button class="button secondary" id="copy-config" type="button">Copy task JSON</button><button class="button ghost" id="reset" type="button">Reset</button></div>
       </form>
-      <div style="margin-top:18px"><div class="small"><strong>Interpretation:</strong> compatibility is architecture-level evidence from the catalog, not a guarantee of benchmark superiority. Always validate on the target discretization and quantities of interest.</div></div>
+      <div style="margin-top:18px"><div class="small"><strong>Interpretation:</strong> final score, confidence, and metric coverage must be read together. The system downweights author-reported or secondary evidence and never treats citation count or venue prestige as CFD performance.</div></div>
     </section>
 
     <section>
@@ -74,6 +76,7 @@
     </section>
   </div>
 </main>
-<footer class="footer"><div class="container footer-row"><span>NAVIER-CFD recommender</span><span>Explainable, deterministic, reproducible</span></div></footer>
+<footer class="footer"><div class="container footer-row"><span>NAVIER-CFD evidence-aware recommender</span><span>Explainable · provenance-aware · reproducible</span></div></footer>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
 <script type="module" src="./app.mjs"></script>
 </body></html>

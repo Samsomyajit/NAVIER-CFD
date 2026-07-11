@@ -1,9 +1,9 @@
 """Build the static NAVIER-CFD web recommender assets.
 
-The generated browser runtime packages the same Python specs, catalog, and
-recommender used by the library. Pyodide loads this zip in the website, so the
-interactive recommendations are produced by the project implementation rather
-than a separate opaque service.
+The generated browser runtime packages the same Python specs, catalog, evidence,
+and recommender used by the library. Pyodide loads this zip in the website, so
+the interactive recommendations are produced by the project implementation
+rather than a separate opaque service.
 """
 from __future__ import annotations
 
@@ -49,13 +49,26 @@ BRIDGE = r'''from __future__ import annotations
 
 import inspect
 import json
+import pkgutil
 from dataclasses import fields, is_dataclass
 from enum import Enum
 from typing import Any, get_args, get_origin, get_type_hints
 
 from navier_cfd import Catalog, TaskSpec, recommend_models
+from navier_cfd.evidence import EvidenceRecord
+import navier_cfd.recommender as _recommender_module
 
 _CATALOG = Catalog.load_builtin()
+_EVIDENCE_BYTES = pkgutil.get_data("navier_cfd", "data/paper_evidence.json")
+if _EVIDENCE_BYTES is None:
+    raise RuntimeError("NAVIER-CFD paper evidence catalog is missing from the browser runtime")
+_EVIDENCE = tuple(
+    EvidenceRecord.from_dict(row)
+    for row in json.loads(_EVIDENCE_BYTES.decode("utf-8"))
+)
+# The normal loader uses a filesystem Path. The browser package is zip-imported,
+# so provide the same immutable evidence records directly to the recommender.
+_recommender_module.load_builtin_evidence = lambda: _EVIDENCE
 
 
 def _jsonable(value: Any) -> Any:
@@ -132,6 +145,7 @@ def health_json() -> str:
         "engine": "navier_cfd.recommender",
         "models": len(_CATALOG.models),
         "datasets": len(_CATALOG.datasets),
+        "evidence_records": len(_EVIDENCE),
         "status": "ready",
     })
 '''
