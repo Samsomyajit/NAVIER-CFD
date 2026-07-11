@@ -25,9 +25,6 @@ jobs:
           base64 --decode /tmp/navier-site-patch.tar.gz.b64 > /tmp/navier-site-patch.tar.gz
           test "$(wc -c < /tmp/navier-site-patch.tar.gz)" -eq 21124
           tar --extract --gzip --file /tmp/navier-site-patch.tar.gz --directory .
-          rm -rf bootstrap
-          rm -f .github/workflows/bootstrap-site.yml
-          rm -f TRIGGER_WEBSITE_DEPLOYMENT.md
       - name: Validate browser recommender
         shell: bash
         run: |
@@ -39,6 +36,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add README.md mkdocs.yml docs/index.md docs/RECOMMENDER.md docs/assets website
           git commit -m "Materialize NAVIER-CFD website and recommender source"
           git push origin HEAD:${{ github.head_ref }}
