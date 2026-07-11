@@ -1,0 +1,14 @@
+name: Evidence diagnostic
+on:
+  push:
+  pull_request:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run focused evidence tests
+        env:
+          PYTHONPATH: src
+        run: python -m pytest tests/test_evidence_recommender.py tests/test_recommender.py -q --tb=short
