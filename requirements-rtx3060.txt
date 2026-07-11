@@ -1,0 +1,4 @@
+# Install CUDA-enabled PyTorch first using the command in docs/RTX3060_QUICKSTART.md.
+-e .
+torch>=2.1
+numpy>=1.24
