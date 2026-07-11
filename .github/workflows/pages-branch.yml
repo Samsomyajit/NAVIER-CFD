@@ -32,7 +32,8 @@ jobs:
           touch _site/.nojekyll
           test -f _site/index.html
           test -f _site/recommender/index.html
-          test -f _site/recommender/runtime/navier_runtime.zip
+          test -f _site/runtime/navier_runtime.zip
+          test -f _site/data/catalog.json
           test -f _site/docs/index.html
       - name: Publish generated site to gh-pages branch
         env:
