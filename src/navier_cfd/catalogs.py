@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from pathlib import Path
 from typing import Iterable
-import json
 
 from .specs import DatasetSpec, ModelSpec
 
@@ -14,7 +14,11 @@ _MODEL_ROWS = [
     ("deeponet", "DeepONet", ("surrogate", "general_pde_solver", "physics_informed")),
     ("mionet", "MIONet", ("surrogate", "general_pde_solver")),
     ("fourier_deeponet", "Fourier-DeepONet", ("surrogate", "specialized")),
-    ("nested_fourier_deeponet", "Nested Fourier-DeepONet", ("surrogate", "specialized", "particle_multiphase")),
+    (
+        "nested_fourier_deeponet",
+        "Nested Fourier-DeepONet",
+        ("surrogate", "specialized", "particle_multiphase"),
+    ),
     ("fourier_mionet", "Fourier-MIONet", ("surrogate", "specialized", "particle_multiphase")),
     ("fno", "Fourier Neural Operator", ("surrogate", "general_pde_solver")),
     ("pino", "Physics-Informed Neural Operator", ("physics_informed", "surrogate", "general_pde_solver")),
@@ -65,10 +69,65 @@ _MODEL_ROWS = [
     ("flow_matching_pde", "Flow Matching for PDEs", ("generative", "physics_informed", "general_pde_solver")),
 ]
 
-_GEOMETRY = {"geo_fno", "gino", "gnot", "transolver", "upt", "meshgraphnets", "domino", "aerotransformer", "geometry_preconditioner", "revit"}
-_THREED = {"gino", "upt", "domino", "p3d", "aerotransformer", "tadpole", "inc", "pict", "diffsph", "neurosem", "np_newton", "geometry_preconditioner", "neuraldem", "revit", "deepmmnet", "tante", "energy_transformer"}
-_ACCEL = {"solver_in_loop", "inc", "pict", "diffsph", "neurosem", "np_newton", "geometry_preconditioner"}
-_LONG = {"pinnsformer", "fno", "f_fno", "pibert", "fourierflow", "pde_refiner", "dpot", "poseidon", "prose_fd", "bcat", "p3d", "tadpole", "solver_in_loop", "inc", "neuraldem", "tante"}
+_NATIVE = {"pinn", "deeponet", "fno"}
+_GEOMETRY = {
+    "geo_fno",
+    "gino",
+    "gnot",
+    "transolver",
+    "upt",
+    "meshgraphnets",
+    "domino",
+    "aerotransformer",
+    "geometry_preconditioner",
+    "revit",
+}
+_THREED = {
+    "gino",
+    "upt",
+    "domino",
+    "p3d",
+    "aerotransformer",
+    "tadpole",
+    "inc",
+    "pict",
+    "diffsph",
+    "neurosem",
+    "np_newton",
+    "geometry_preconditioner",
+    "neuraldem",
+    "revit",
+    "deepmmnet",
+    "tante",
+    "energy_transformer",
+}
+_ACCEL = {
+    "solver_in_loop",
+    "inc",
+    "pict",
+    "diffsph",
+    "neurosem",
+    "np_newton",
+    "geometry_preconditioner",
+}
+_LONG = {
+    "pinnsformer",
+    "fno",
+    "f_fno",
+    "pibert",
+    "fourierflow",
+    "pde_refiner",
+    "dpot",
+    "poseidon",
+    "prose_fd",
+    "bcat",
+    "p3d",
+    "tadpole",
+    "solver_in_loop",
+    "inc",
+    "neuraldem",
+    "tante",
+}
 _PARTICLE = {"diffsph", "neuraldem"}
 _UQ = {"conformal_deeponet", "fun_diff", "fourierflow"}
 
@@ -112,6 +171,14 @@ _REPO = {
 }
 
 
+def _integration(model_id: str) -> str:
+    if model_id in _NATIVE:
+        return "native"
+    if model_id in _REPO:
+        return "external"
+    return "metadata"
+
+
 def _models() -> list[ModelSpec]:
     result: list[ModelSpec] = []
     for model_id, name, categories in _MODEL_ROWS:
@@ -119,50 +186,205 @@ def _models() -> list[ModelSpec]:
         three_d = model_id in _THREED or model_id not in {"pinnsformer", "riemannonet"}
         accel = model_id in _ACCEL
         particle = model_id in _PARTICLE
-        mesh_types = ("particle",) if particle else (("unstructured", "point_cloud", "structured") if geometry else ("structured", "meshfree"))
-        result.append(ModelSpec(
-            id=model_id,
-            name=name,
-            categories=categories,
-            architecture=_ARCH.get(model_id, name + " architecture"),
-            tasks=(("acceleration", "corrector", "preconditioner") if accel else ("surrogate", "forecasting")),
-            physics=(("particle", "granular") if particle else ("general_pde", "fluid_dynamics")),
-            mesh_types=mesh_types,
-            geometry_modes=(("varying", "parameterized") if geometry else ("fixed", "parameterized")),
-            temporal_modes=(("autoregressive", "unsteady", "steady") if model_id in _LONG or accel else ("steady", "unsteady")),
-            dimensions=((1, 2, 3) if three_d else (1, 2)),
-            strengths=("registered in the uniform NAVIER-CFD model taxonomy",),
-            limitations=("verify claims on the selected CFD benchmark and discretization",),
-            reference=_REF.get(model_id, name),
-            repository=_REPO.get(model_id),
-            integration="external" if model_id in _REPO else "metadata",
-            min_memory_gb=24 if model_id in {"gino", "domino", "p3d", "aerotransformer", "neuraldem"} else 8,
-            framework="pytorch",
-            tags=tuple(filter(None, ["mesh_transfer" if geometry else "", "long_rollout" if model_id in _LONG or accel else "", "uncertainty" if model_id in _UQ else "", "conservative" if accel else "", "3d" if three_d else ""])),
-        ))
+        if particle:
+            mesh_types = ("particle",)
+        elif geometry:
+            mesh_types = ("unstructured", "point_cloud", "structured")
+        else:
+            mesh_types = ("structured", "meshfree")
+
+        result.append(
+            ModelSpec(
+                id=model_id,
+                name=name,
+                categories=categories,
+                architecture=_ARCH.get(model_id, name + " architecture"),
+                tasks=("acceleration", "corrector", "preconditioner") if accel else ("surrogate", "forecasting"),
+                physics=("particle", "granular") if particle else ("general_pde", "fluid_dynamics"),
+                mesh_types=mesh_types,
+                geometry_modes=("varying", "parameterized") if geometry else ("fixed", "parameterized"),
+                temporal_modes=("autoregressive", "unsteady", "steady")
+                if model_id in _LONG or accel
+                else ("steady", "unsteady"),
+                dimensions=(1, 2, 3) if three_d else (1, 2),
+                strengths=("registered in the uniform NAVIER-CFD model taxonomy",),
+                limitations=("verify claims on the selected CFD benchmark and discretization",),
+                reference=_REF.get(model_id, name),
+                repository=_REPO.get(model_id),
+                integration=_integration(model_id),
+                min_memory_gb=24 if model_id in {"gino", "domino", "p3d", "aerotransformer", "neuraldem"} else 8,
+                framework="pytorch",
+                tags=tuple(
+                    filter(
+                        None,
+                        [
+                            "mesh_transfer" if geometry else "",
+                            "long_rollout" if model_id in _LONG or accel else "",
+                            "uncertainty" if model_id in _UQ else "",
+                            "conservative" if accel else "",
+                            "3d" if three_d else "",
+                        ],
+                    )
+                ),
+            )
+        )
     return result
 
 
 def _datasets() -> list[DatasetSpec]:
     rows = [
-        ("pdebench", "PDEBench", "Extensive time-dependent PDE benchmark", "AI4Science-WestlakeU/PDEBench", ("navier_stokes", "advection", "reaction_diffusion"), (1, 2, 3), ("structured",), ("fixed",), ("autoregressive",)),
-        ("cfdbench", "CFDBench", "CFD benchmark with boundary, property, and geometry shifts", "chen-yingfa/CFDBench", ("cavity", "tube", "dam", "cylinder"), (2,), ("structured",), ("fixed", "varying"), ("steady", "autoregressive")),
-        ("realpdebench", "RealPDEBench", "Paired real-world and simulated spatiotemporal systems", "AI4Science-WestlakeU/RealPDEBench", ("cylinder", "fsi", "controlled_cylinder", "foil", "combustion"), (2,), ("structured",), ("fixed", "varying"), ("autoregressive",)),
-        ("airfrans", "AirfRANS", "RANS airfoil geometry and operating-condition benchmark", None, ("airfoil",), (2,), ("unstructured", "point_cloud"), ("varying",), ("steady",)),
-        ("drivaernetpp", "DrivAerNet++", "Large multimodal vehicle CFD dataset", None, ("vehicle_aerodynamics",), (3,), ("point_cloud", "unstructured"), ("varying",), ("steady",)),
-        ("drivaerml", "DrivAerML", "High-fidelity road-car aerodynamic CFD", None, ("vehicle_aerodynamics",), (3,), ("unstructured",), ("varying",), ("steady", "unsteady")),
-        ("the_well", "The Well", "Diverse large-scale physics simulations", "polymathic-ai/the_well", ("fluid", "multiphysics"), (2, 3), ("structured",), ("fixed", "varying"), ("autoregressive",)),
-        ("apebench", "APEBench", "Autoregressive PDE emulator benchmark", None, ("46_pde_configurations",), (1, 2, 3), ("structured",), ("fixed",), ("autoregressive",)),
-        ("scalarflow", "ScalarFlow", "Real volumetric scalar transport flows", None, ("scalar_transport",), (3,), ("structured",), ("fixed",), ("autoregressive",)),
-        ("shapenet_car", "ShapeNet-Car", "Vehicle-shape design benchmark", None, ("vehicle_design",), (3,), ("point_cloud",), ("varying",), ("steady",)),
-        ("eagle", "EAGLE", "Fluid and geometry learning benchmark", None, ("fluid",), (2, 3), ("structured", "unstructured"), ("varying",), ("autoregressive",)),
+        (
+            "pdebench",
+            "PDEBench",
+            "Extensive time-dependent PDE benchmark",
+            "AI4Science-WestlakeU/PDEBench",
+            ("navier_stokes", "advection", "reaction_diffusion"),
+            (1, 2, 3),
+            ("structured",),
+            ("fixed",),
+            ("autoregressive",),
+        ),
+        (
+            "cfdbench",
+            "CFDBench",
+            "CFD benchmark with boundary, property, and geometry shifts",
+            "chen-yingfa/CFDBench",
+            ("cavity", "tube", "dam", "cylinder"),
+            (2,),
+            ("structured",),
+            ("fixed", "varying"),
+            ("steady", "autoregressive"),
+        ),
+        (
+            "realpdebench",
+            "RealPDEBench",
+            "Paired real-world and simulated spatiotemporal systems",
+            "AI4Science-WestlakeU/RealPDEBench",
+            ("cylinder", "fsi", "controlled_cylinder", "foil", "combustion"),
+            (2,),
+            ("structured",),
+            ("fixed", "varying"),
+            ("autoregressive",),
+        ),
+        (
+            "airfrans",
+            "AirfRANS",
+            "RANS airfoil geometry and operating-condition benchmark",
+            None,
+            ("airfoil",),
+            (2,),
+            ("unstructured", "point_cloud"),
+            ("varying",),
+            ("steady",),
+        ),
+        (
+            "drivaernetpp",
+            "DrivAerNet++",
+            "Large multimodal vehicle CFD dataset",
+            None,
+            ("vehicle_aerodynamics",),
+            (3,),
+            ("point_cloud", "unstructured"),
+            ("varying",),
+            ("steady",),
+        ),
+        (
+            "drivaerml",
+            "DrivAerML",
+            "High-fidelity road-car aerodynamic CFD",
+            None,
+            ("vehicle_aerodynamics",),
+            (3,),
+            ("unstructured",),
+            ("varying",),
+            ("steady", "unsteady"),
+        ),
+        (
+            "the_well",
+            "The Well",
+            "Diverse large-scale physics simulations",
+            "polymathic-ai/the_well",
+            ("fluid", "multiphysics"),
+            (2, 3),
+            ("structured",),
+            ("fixed", "varying"),
+            ("autoregressive",),
+        ),
+        (
+            "apebench",
+            "APEBench",
+            "Autoregressive PDE emulator benchmark",
+            None,
+            ("46_pde_configurations",),
+            (1, 2, 3),
+            ("structured",),
+            ("fixed",),
+            ("autoregressive",),
+        ),
+        (
+            "scalarflow",
+            "ScalarFlow",
+            "Real volumetric scalar transport flows",
+            None,
+            ("scalar_transport",),
+            (3,),
+            ("structured",),
+            ("fixed",),
+            ("autoregressive",),
+        ),
+        (
+            "shapenet_car",
+            "ShapeNet-Car",
+            "Vehicle-shape design benchmark",
+            None,
+            ("vehicle_design",),
+            (3,),
+            ("point_cloud",),
+            ("varying",),
+            ("steady",),
+        ),
+        (
+            "eagle",
+            "EAGLE",
+            "Fluid and geometry learning benchmark",
+            None,
+            ("fluid",),
+            (2, 3),
+            ("structured", "unstructured"),
+            ("varying",),
+            ("autoregressive",),
+        ),
     ]
-    return [DatasetSpec(
-        id=i, name=n, description=d, tasks=("surrogate", "benchmark"), physics=("fluid_dynamics", "general_pde"),
-        dimensions=dim, mesh_types=mesh, geometry_modes=geo, temporal_modes=temp,
-        hf_repo_id=hf, source_url=None, license=None, size=None, scenarios=scenarios,
-        notes=("Pin dataset revisions and preserve official splits.",)
-    ) for i, n, d, hf, scenarios, dim, mesh, geo, temp in rows]
+    return [
+        DatasetSpec(
+            id=dataset_id,
+            name=name,
+            description=description,
+            tasks=("surrogate", "benchmark"),
+            physics=("fluid_dynamics", "general_pde"),
+            dimensions=dimensions,
+            mesh_types=mesh_types,
+            geometry_modes=geometry_modes,
+            temporal_modes=temporal_modes,
+            hf_repo_id=hf_repo_id,
+            source_url=None,
+            license=None,
+            size=None,
+            scenarios=scenarios,
+            notes=("Pin dataset revisions and preserve official splits.",),
+        )
+        for (
+            dataset_id,
+            name,
+            description,
+            hf_repo_id,
+            scenarios,
+            dimensions,
+            mesh_types,
+            geometry_modes,
+            temporal_modes,
+        ) in rows
+    ]
 
 
 @dataclass
@@ -178,7 +400,10 @@ class Catalog:
     def from_paths(cls, model_path: str | Path, dataset_path: str | Path) -> "Catalog":
         model_data = json.loads(Path(model_path).read_text(encoding="utf-8"))
         dataset_data = json.loads(Path(dataset_path).read_text(encoding="utf-8"))
-        return cls([ModelSpec.from_dict(x) for x in model_data], [DatasetSpec.from_dict(x) for x in dataset_data])
+        return cls(
+            [ModelSpec.from_dict(item) for item in model_data],
+            [DatasetSpec.from_dict(item) for item in dataset_data],
+        )
 
     def model(self, model_id: str) -> ModelSpec:
         for item in self.models:
@@ -193,14 +418,20 @@ class Catalog:
         raise KeyError(f"Unknown dataset id: {dataset_id}")
 
     def models_by_category(self, category: str) -> list[ModelSpec]:
-        return [x for x in self.models if category in x.categories]
+        return [item for item in self.models if category in item.categories]
 
     def search_models(self, query: str) -> list[ModelSpec]:
-        q = query.lower()
-        return [x for x in self.models if q in x.name.lower() or q in x.architecture.lower() or any(q in t.lower() for t in x.tags)]
+        normalized = query.lower()
+        return [
+            item
+            for item in self.models
+            if normalized in item.name.lower()
+            or normalized in item.architecture.lower()
+            or any(normalized in tag.lower() for tag in item.tags)
+        ]
 
     def extend_models(self, models: Iterable[ModelSpec]) -> None:
-        existing = {x.id for x in self.models}
+        existing = {item.id for item in self.models}
         for model in models:
             if model.id in existing:
                 raise ValueError(f"Duplicate model id: {model.id}")
