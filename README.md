@@ -7,7 +7,7 @@
 <p align="center"><strong>Neural and Agentic Verification, Integration, Evaluation, and Recommendation for Computational Fluid Dynamics</strong></p>
 
 <p align="center">
-  <a href="https://github.com/Samsomyajit/NAVIER-CFD/releases"><img src="https://img.shields.io/badge/version-0.2.0-2f6f9f.svg" alt="Version"></a>
+  <a href="https://github.com/Samsomyajit/NAVIER-CFD/releases"><img src="https://img.shields.io/badge/version-0.3.0-2f6f9f.svg" alt="Version"></a>
   <a href="https://pypi.org/project/navier-cfd/"><img src="https://img.shields.io/pypi/v/navier-cfd.svg?label=PyPI" alt="PyPI"></a>
   <a href="https://pypi.org/project/navier-cfd/"><img src="https://img.shields.io/pypi/pyversions/navier-cfd.svg" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-4c8c6b.svg" alt="Apache 2.0"></a>
@@ -15,11 +15,12 @@
   <a href="https://samsomyajit.github.io/NAVIER-CFD/"><img src="https://img.shields.io/badge/project-website-0d6fdc.svg" alt="Project website"></a>
   <a href="https://samsomyajit.github.io/NAVIER-CFD/recommender/"><img src="https://img.shields.io/badge/tool-recommender-13b7d8.svg" alt="Interactive recommender"></a>
   <img src="https://img.shields.io/badge/models-55-7c6aa6.svg" alt="55 models">
+  <img src="https://img.shields.io/badge/native_models-PINN%20%7C%20DeepONet%20%7C%20FNO-008b8b.svg" alt="Native executable models">
   <img src="https://img.shields.io/badge/datasets-11-5d8f72.svg" alt="11 datasets">
   <img src="https://img.shields.io/badge/scoring-paper--evidence--aware-7057c7.svg" alt="Paper-evidence-aware scoring">
 </p>
 
-NAVIER-CFD is a CFD-first Python platform and project website for neural PDE solvers, hybrid numerical acceleration, benchmark datasets, paper-evidence-aware task recommendation, Hugging Face integration, and agentic experiment planning.
+NAVIER-CFD is a CFD-first Python platform for executable neural PDE models, hybrid numerical acceleration, benchmark datasets, paper-evidence-aware task recommendation, Hugging Face integration, and agentic experiment planning.
 
 ## Project website and interactive tool
 
@@ -31,11 +32,113 @@ The web recommender runs entirely in the browser. It applies hard compatibility 
 
 > A recommendation is a task-specific hypothesis, not proof that one architecture is universally superior. Report the final score together with evidence confidence, metric coverage, matched paper records, and the target benchmark.
 
+## Executable model hub
+
+Version 0.3 adds a common Python runtime for model discovery, status inspection, construction, dependency installation, and upstream adapter registration.
+
+Every one of the 55 catalog entries is addressable through a uniform `ModelHandle`:
+
+```python
+from navier_cfd import list_models
+
+for handle in list_models():
+    print(handle.id, handle.status.mode, handle.status.executable)
+```
+
+Three broadly used reference implementations are shipped natively and can be constructed directly:
+
+- `pinn` — coordinate-network PINN backbone;
+- `deeponet` — branch/trunk DeepONet;
+- `fno` — dimension-generic 1D, 2D, and 3D Fourier Neural Operator.
+
+Install the executable-model extra:
+
+```bash
+pip install "navier-cfd[models]"
+```
+
+Construct a 2D FNO:
+
+```python
+from navier_cfd import TaskSpec, load_model
+
+flow_task = TaskSpec(
+    problem="cylinder_wake",
+    task_type="forecasting",
+    dimension=2,
+    mesh_type="structured",
+    temporal_mode="autoregressive",
+    geometry_mode="fixed",
+    physics=("incompressible_navier_stokes",),
+)
+
+model = load_model(
+    "fno",
+    task=flow_task,
+    in_channels=3,
+    out_channels=2,
+    modes=(16, 16),
+    width=64,
+    n_layers=4,
+)
+```
+
+Construct a PINN backbone:
+
+```python
+pinn = load_model(
+    "pinn",
+    task=flow_task,
+    input_dim=3,   # x, y, t
+    output_dim=3,  # u, v, p
+    hidden_channels=128,
+    depth=5,
+)
+```
+
+Construct a DeepONet:
+
+```python
+deeponet = load_model(
+    "deeponet",
+    task=flow_task,
+    branch_input_dim=256,
+    trunk_input_dim=2,
+    output_dim=3,
+    latent_dim=128,
+)
+```
+
+### Connecting an upstream implementation
+
+Many research repositories do not expose a stable PyPI package or common constructor. NAVIER-CFD therefore never silently clones or executes them. An installed upstream implementation can still be connected under the same API:
+
+```python
+from navier_cfd import ModelHub
+
+hub = ModelHub()
+hub.register_external(
+    "transolver",
+    entrypoint="my_transolver_package:Transolver",
+    install_spec="my-transolver-package",
+)
+
+model = hub.load("transolver", hidden_dim=256, num_layers=8)
+```
+
+External installation is opt-in and never runs merely by importing `navier_cfd`:
+
+```python
+hub.model("transolver").install(allow_external=True)
+```
+
+This design brings all registered models under one discovery and adapter interface while respecting upstream licenses, dependency conflicts, and model-specific constructor APIs. Exact upstream implementations become directly executable as stable adapters are added; a metadata card is not misrepresented as runnable code.
+
 ## Evidence-aware recommendation
 
-Version 0.2 introduces a traceable paper-result layer. Each quantitative claim is stored with the paper, benchmark, metric, baseline, physical regime, dimension, mesh, geometry, temporal mode, fidelity, code/data availability, evidence level, and caveats.
+Version 0.2 introduced a traceable paper-result layer. Each quantitative claim is stored with the paper, benchmark, metric, baseline, physical regime, dimension, mesh, geometry, temporal mode, fidelity, code/data availability, evidence level, and caveats.
 
-The recommender now combines:
+The recommender combines:
 
 1. **Hard compatibility filtering** for dimension, representation, geometry/mesh transfer, numerical role, temporal mode, and hardware.
 2. **Task-to-paper similarity** across physics, discretization, geometry, temporal regime, role, and fidelity.
@@ -54,10 +157,11 @@ See [Evidence Scoring](docs/EVIDENCE_SCORING.md) and the frozen catalog at `src/
   <img src="docs/assets/navier_pipeline.svg" alt="NAVIER-CFD scientific pipeline" width="100%">
 </p>
 
-The workflow keeps the learned numerical role explicit—surrogate, closure, corrector, preconditioner, inverse model, controller, or generator—and connects each experiment to versioned data, traceable model cards, CFD-aware metrics, paper evidence, and a reproducible run manifest.
+The workflow keeps the learned numerical role explicit—surrogate, closure, corrector, preconditioner, inverse model, controller, or generator—and connects each experiment to versioned data, traceable model cards, executable adapters, CFD-aware metrics, paper evidence, and a reproducible run manifest.
 
 ## Why NAVIER-CFD
 
+- **Unified executable model hub:** one API for native models, installed upstream entrypoints, dependency status, and adapter registration.
 - **55-model taxonomy:** acceleration frameworks, surrogates, general PDE solvers, specialized CFD, geometry and unstructured-mesh models, foundation models, inverse methods, uncertainty, particle and multiphase models, and generative methods.
 - **11 first-class datasets:** PDEBench, CFDBench, RealPDEBench, AirfRANS, DrivAerNet++, DrivAerML, The Well, APEBench, ScalarFlow, ShapeNet-Car, and EAGLE.
 - **Paper-level evidence:** traceable benchmark claims with task context, provenance, quality, confidence, and comparability limits.
@@ -65,14 +169,19 @@ The workflow keeps the learned numerical role explicit—surrogate, closure, cor
 - **Explainable recommendation:** compatibility filtering plus evidence-aware ranking by physics, dimension, mesh, geometry, temporal regime, numerical role, fidelity, memory, conservation, uncertainty, and transfer requirements.
 - **Agentic AI:** deterministic offline planning and provider-neutral interfaces for external LLM agents.
 - **CFD-aware benchmarking:** field, spectral, rollout, conservation, OOD, quantity-of-interest, uncertainty, wall-clock, memory, and break-even metrics.
-- **Safe integration:** external repositories remain metadata-first and are never executed automatically.
 
 ## Installation
 
-From PyPI:
+Core platform:
 
 ```bash
 pip install navier-cfd
+```
+
+Core platform plus executable native models:
+
+```bash
+pip install "navier-cfd[models]"
 ```
 
 From source:
@@ -80,13 +189,13 @@ From source:
 ```bash
 git clone https://github.com/Samsomyajit/NAVIER-CFD.git
 cd NAVIER-CFD
-pip install -e .
+pip install -e ".[models]"
 
 # development, tests, and documentation
-pip install -e ".[dev,docs]"
+pip install -e ".[dev,docs,models]"
 ```
 
-## Quick start
+## Command-line quick start
 
 ```bash
 # Explore catalogs
@@ -125,7 +234,7 @@ navier agent plan \
   "Benchmark RealPDEBench cylinder sim-to-real forecasting with 24 GB VRAM, conservation and uncertainty"
 ```
 
-## Python API
+## Python recommendation API
 
 ```python
 from navier_cfd import Catalog, TaskSpec, recommend_models
@@ -165,7 +274,7 @@ for result in recommend_models(task, catalog.models, top_k=8):
 - **Acceleration:** Solver-in-the-Loop, INC, PICT, diffSPH, NeuroSEM, neural-operator preconditioned Newton, and geometry-aware neural preconditioning.
 - **Uncertainty and adaptation:** Conformalized-DeepONet and TANTE.
 
-“Included” means represented through a uniform model card and recommendation interface. Official implementations remain external so upstream licenses and revisions are respected.
+“Included” means that every model has a uniform card and `ModelHandle`. “Native” means NAVIER-CFD ships an executable implementation. “External adapter” means NAVIER-CFD knows how to import an installed upstream implementation. “Metadata” means an executable adapter is still required.
 
 ## Repository map
 
@@ -174,7 +283,7 @@ src/navier_cfd/
   agents/          deterministic and LLM-ready planning
   benchmarks/      CFD metrics and benchmark plans
   datasets/        Hugging Face discovery, download, streaming
-  models/          safe adapter protocol
+  models/          native models, ModelHub, and external adapters
   data/            frozen paper-evidence catalog
   catalogs.py      model and dataset registries
   evidence.py      task similarity, quality, utility, shrinkage
@@ -190,22 +299,20 @@ case_studies/      detailed benchmark study guides
 configs/tasks/     reusable task specifications
 ```
 
-## Recommender validation
-
-The Python recommender is covered by `pytest`; the browser engine is covered by Node's built-in test runner.
+## Validation
 
 ```bash
-pytest tests/test_recommender.py tests/test_evidence_recommender.py
+pytest tests/test_recommender.py tests/test_evidence_recommender.py tests/test_model_hub.py
 node --test website/recommender/recommender-core.test.mjs
 ```
 
-Canonical tests verify task-specific evidence transfer, geometry-aware 3D ranking, hybrid acceleration selection, evidence provenance, and neutral treatment of incomparable absolute MSE values.
+The test suite covers task-specific evidence transfer, geometry-aware ranking, hybrid acceleration selection, evidence provenance, uniform model handles, native model construction, and browser-runtime execution.
 
 ## Packaging and deployment
 
 - Package: `navier-cfd`
 - Import namespace: `navier_cfd`
-- Current version: `0.2.0`
+- Current version: `0.3.0`
 - Evidence algorithm: `0.2.0-evidence`
 - Build backend: Hatchling
 - Website source: `website/`

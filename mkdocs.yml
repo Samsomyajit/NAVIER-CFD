@@ -38,16 +38,18 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Models:
+      - Executable Model Hub: MODEL_HUB.md
+      - Model Catalog: MODEL_CATALOG.md
+      - Model Atlas: models/README.md
   - Recommender:
       - Overview: RECOMMENDER.md
       - Evidence Scoring: EVIDENCE_SCORING.md
   - Platform:
       - Architecture: ARCHITECTURE.md
-      - Model Catalog: MODEL_CATALOG.md
       - Dataset Catalog: DATASET_CATALOG.md
       - Agentic AI: AGENTIC_AI.md
       - Roadmap: ROADMAP.md
-  - Model Atlas: models/README.md
   - Dataset Cards:
       - CFDBench: datasets/cfdbench.md
       - RealPDEBench: datasets/realpdebench.md

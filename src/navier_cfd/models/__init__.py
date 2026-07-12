@@ -1,3 +1,42 @@
 from .base import ExternalModelAdapter, ModelAdapter, ModelFactory
+from .hub import (
+    ExternalInstallDisabledError,
+    ExternalModelRecipe,
+    ModelDependencyError,
+    ModelHandle,
+    ModelHub,
+    ModelHubError,
+    ModelNotExecutableError,
+    ModelStatus,
+    UnknownModelError,
+    get_model_hub,
+    install_model,
+    list_models,
+    load_model,
+    model_info,
+)
+from .native import MissingTorchDependency, build_deeponet, build_fno, build_pinn
 
-__all__ = ["ExternalModelAdapter", "ModelAdapter", "ModelFactory"]
+__all__ = [
+    "ExternalInstallDisabledError",
+    "ExternalModelAdapter",
+    "ExternalModelRecipe",
+    "MissingTorchDependency",
+    "ModelAdapter",
+    "ModelDependencyError",
+    "ModelFactory",
+    "ModelHandle",
+    "ModelHub",
+    "ModelHubError",
+    "ModelNotExecutableError",
+    "ModelStatus",
+    "UnknownModelError",
+    "build_deeponet",
+    "build_fno",
+    "build_pinn",
+    "get_model_hub",
+    "install_model",
+    "list_models",
+    "load_model",
+    "model_info",
+]

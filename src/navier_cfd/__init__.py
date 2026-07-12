@@ -9,6 +9,22 @@ from .evidence import (
     load_builtin_evidence,
     score_model_evidence,
 )
+from .models import (
+    ExternalInstallDisabledError,
+    ExternalModelRecipe,
+    ModelDependencyError,
+    ModelHandle,
+    ModelHub,
+    ModelHubError,
+    ModelNotExecutableError,
+    ModelStatus,
+    UnknownModelError,
+    get_model_hub,
+    install_model,
+    list_models,
+    load_model,
+    model_info,
+)
 from .recommender import Recommendation, recommend_models
 from .specs import DatasetSpec, ModelSpec, TaskSpec
 
@@ -19,12 +35,26 @@ __all__ = [
     "EvidenceMatch",
     "EvidenceRecord",
     "EvidenceSummary",
+    "ExternalInstallDisabledError",
+    "ExternalModelRecipe",
+    "ModelDependencyError",
+    "ModelHandle",
+    "ModelHub",
+    "ModelHubError",
+    "ModelNotExecutableError",
     "ModelSpec",
+    "ModelStatus",
     "Recommendation",
     "TaskSpec",
+    "UnknownModelError",
+    "get_model_hub",
+    "install_model",
+    "list_models",
     "load_builtin_evidence",
+    "load_model",
+    "model_info",
     "recommend_models",
     "score_model_evidence",
 ]
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"

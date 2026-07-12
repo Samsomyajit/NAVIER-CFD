@@ -14,11 +14,12 @@ from .agents import AgentOrchestrator
 from .catalogs import Catalog
 from .datasets import HuggingFaceDatasetManager
 from .evidence import ALGORITHM_VERSION, load_builtin_evidence
+from .models import ModelHub, ModelHubError
 from .recommender import recommend_models
 from .specs import TaskSpec
 
 app = typer.Typer(help="NAVIER-CFD: neural and agentic CFD datasets, models, benchmarks, recommendation, and planning.")
-models_app = typer.Typer(help="Browse model cards.")
+models_app = typer.Typer(help="Browse and load model integrations.")
 datasets_app = typer.Typer(help="Discover and download datasets.")
 evidence_app = typer.Typer(help="Inspect paper-level benchmark evidence used by the recommender.")
 agent_app = typer.Typer(help="Agentic experiment planning.")
@@ -31,27 +32,78 @@ console = Console()
 
 @models_app.command("list")
 def models_list(category: Optional[str] = typer.Option(None), query: Optional[str] = None) -> None:
-    catalog = Catalog.load_builtin()
-    models = catalog.models
+    hub = ModelHub()
+    handles = list(hub.models())
     if category:
-        models = [m for m in models if category in m.categories]
+        handles = [handle for handle in handles if category in handle.spec.categories]
     if query:
         q = query.lower()
-        models = [m for m in models if q in m.name.lower() or q in " ".join(m.tags).lower()]
-    table = Table(title=f"Models ({len(models)})")
+        handles = [
+            handle
+            for handle in handles
+            if q in handle.spec.name.lower() or q in " ".join(handle.spec.tags).lower()
+        ]
+    table = Table(title=f"Models ({len(handles)})")
     table.add_column("ID")
     table.add_column("Name")
     table.add_column("Categories")
-    table.add_column("Integration")
-    for m in models:
-        table.add_row(m.id, m.name, ", ".join(m.categories), m.integration)
+    table.add_column("Runtime")
+    table.add_column("Ready")
+    for handle in handles:
+        status = handle.status
+        table.add_row(
+            handle.id,
+            handle.spec.name,
+            ", ".join(handle.spec.categories),
+            status.mode,
+            "yes" if status.dependency_available else "no",
+        )
     console.print(table)
 
 
 @models_app.command("info")
 def models_info(model_id: str) -> None:
-    model = Catalog.load_builtin().model(model_id)
-    console.print_json(json.dumps(model.to_dict()))
+    console.print_json(json.dumps(ModelHub().model(model_id).to_dict()))
+
+
+@models_app.command("executable")
+def models_executable(ready_only: bool = typer.Option(False, help="Show only models whose dependencies are installed.")) -> None:
+    hub = ModelHub()
+    handles = hub.executable(ready_only=ready_only)
+    table = Table(title=f"Executable model integrations ({len(handles)})")
+    table.add_column("ID")
+    table.add_column("Name")
+    table.add_column("Mode")
+    table.add_column("Dependency")
+    table.add_column("Install spec")
+    for handle in handles:
+        status = handle.status
+        table.add_row(
+            handle.id,
+            handle.spec.name,
+            status.mode,
+            "ready" if status.dependency_available else "missing",
+            status.install_spec or "—",
+        )
+    console.print(table)
+
+
+@models_app.command("install")
+def models_install(
+    model_id: str,
+    allow_external: bool = typer.Option(
+        False,
+        "--allow-external",
+        help="Explicitly allow pip to execute third-party packaging code.",
+    ),
+    upgrade: bool = typer.Option(False, help="Upgrade an existing dependency."),
+) -> None:
+    try:
+        ModelHub().install(model_id, allow_external=allow_external, upgrade=upgrade)
+    except ModelHubError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=2) from exc
+    console.print(f"Installed executable dependencies for {model_id}")
 
 
 @datasets_app.command("list")
@@ -62,8 +114,8 @@ def datasets_list() -> None:
     table.add_column("Name")
     table.add_column("Scenarios")
     table.add_column("Hugging Face")
-    for d in datasets:
-        table.add_row(d.id, d.name, ", ".join(d.scenarios), d.hf_repo_id or "external")
+    for dataset in datasets:
+        table.add_row(dataset.id, dataset.name, ", ".join(dataset.scenarios), dataset.hf_repo_id or "external")
     console.print(table)
 
 
