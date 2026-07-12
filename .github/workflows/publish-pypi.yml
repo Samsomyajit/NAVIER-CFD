@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - pyproject.toml
+      - .github/workflows/publish-pypi.yml
 
 permissions:
   contents: read
@@ -54,3 +55,5 @@ jobs:
           path: dist/
       - name: Publish with PyPI Trusted Publishing
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
