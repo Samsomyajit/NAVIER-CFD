@@ -49,13 +49,14 @@ def test_metadata_only_model_explains_how_to_connect_adapter() -> None:
         hub.load("mionet", task=_task())
 
 
-def test_fno_native_forward_when_torch_is_installed() -> None:
+def test_native_models_forward_when_torch_is_installed() -> None:
     if importlib.util.find_spec("torch") is None:
         pytest.skip("PyTorch is an optional dependency")
     import torch
 
     hub = ModelHub()
-    model = hub.load(
+
+    fno = hub.load(
         "fno",
         task=_task(2),
         in_channels=3,
@@ -65,14 +66,37 @@ def test_fno_native_forward_when_torch_is_installed() -> None:
         n_layers=2,
         projection_width=16,
     )
-    inputs = torch.randn(2, 12, 10, 3)
-    outputs = model(inputs)
-    assert outputs.shape == (2, 12, 10, 2)
+    fno_inputs = torch.randn(2, 12, 10, 3)
+    assert fno(fno_inputs).shape == (2, 12, 10, 2)
+
+    pinn = hub.load(
+        "pinn",
+        task=_task(2),
+        input_dim=3,
+        output_dim=3,
+        hidden_channels=16,
+        depth=2,
+    )
+    assert pinn(torch.randn(4, 3)).shape == (4, 3)
+
+    deeponet = hub.load(
+        "deeponet",
+        task=_task(2),
+        branch_input_dim=8,
+        trunk_input_dim=2,
+        output_dim=2,
+        latent_dim=8,
+        hidden_channels=16,
+        depth=2,
+    )
+    branch = torch.randn(3, 8)
+    trunk = torch.randn(5, 2)
+    assert deeponet(branch, trunk).shape == (3, 5, 2)
 
 
-def test_native_load_has_actionable_error_without_torch(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_native_load_has_actionable_error_without_torch() -> None:
     if importlib.util.find_spec("torch") is not None:
         pytest.skip("This test only applies when PyTorch is absent")
     hub = ModelHub()
-    with pytest.raises(ModelDependencyError, match="navier-cfd\[torch\]"):
+    with pytest.raises(ModelDependencyError, match=r"navier-cfd\[torch\]"):
         hub.load("pinn", task=_task(), output_dim=2)
