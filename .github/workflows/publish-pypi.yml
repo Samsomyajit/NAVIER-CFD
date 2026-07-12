@@ -1,5 +1,6 @@
 name: Publish NAVIER-CFD to PyPI
 
+# This workflow publishes version bumps and may also be run manually.
 on:
   release:
     types: [published]
