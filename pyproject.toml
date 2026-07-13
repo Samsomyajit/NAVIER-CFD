@@ -4,15 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "navier-cfd"
-version = "0.3.0"
-description = "CFD-first executable model hub, evidence-aware recommender, Hugging Face data hub, benchmark toolkit, and agentic experiment planner."
+version = "0.4.0"
+description = "Unified executable neural CFD model hub with PIBERT, dataset adapters, training, checkpoints, metrics, recommendation, and experiment orchestration."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [
   {name = "Somyajit Chakraborty", email = "chksomyajit@sjtu.edu.cn"},
 ]
-keywords = ["CFD", "scientific machine learning", "neural operator", "PINN", "PDE", "Hugging Face", "model hub"]
+keywords = ["CFD", "scientific machine learning", "neural operator", "PINN", "PIBERT", "PDE", "Hugging Face", "model hub"]
 dependencies = [
   "numpy>=1.24",
   "typer>=0.12",
@@ -24,6 +24,7 @@ dependencies = [
 [project.optional-dependencies]
 torch = ["torch>=2.1"]
 models = ["torch>=2.1"]
+train = ["torch>=2.1"]
 dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.5", "mypy>=1.10"]
 docs = ["mkdocs-material>=9.5"]
 all = ["torch>=2.1", "pytest>=8", "pytest-cov>=5", "ruff>=0.5", "mypy>=1.10", "mkdocs-material>=9.5"]
