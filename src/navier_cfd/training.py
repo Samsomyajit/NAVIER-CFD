@@ -115,7 +115,12 @@ class CFDTrainer:
             if batch.coordinates is None:
                 raise ValueError("DeepONet requires coordinates in the canonical batch")
             branch = batch.inputs.reshape(batch.inputs.shape[0], -1)
-            return self.model(branch, batch.coordinates)
+            trunk = batch.coordinates.reshape(
+                batch.coordinates.shape[0],
+                -1,
+                batch.coordinates.shape[-1],
+            )
+            return self.model(branch, trunk)
         return self.model(batch.inputs)
 
     @staticmethod
