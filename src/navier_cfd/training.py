@@ -9,6 +9,7 @@ import numpy as np
 from .benchmarks.metrics import compute_metric_bundle
 from .checkpoints import CheckpointManager
 from .datasets.core import CFDBatch
+from .models.forward import forward_model
 
 
 @dataclass
@@ -106,22 +107,7 @@ class CFDTrainer:
     def _forward(self, batch: CFDBatch) -> Any:
         if self.forward_fn is not None:
             return self.forward_fn(self.model, batch)
-        if self.model_id == "pibert":
-            return self.model(batch.inputs, coordinates=batch.coordinates, mask=batch.mask)
-        if self.model_id == "pinn":
-            values = batch.coordinates if batch.coordinates is not None else batch.inputs
-            return self.model(values)
-        if self.model_id == "deeponet":
-            if batch.coordinates is None:
-                raise ValueError("DeepONet requires coordinates in the canonical batch")
-            branch = batch.inputs.reshape(batch.inputs.shape[0], -1)
-            trunk = batch.coordinates.reshape(
-                batch.coordinates.shape[0],
-                -1,
-                batch.coordinates.shape[-1],
-            )
-            return self.model(branch, trunk)
-        return self.model(batch.inputs)
+        return forward_model(self.model_id, self.model, batch)
 
     @staticmethod
     def _align(prediction: Any, target: Any) -> tuple[Any, Any]:

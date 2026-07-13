@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "navier-cfd"
-version = "0.4.0"
-description = "Unified executable neural CFD model hub with PIBERT, dataset adapters, training, checkpoints, metrics, recommendation, and experiment orchestration."
+version = "0.5.0"
+description = "Dataset-configured native neural operators, deep-learning CFD models, physics-informed models, PIBERT, training, metrics, checkpoints, and recommendation."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
@@ -52,6 +52,10 @@ addopts = "-q"
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+
+[tool.ruff.lint.per-file-ignores]
+"src/navier_cfd/models/native_suite.py" = ["F401"]
+"tests/test_native_suite.py" = ["F401"]
 
 [tool.mypy]
 python_version = "3.10"

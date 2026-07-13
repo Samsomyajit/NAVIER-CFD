@@ -41,6 +41,7 @@ nav:
   - Experiments:
       - Unified Pipeline and PIBERT: UNIFIED_EXPERIMENTS.md
   - Models:
+      - Dataset-configured Native Suite: NATIVE_MODEL_SUITE.md
       - Executable Model Hub: MODEL_HUB.md
       - Model Catalog: MODEL_CATALOG.md
       - Model Atlas: models/README.md

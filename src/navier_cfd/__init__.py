@@ -27,7 +27,10 @@ from .evidence import (
 )
 from .experiment import Experiment, ExperimentResult
 from .models import (
+    DATASET_MODEL_DEFAULTS,
+    NATIVE_REFERENCE_FAMILIES,
     AdapterConformanceReport,
+    DatasetModelDefaults,
     ExternalInstallDisabledError,
     ExternalModelRecipe,
     ModelBuildPlan,
@@ -39,7 +42,9 @@ from .models import (
     ModelStatus,
     PIBERT,
     UnknownModelError,
+    build_native_reference,
     build_pibert,
+    configure_model_for_dataset,
     get_model_hub,
     install_model,
     list_models,
@@ -64,8 +69,10 @@ __all__ = [
     "Catalog",
     "CheckpointError",
     "CheckpointManager",
+    "DATASET_MODEL_DEFAULTS",
     "DatasetAdapter",
     "DatasetAdapterError",
+    "DatasetModelDefaults",
     "DatasetProfile",
     "DatasetSpec",
     "EvidenceMatch",
@@ -84,14 +91,17 @@ __all__ = [
     "ModelNotExecutableError",
     "ModelSpec",
     "ModelStatus",
+    "NATIVE_REFERENCE_FAMILIES",
     "PIBERT",
     "Recommendation",
     "TaskSpec",
     "TrainerConfig",
     "TrainingResult",
     "UnknownModelError",
+    "build_native_reference",
     "build_pibert",
     "collate_cfd_samples",
+    "configure_model_for_dataset",
     "get_model_hub",
     "install_model",
     "list_models",
@@ -107,4 +117,4 @@ __all__ = [
     "validate_model_adapter",
 ]
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"

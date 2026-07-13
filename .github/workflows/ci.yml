@@ -44,7 +44,7 @@ jobs:
         run: node --test website/recommender/recommender-core.test.mjs
 
   native-models:
-    name: Native model and training smoke tests
+    name: Native model, dataset configuration, and training smoke tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,4 +56,19 @@ jobs:
         run: python -m pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
       - run: pip install -e ".[dev]" --quiet
       - name: Run executable model and experiment tests
-        run: pytest tests/test_model_hub.py tests/test_pibert_pipeline.py -q
+        id: native-tests
+        shell: bash
+        run: |
+          set +e
+          pytest tests/test_model_hub.py tests/test_pibert_pipeline.py tests/test_native_suite.py -q --tb=short > native-suite.txt 2>&1
+          status=$?
+          cat native-suite.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-suite-diagnostics
+          path: native-suite.txt
+      - name: Enforce native suite result
+        if: steps.native-tests.outputs.status != '0'
+        run: exit 1
