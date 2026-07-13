@@ -23,14 +23,14 @@
     <div>
       <span class="eyebrow">NAVIER-CFD 0.5 · executable scientific ML</span>
       <h1>Pass the dataset. Import the model. Run the CFD experiment.</h1>
-      <p class="lead">NAVIER-CFD now provides 39 executable native reference models across neural operators, transformer and graph learning, and physics-informed ML—configured automatically for 11 registered CFD/PDE datasets.</p>
+      <p class="lead">NAVIER-CFD provides 52 executable native reference models across neural operators, transformer and graph learning, physics-informed ML, generative field models, correctors, preconditioners, and uncertainty—configured automatically for 11 registered CFD/PDE datasets.</p>
       <div class="hero-actions">
         <a class="button" href="#dataset-api">See the Python API</a>
         <a class="button secondary" href="./recommender/">Try the recommender</a>
         <a class="button ghost" href="https://github.com/Samsomyajit/NAVIER-CFD">View GitHub</a>
       </div>
       <div class="badges">
-        <span class="badge">39 native reference models</span>
+        <span class="badge">52 native reference models</span>
         <span class="badge">55 catalog models</span>
         <span class="badge">11 dataset profiles</span>
         <span class="badge">PyTorch training</span>
@@ -81,7 +81,7 @@ pibert, plan = load_model(
       <div class="section-head">
         <div class="kicker">Native model coverage</div>
         <h2>Neural operators, deep learning, and physics-informed ML under one API.</h2>
-        <p class="lead">Every native reference model is executable, trainable, shape-tested, backward-tested, and connected to the same dataset, trainer, checkpoint, and metric layers.</p>
+        <p class="lead">Every native reference model is executable, trainable, shape-tested, backward-tested, and connected to the same dataset, trainer, checkpoint, and metric layers. Family counts below overlap where a model belongs to more than one scientific category.</p>
       </div>
       <div class="grid model-grid">
         <article class="card">
@@ -92,16 +92,21 @@ pibert, plan = load_model(
         <article class="card">
           <strong class="metric">9</strong>
           <h3>Physics-informed models</h3>
-          <p>PINN, NSFnets, PINNsFormer, PINO, PIBERT, PI-MFM, RiemannONet, and DeepM&amp;Mnet-style multi-physics models.</p>
+          <p>PINN, NSFnets, PINNsFormer, PINO, PIBERT, PI-MFM, RiemannONet, DeepM&amp;Mnet, and physics-conditioned operator variants.</p>
         </article>
         <article class="card">
-          <strong class="metric">10</strong>
-          <h3>Geometry and foundation-style models</h3>
-          <p>MeshGraphNets, UPT, DPOT, Poseidon, PROSE-FD, BCAT, PDEformer-1, P3D, AeroTransformer, Tadpole, and ReViT.</p>
+          <strong class="metric">11</strong>
+          <h3>Geometry and foundation models</h3>
+          <p>MeshGraphNets, GINO, DoMINO, UPT, DPOT, Poseidon, PROSE-FD, BCAT, PDEformer-1, P3D, AeroTransformer, Tadpole, and ReViT.</p>
+        </article>
+        <article class="card">
+          <strong class="metric">13</strong>
+          <h3>Generative, corrector, and UQ models</h3>
+          <p>FourierFlow, PDE-Refiner, solver-in-the-loop, INC, NeuroSEM, neural preconditioning references, conformal prediction, TANTE-style adaptation, energy-transformer reconstruction, FunDiff, and PDE flow matching.</p>
         </article>
       </div>
       <div class="notice">
-        <strong>Scientific scope:</strong> native reference implementations are working NAVIER-CFD architectures, not automatic claims of bit-for-bit reproduction of every author repository, unpublished preprocessing step, private checkpoint, or paper table.
+        <strong>Scientific scope:</strong> native reference implementations are working NAVIER-CFD architectures, not automatic claims of bit-for-bit reproduction of every author repository, unpublished preprocessing step, private checkpoint, or paper table. PICT, diffSPH, and NeuralDEM remain specialized external integrations because they require dedicated numerical solvers or particle runtimes.
       </div>
     </div>
   </section>
