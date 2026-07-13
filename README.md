@@ -23,7 +23,7 @@ NAVIER-CFD is a CFD-first Python platform for importing, configuring, training, 
 
 ## Authors and affiliation
 
-**Somyajit Chakraborty¹, Xizhong Chen¹\***
+**Somyajit Chakraborty¹, Kaiyuan Yang¹, Xizhong Chen¹\***
 
 ¹State Key Laboratory of Synergistic Chem-Bio Synthesis, Department of Chemical Engineering,  
 School of Chemistry and Chemical Engineering, Shanghai Jiao Tong University, Shanghai 200240, China
