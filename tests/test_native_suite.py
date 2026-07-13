@@ -43,7 +43,10 @@ NATIVE_SUITE = (
     "transolver",
     "upt",
     "meshgraphnets",
+    "domino",
     "pibert",
+    "fourierflow",
+    "pde_refiner",
     "dpot",
     "poseidon",
     "prose_fd",
@@ -55,9 +58,19 @@ NATIVE_SUITE = (
     "p3d",
     "aerotransformer",
     "tadpole",
+    "solver_in_loop",
+    "inc",
+    "neurosem",
+    "np_newton",
+    "geometry_preconditioner",
     "revit",
     "deepmmnet",
+    "conformal_deeponet",
+    "tante",
     "riemannonet",
+    "energy_transformer",
+    "fun_diff",
+    "flow_matching_pde",
 )
 
 
@@ -98,8 +111,6 @@ def test_all_dataset_profiles_resolve_without_a_sample() -> None:
 
 
 def test_native_suite_is_importable_and_backward_tested() -> None:
-    import torch
-
     sample = _sample()
     batch = collate_cfd_samples([sample])
     hub = ModelHub()
@@ -126,6 +137,7 @@ def test_native_suite_is_importable_and_backward_tested() -> None:
         except Exception as exc:  # pragma: no cover - collected for actionable CI output
             failures.append(f"{model_id}: {type(exc).__name__}: {exc}")
 
+    assert len(NATIVE_SUITE) == 52
     assert not failures, "\n".join(failures)
 
 
