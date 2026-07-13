@@ -1,6 +1,22 @@
 """NAVIER-CFD public API: neural and agentic workflows for computational fluid dynamics."""
 
 from .catalogs import Catalog
+from .checkpoints import CheckpointError, CheckpointManager
+from .datasets import (
+    AdaptedDataset,
+    AdapterRegistry,
+    BUILTIN_DATASET_PROFILES,
+    CFDBatch,
+    CFDSample,
+    DatasetAdapter,
+    DatasetAdapterError,
+    DatasetProfile,
+    HuggingFaceDatasetManager,
+    collate_cfd_samples,
+    make_dataloaders,
+    split_dataset,
+    split_indices,
+)
 from .evidence import (
     ALGORITHM_VERSION,
     EvidenceMatch,
@@ -9,34 +25,55 @@ from .evidence import (
     load_builtin_evidence,
     score_model_evidence,
 )
+from .experiment import Experiment, ExperimentResult
 from .models import (
     ExternalInstallDisabledError,
     ExternalModelRecipe,
+    ModelBuildPlan,
     ModelDependencyError,
     ModelHandle,
     ModelHub,
     ModelHubError,
     ModelNotExecutableError,
     ModelStatus,
+    PIBERT,
     UnknownModelError,
+    build_pibert,
     get_model_hub,
     install_model,
     list_models,
     load_model,
     model_info,
+    translate_model_config,
 )
 from .recommender import Recommendation, recommend_models
 from .specs import DatasetSpec, ModelSpec, TaskSpec
+from .training import CFDTrainer, TrainerConfig, TrainingResult
 
 __all__ = [
     "ALGORITHM_VERSION",
+    "AdaptedDataset",
+    "AdapterRegistry",
+    "BUILTIN_DATASET_PROFILES",
+    "CFDBatch",
+    "CFDSample",
+    "CFDTrainer",
     "Catalog",
+    "CheckpointError",
+    "CheckpointManager",
+    "DatasetAdapter",
+    "DatasetAdapterError",
+    "DatasetProfile",
     "DatasetSpec",
     "EvidenceMatch",
     "EvidenceRecord",
     "EvidenceSummary",
+    "Experiment",
+    "ExperimentResult",
     "ExternalInstallDisabledError",
     "ExternalModelRecipe",
+    "HuggingFaceDatasetManager",
+    "ModelBuildPlan",
     "ModelDependencyError",
     "ModelHandle",
     "ModelHub",
@@ -44,17 +81,26 @@ __all__ = [
     "ModelNotExecutableError",
     "ModelSpec",
     "ModelStatus",
+    "PIBERT",
     "Recommendation",
     "TaskSpec",
+    "TrainerConfig",
+    "TrainingResult",
     "UnknownModelError",
+    "build_pibert",
+    "collate_cfd_samples",
     "get_model_hub",
     "install_model",
     "list_models",
     "load_builtin_evidence",
     "load_model",
+    "make_dataloaders",
     "model_info",
     "recommend_models",
     "score_model_evidence",
+    "split_dataset",
+    "split_indices",
+    "translate_model_config",
 ]
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
