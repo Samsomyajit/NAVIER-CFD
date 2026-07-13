@@ -4,7 +4,8 @@ from dataclasses import asdict, dataclass
 from typing import Any, Callable, Mapping
 
 from ..datasets import CFDBatch, CFDSample, collate_cfd_samples
-from .config import translate_model_config
+from .dataset_factory import load_model
+from .forward import forward_model
 from .hub import ModelHub
 
 
@@ -18,45 +19,33 @@ class AdapterConformanceReport:
     output_shape: tuple[int, ...] | None
     target_shape: tuple[int, ...]
     checks: Mapping[str, bool]
+    dataset_id: str | None = None
     error: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
-def _default_forward(model_id: str, model: Any, batch: CFDBatch) -> Any:
-    if model_id == "pibert":
-        return model(batch.inputs, coordinates=batch.coordinates, mask=batch.mask)
-    if model_id == "pinn":
-        return model(batch.coordinates if batch.coordinates is not None else batch.inputs)
-    if model_id == "deeponet":
-        if batch.coordinates is None:
-            raise ValueError("DeepONet conformance requires coordinates")
-        branch = batch.inputs.reshape(batch.inputs.shape[0], -1)
-        trunk = batch.coordinates.reshape(batch.coordinates.shape[0], -1, batch.coordinates.shape[-1])
-        return model(branch, trunk)
-    return model(batch.inputs)
-
-
 def validate_model_adapter(
     model_id: str,
     sample: CFDSample,
     *,
+    dataset: str | None = None,
     task: Any | None = None,
     hub: ModelHub | None = None,
     overrides: Mapping[str, Any] | None = None,
     forward_fn: Callable[[Any, CFDBatch], Any] | None = None,
     require_backward: bool = True,
 ) -> AdapterConformanceReport:
-    """Construct and exercise one model adapter against a canonical sample.
+    """Construct and exercise one model against a canonical dataset sample.
 
-    A passing report means the constructor, tensor contract, forward pass, output
-    compatibility, and optional backward pass worked in the current environment.
-    It does not establish numerical correctness against the original paper.
+    Passing means constructor, resolved dataset configuration, forward contract,
+    output compatibility, and optional backward propagation worked. It does not
+    establish numerical reproduction of the originating paper.
     """
 
-    hub = hub or ModelHub()
-    status = hub.status(model_id)
+    current_hub = hub or ModelHub()
+    status = current_hub.status(model_id)
     checks = {
         "registered": True,
         "executable": status.executable,
@@ -71,12 +60,19 @@ def validate_model_adapter(
     try:
         if not status.executable:
             raise RuntimeError(status.message)
-        plan = translate_model_config(model_id, sample, task=task, overrides=overrides)
-        model = hub.load(model_id, task=task, **dict(plan.builder_kwargs))
+        model, plan = load_model(
+            model_id,
+            dataset=dataset,
+            sample=sample,
+            task=task,
+            overrides=overrides,
+            hub=current_hub,
+            return_plan=True,
+        )
         checks["constructed"] = True
         parameter_count = sum(parameter.numel() for parameter in model.parameters())
         batch = collate_cfd_samples([sample])
-        output = (forward_fn or (lambda current, current_batch: _default_forward(model_id, current, current_batch)))(
+        output = (forward_fn or (lambda current, current_batch: forward_model(model_id, current, current_batch)))(
             model,
             batch,
         )
@@ -92,6 +88,7 @@ def validate_model_adapter(
         passed = all(checks.values())
         return AdapterConformanceReport(
             model_id=model_id,
+            dataset_id=plan.dataset_id if plan is not None else dataset,
             passed=passed,
             runtime_mode=status.mode,
             parameter_count=parameter_count,
@@ -105,6 +102,7 @@ def validate_model_adapter(
         input_shape = tuple(int(value) for value in getattr(sample.inputs, "shape", ()))
         return AdapterConformanceReport(
             model_id=model_id,
+            dataset_id=dataset,
             passed=False,
             runtime_mode=status.mode,
             parameter_count=parameter_count,
