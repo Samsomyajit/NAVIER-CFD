@@ -27,6 +27,7 @@ from .evidence import (
 )
 from .experiment import Experiment, ExperimentResult
 from .models import (
+    AdapterConformanceReport,
     ExternalInstallDisabledError,
     ExternalModelRecipe,
     ModelBuildPlan,
@@ -45,6 +46,7 @@ from .models import (
     load_model,
     model_info,
     translate_model_config,
+    validate_model_adapter,
 )
 from .recommender import Recommendation, recommend_models
 from .specs import DatasetSpec, ModelSpec, TaskSpec
@@ -53,6 +55,7 @@ from .training import CFDTrainer, TrainerConfig, TrainingResult
 __all__ = [
     "ALGORITHM_VERSION",
     "AdaptedDataset",
+    "AdapterConformanceReport",
     "AdapterRegistry",
     "BUILTIN_DATASET_PROFILES",
     "CFDBatch",
@@ -101,6 +104,7 @@ __all__ = [
     "split_dataset",
     "split_indices",
     "translate_model_config",
+    "validate_model_adapter",
 ]
 
 __version__ = "0.4.0"
