@@ -41,7 +41,7 @@ class MultiscaleWaveletEmbedding:
     """Sequence-local multiscale detail features inspired by Haar decompositions."""
 
     def __new__(cls, hidden_dim: int, scales: Sequence[int] = (1, 2, 4)) -> Any:
-        torch, nn, functional = _require_torch()
+        _, nn, functional = _require_torch()
         scales = tuple(int(scale) for scale in scales)
         if not scales or any(scale < 1 for scale in scales):
             raise ValueError("wavelet scales must be positive")
@@ -66,6 +66,8 @@ class MultiscaleWaveletEmbedding:
                     details.append(values - smooth)
                 return self.projection(torch.cat(details, dim=-1))
 
+        import torch
+
         return _Wavelet()
 
 
@@ -78,6 +80,7 @@ class PhysicsBiasedAttention:
         dropout: float = 0.0,
         distance_bias: float = 1.0,
         residual_bias: float = 0.25,
+        attention_chunk_size: int | None = 1024,
     ) -> Any:
         torch, nn, _ = _require_torch()
         if hidden_dim % num_heads != 0:
@@ -96,12 +99,22 @@ class PhysicsBiasedAttention:
                 self.distance_strength = nn.Parameter(torch.tensor(float(distance_bias)))
                 self.residual_strength = nn.Parameter(torch.tensor(float(residual_bias)))
 
-            def _physics_bias(self, coordinates: Any | None, residuals: Any | None, length: int) -> Any | None:
+            def _physics_bias(
+                self,
+                coordinates: Any | None,
+                residuals: Any | None,
+                length: int,
+                start: int,
+                end: int,
+            ) -> Any | None:
                 bias = None
                 if coordinates is not None:
                     if coordinates.ndim == 2:
                         coordinates = coordinates.unsqueeze(0)
-                    distance = torch.cdist(coordinates.float(), coordinates.float())
+                    distance = torch.cdist(
+                        coordinates[:, start:end].float(),
+                        coordinates.float(),
+                    )
                     scale = distance.detach().mean(dim=(-1, -2), keepdim=True).clamp_min(1e-6)
                     bias = -self.distance_strength.abs() * distance / scale
                 if residuals is not None:
@@ -110,7 +123,9 @@ class PhysicsBiasedAttention:
                     else:
                         magnitude = residuals.reshape(residuals.shape[0], length, -1).norm(dim=-1)
                     magnitude = magnitude / magnitude.detach().mean(dim=-1, keepdim=True).clamp_min(1e-6)
-                    focus = 0.5 * (magnitude.unsqueeze(-1) + magnitude.unsqueeze(-2))
+                    focus = 0.5 * (
+                        magnitude[:, start:end].unsqueeze(-1) + magnitude.unsqueeze(-2)
+                    )
                     residual_term = self.residual_strength * focus
                     bias = residual_term if bias is None else bias + residual_term
                 return bias
@@ -129,20 +144,29 @@ class PhysicsBiasedAttention:
                 query = query.transpose(1, 2)
                 key = key.transpose(1, 2)
                 value = value.transpose(1, 2)
-                logits = torch.matmul(query, key.transpose(-1, -2)) * self.scale
-                bias = self._physics_bias(coordinates, residuals, length)
-                if bias is not None:
-                    if bias.shape[0] == 1 and batch > 1:
-                        bias = bias.expand(batch, -1, -1)
-                    logits = logits + bias.unsqueeze(1)
+                if mask is not None and mask.ndim > 2:
+                    mask = mask.reshape(mask.shape[0], -1)
+                key_mask = None
                 if mask is not None:
-                    if mask.ndim > 2:
-                        mask = mask.reshape(mask.shape[0], -1)
                     key_mask = ~mask.bool().unsqueeze(1).unsqueeze(2)
-                    logits = logits.masked_fill(key_mask, torch.finfo(logits.dtype).min)
-                attention = torch.softmax(logits, dim=-1)
-                attention = self.dropout(attention)
-                output = torch.matmul(attention, value).transpose(1, 2).reshape(batch, length, -1)
+
+                chunk = attention_chunk_size or length
+                chunk = max(1, min(int(chunk), length))
+                chunks = []
+                key_transposed = key.transpose(-1, -2)
+                for start in range(0, length, chunk):
+                    end = min(length, start + chunk)
+                    logits = torch.matmul(query[:, :, start:end], key_transposed) * self.scale
+                    bias = self._physics_bias(coordinates, residuals, length, start, end)
+                    if bias is not None:
+                        if bias.shape[0] == 1 and batch > 1:
+                            bias = bias.expand(batch, -1, -1)
+                        logits = logits + bias.unsqueeze(1)
+                    if key_mask is not None:
+                        logits = logits.masked_fill(key_mask, torch.finfo(logits.dtype).min)
+                    attention = self.dropout(torch.softmax(logits, dim=-1))
+                    chunks.append(torch.matmul(attention, value))
+                output = torch.cat(chunks, dim=2).transpose(1, 2).reshape(batch, length, -1)
                 output = self.output(output)
                 if mask is not None:
                     output = output * mask.unsqueeze(-1).to(output.dtype)
@@ -159,10 +183,16 @@ class PIBERTBlock:
         *,
         mlp_ratio: float = 4.0,
         dropout: float = 0.0,
+        attention_chunk_size: int | None = 1024,
     ) -> Any:
         _, nn, _ = _require_torch()
         inner = max(hidden_dim, int(hidden_dim * mlp_ratio))
-        attention = PhysicsBiasedAttention(hidden_dim, num_heads, dropout=dropout)
+        attention = PhysicsBiasedAttention(
+            hidden_dim,
+            num_heads,
+            dropout=dropout,
+            attention_chunk_size=attention_chunk_size,
+        )
 
         class _Block(nn.Module):
             def __init__(self) -> None:
@@ -186,7 +216,7 @@ class PIBERTBlock:
 
 
 class PIBERT:
-    """Functional Fourier-wavelet physics-biased transformer for CFD fields.
+    """A functional Fourier-wavelet physics-biased transformer for CFD fields.
 
     This implementation follows the public PIBERT design description while
     replacing the placeholder linear layer in the original repository with
@@ -209,6 +239,7 @@ class PIBERT:
         mlp_ratio: float = 4.0,
         use_fourier: bool = True,
         use_wavelet: bool = True,
+        attention_chunk_size: int | None = 1024,
     ) -> Any:
         torch, nn, _ = _require_torch()
         if min(input_dim, output_dim, coordinate_dim, hidden_dim, num_layers, num_heads) < 1:
@@ -234,6 +265,7 @@ class PIBERT:
                             num_heads,
                             mlp_ratio=mlp_ratio,
                             dropout=dropout,
+                            attention_chunk_size=attention_chunk_size,
                         )
                         for _ in range(num_layers)
                     ]
@@ -247,8 +279,17 @@ class PIBERT:
                 spatial_shape = tuple(values.shape[1:-1])
                 return values.reshape(values.shape[0], -1, values.shape[-1]), spatial_shape
 
-            def _default_coordinates(self, batch: int, spatial_shape: tuple[int, ...], device: Any, dtype: Any) -> Any:
-                axes = [torch.linspace(0.0, 1.0, steps=size, device=device, dtype=dtype) for size in spatial_shape]
+            def _default_coordinates(
+                self,
+                batch: int,
+                spatial_shape: tuple[int, ...],
+                device: Any,
+                dtype: Any,
+            ) -> Any:
+                axes = [
+                    torch.linspace(0.0, 1.0, steps=size, device=device, dtype=dtype)
+                    for size in spatial_shape
+                ]
                 mesh = torch.meshgrid(*axes, indexing="ij")
                 coords = torch.stack(mesh, dim=-1).reshape(-1, len(spatial_shape))
                 if coords.shape[-1] < self.coordinate_dim:
@@ -263,7 +304,12 @@ class PIBERT:
                     coords = coords[:, : self.coordinate_dim]
                 return coords.unsqueeze(0).expand(batch, -1, -1)
 
-            def _coordinates(self, coordinates: Any | None, values: Any, spatial_shape: tuple[int, ...]) -> Any:
+            def _coordinates(
+                self,
+                coordinates: Any | None,
+                values: Any,
+                spatial_shape: tuple[int, ...],
+            ) -> Any:
                 batch = values.shape[0]
                 if coordinates is None:
                     return self._default_coordinates(batch, spatial_shape, values.device, values.dtype)
@@ -310,7 +356,7 @@ class PIBERT:
                 if flat_mask is not None:
                     flat_mask = flat_mask.reshape(flat_mask.shape[0], -1)
                 residuals = pde_residuals
-                if residuals is not None:
+                if residuals is not None and residuals.ndim > 2:
                     residuals = residuals.reshape(residuals.shape[0], -1, residuals.shape[-1])
                 for block in self.blocks:
                     hidden = block(
@@ -343,6 +389,7 @@ def build_pibert(
     mlp_ratio: float = 4.0,
     use_fourier: bool = True,
     use_wavelet: bool = True,
+    attention_chunk_size: int | None = 1024,
     **_: Any,
 ) -> Any:
     return PIBERT(
@@ -358,6 +405,7 @@ def build_pibert(
         mlp_ratio=mlp_ratio,
         use_fourier=use_fourier,
         use_wavelet=use_wavelet,
+        attention_chunk_size=attention_chunk_size,
     )
 
 
