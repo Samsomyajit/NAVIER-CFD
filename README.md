@@ -399,7 +399,7 @@ The dedicated CPU-PyTorch CI job constructs, forwards, and backpropagates throug
 - Technical documentation: https://samsomyajit.github.io/NAVIER-CFD/docs/
 - Simplified Chinese documentation: https://samsomyajit.github.io/NAVIER-CFD/docs/zh/
 - Native suite guide: `docs/NATIVE_MODEL_SUITE.md`
-- Unified experiments and PIBERT: `docs/UNIFIED_EXPERIMENTS.md`
+- Unified experiments: `docs/UNIFIED_EXPERIMENTS.md`
 
 ## License
 
