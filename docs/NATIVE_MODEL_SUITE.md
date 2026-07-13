@@ -1,6 +1,6 @@
 # Dataset-configured native model suite
 
-NAVIER-CFD 0.5 adds a dataset-aware import layer and a broad set of executable native reference architectures spanning operator learning, geometry-aware deep learning, transformer and graph models, and physics-informed machine learning.
+NAVIER-CFD 0.5 provides **52 executable native reference models** spanning operator learning, geometry-aware deep learning, transformer and graph models, physics-informed machine learning, generative field models, learned correctors, preconditioners, adaptation, and uncertainty.
 
 ## Dataset as an import argument
 
@@ -10,6 +10,7 @@ from navier_cfd import load_model
 model = load_model("fno", dataset="pdebench")
 model = load_model("transolver", dataset="airfrans")
 model = load_model("gino", dataset="drivaerml")
+model = load_model("p3d", dataset="scalarflow")
 ```
 
 The dataset profile determines default:
@@ -22,7 +23,7 @@ The dataset profile determines default:
 - Fourier modes;
 - hidden width;
 - number of layers;
-- attention or graph dispatch;
+- attention, graph, field, coordinate, or branch/trunk dispatch;
 - normalization description;
 - channel layout.
 
@@ -40,30 +41,30 @@ model, plan = load_model(
 print(plan.to_dict())
 ```
 
-The resolution order is:
+Resolution order:
 
-1. explicit model keyword arguments;
-2. user overrides;
-3. actual `CFDSample` shapes;
-4. registered dataset defaults.
+1. Explicit model keyword arguments.
+2. User overrides.
+3. Actual `CFDSample` shapes.
+4. Registered dataset defaults.
 
 ## Dataset profiles
 
-| Dataset | Representation | Default dimension | Typical model families |
+| Dataset | Representation | Default dimension | Typical native families |
 |---|---|---:|---|
 | PDEBench | structured | 2 | FNO, PINO, PIBERT, transformer operators |
 | CFDBench | structured | 2 | FNO, PINO, U-NO, PIBERT |
 | RealPDEBench | structured | 2 | PIBERT, PINO, DeepONet, temporal operators |
 | The Well | structured | 3 | FNO, P3D, latent and state-space operators |
-| APEBench | structured | 2 | autoregressive operators |
-| ScalarFlow | structured | 3 | FNO, P3D, convolutional operators |
+| APEBench | structured | 2 | autoregressive operators and refiners |
+| ScalarFlow | structured | 3 | FNO, P3D, convolutional and generative operators |
 | AirfRANS | point cloud | 2 | Transolver, GINO, MeshGraphNets, Geo-FNO |
-| DrivAerNet++ | point cloud | 3 | GINO, Transolver, AeroTransformer |
+| DrivAerNet++ | point cloud | 3 | GINO, Transolver, AeroTransformer, DoMINO reference |
 | DrivAerML | unstructured | 3 | GINO, MeshGraphNets, geometry transformers |
-| ShapeNet-Car | point cloud | 3 | geometry-conditioned models |
-| EAGLE | unstructured | 3 | graph and transformer operators |
+| ShapeNet-Car | point cloud | 3 | geometry-conditioned models and preconditioners |
+| EAGLE | unstructured | 3 | graph, transformer, and geometry operators |
 
-Defaults are deliberately visible. Dataset releases can differ in field names, ordering, resolution, and target definitions, so production experiments should provide an actual sample and explicit adapter keys.
+Defaults are visible and reviewable. Dataset releases can differ in field names, ordering, resolution, and target definitions, so production experiments should provide an actual sample and explicit adapter keys.
 
 ## Native reference inventory
 
@@ -102,9 +103,10 @@ Defaults are deliberately visible. Dataset releases can differ in field names, o
 - RiemannONet
 - DeepM&Mnet
 
-### Deep learning and geometry
+### Geometry, graph, transformer, and foundation-style learning
 
 - MeshGraphNets
+- DoMINO reference
 - Universal Physics Transformer
 - DPOT
 - Poseidon
@@ -115,6 +117,23 @@ Defaults are deliberately visible. Dataset releases can differ in field names, o
 - AeroTransformer
 - Tadpole
 - ReViT
+
+### Generative, corrector, preconditioning, adaptation, and uncertainty
+
+- FourierFlow reference
+- PDE-Refiner reference
+- Solver-in-the-Loop corrector
+- Indirect Neural Corrector
+- NeuroSEM corrector reference
+- Neural-operator preconditioned Newton reference
+- Geometry-aware neural preconditioner
+- Conformalized-DeepONet reference
+- TANTE-style adaptation
+- Energy Transformer reconstruction reference
+- FunDiff reference
+- Flow Matching for PDEs reference
+
+PICT, diffSPH, and NeuralDEM remain external integrations because meaningful execution requires their dedicated differentiable CFD or particle runtimes. NAVIER-CFD does not replace those solvers with misleading generic field networks.
 
 ## Native reference versus official reproduction
 
@@ -131,7 +150,7 @@ A NAVIER-CFD native reference implementation is:
 It is not automatically:
 
 - the exact author repository revision;
-- a reproduction of an unpublished preprocessing pipeline;
+- a reproduction of unpublished preprocessing;
 - a copy of private checkpoints;
 - numerically identical to every paper table;
 - licensed to redistribute third-party weights.
@@ -152,15 +171,7 @@ report = validate_model_adapter(
 assert report.passed
 ```
 
-The report checks:
-
-- registry status;
-- dependency availability;
-- dataset-specific construction;
-- parameter count;
-- forward pass;
-- output compatibility;
-- backward propagation.
+The report checks registry status, dependency availability, dataset-specific construction, parameter count, forward pass, output compatibility, and backward propagation.
 
 ## Experiment API
 
