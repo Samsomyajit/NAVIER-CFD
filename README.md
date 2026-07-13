@@ -15,11 +15,11 @@
   <a href="https://samsomyajit.github.io/NAVIER-CFD/recommender/"><img src="https://img.shields.io/badge/tool-recommender-13b7d8.svg" alt="Interactive recommender"></a>
   <img src="https://img.shields.io/badge/version-0.5.0-2f6f9f.svg" alt="Version 0.5.0">
   <img src="https://img.shields.io/badge/catalog_models-55-7c6aa6.svg" alt="55 catalog models">
-  <img src="https://img.shields.io/badge/native_reference_models-39-008b8b.svg" alt="39 native reference models">
+  <img src="https://img.shields.io/badge/native_reference_models-52-008b8b.svg" alt="52 native reference models">
   <img src="https://img.shields.io/badge/dataset_profiles-11-5d8f72.svg" alt="11 dataset profiles">
 </p>
 
-NAVIER-CFD is a CFD-first Python platform for importing, configuring, training, testing, and comparing neural PDE/CFD models across standardized datasets. It combines dataset adapters, native reference architectures, external-model adapters, evidence-aware recommendation, reproducible training, checkpoints, CFD metrics, Hugging Face access, and experiment manifests.
+NAVIER-CFD is a CFD-first Python platform for importing, configuring, training, testing, comparing, and recommending neural PDE/CFD models across standardized datasets. Version 0.5 makes the **dataset a first-class model-construction argument** and provides 52 executable native reference models under one common PyTorch workflow.
 
 ## Install
 
@@ -27,33 +27,31 @@ NAVIER-CFD is a CFD-first Python platform for importing, configuring, training, 
 pip install "navier-cfd[models]"
 ```
 
-Core catalog and recommender only:
+Core catalog, recommendation, evidence, and dataset-discovery tools:
 
 ```bash
 pip install navier-cfd
 ```
 
-## Dataset-driven model import
-
-The dataset can be passed directly to `load_model`. NAVIER-CFD resolves dimensionality, field channels, coordinate size, mesh representation, spectral modes, hidden size, and input dispatch from the registered dataset profile.
+## Dataset determines the model configuration
 
 ```python
 from navier_cfd import load_model
 
-# 2D structured CFD defaults: 3 input and 3 output channels.
+# 2D structured CFD configuration
 fno = load_model("fno", dataset="cfdbench")
 
-# 3D structured scalar-flow defaults and 3D Fourier modes.
-fno_3d = load_model("fno", dataset="scalarflow")
+# 3D structured volumetric configuration
+p3d = load_model("p3d", dataset="scalarflow")
 
-# Point-cloud geometry defaults for AirfRANS.
+# 2D point-cloud geometry configuration
 transolver = load_model("transolver", dataset="airfrans")
 
-# Unstructured 3D defaults for DrivAerML.
+# 3D unstructured geometry configuration
 gino = load_model("gino", dataset="drivaerml")
 ```
 
-A real canonical sample overrides profile assumptions:
+A canonical sample overrides profile assumptions about channels, dimensionality, coordinates, and sensor count:
 
 ```python
 model, plan = load_model(
@@ -71,23 +69,33 @@ model, plan = load_model(
 print(plan.to_dict())
 ```
 
-Resolution priority is:
+Resolution priority:
 
 ```text
-explicit keyword arguments
-        ↑
+explicit model keyword arguments
+              ↑
 user overrides
-        ↑
+              ↑
 actual CFDSample shapes
-        ↑
+              ↑
 registered dataset defaults
 ```
 
+The build plan records:
+
+- dataset identifier and representation;
+- dimension and coordinate dimension;
+- input and output channels;
+- normalization description and layout;
+- spectral modes or graph/attention parameters;
+- model input mode;
+- assumptions and scientific cautions.
+
 ## Registered dataset configurations
 
-| Dataset | Default representation | Dimension | Typical use |
+| Dataset | Representation | Default dimension | Primary use |
 |---|---|---:|---|
-| PDEBench | Structured | 2D default; sample-aware 1D–3D | PDE forecasting and operators |
+| PDEBench | Structured | 2D default, sample-aware 1D–3D | PDE forecasting and operator learning |
 | CFDBench | Structured | 2D | Cavity, tube, dam and cylinder CFD |
 | RealPDEBench | Structured | 2D | Simulation-to-real forecasting |
 | The Well | Structured | 3D default | Large multiphysics fields |
@@ -99,28 +107,26 @@ registered dataset defaults
 | ShapeNet-Car | Point cloud | 3D | Geometry-conditioned vehicle fields |
 | EAGLE | Unstructured | 3D default | Fluid and geometry learning |
 
-Dataset defaults are reviewable, not hidden. Historical releases may use different variable names or channel order, so production experiments should pass an actual `CFDSample` and explicit adapter keys.
+Dataset defaults are visible and reviewable. Production experiments should pass an actual `CFDSample` and explicit adapter keys because historical releases can differ in variable names, ordering, resolution, and targets.
 
-## Native reference model suite
+## Native reference model inventory
 
-Version 0.5 exposes **39 executable native reference models** through one interface.
-
-### Neural operators and operator-learning models
+### Neural operators and operator learning
 
 - DeepONet
 - MIONet
 - Fourier-DeepONet
 - Nested Fourier-DeepONet
 - Fourier-MIONet
-- FNO
-- PINO
+- Fourier Neural Operator
+- Physics-Informed Neural Operator
 - Geo-FNO
-- GINO
+- Geometry-Informed Neural Operator
 - U-FNO
-- F-FNO
-- U-NO
+- Factorized FNO
+- U-shaped Neural Operator
 - Latent Spectral Model
-- GNOT
+- General Neural Operator Transformer
 - Galerkin Transformer
 - Multiwavelet Transformer
 - FactFormer
@@ -129,9 +135,9 @@ Version 0.5 exposes **39 executable native reference models** through one interf
 - Laplace Neural Operator
 - State-Space Neural Operator
 
-### Physics-informed models
+### Physics-informed machine learning
 
-- PINN
+- Physics-Informed Neural Network
 - NSFnets
 - PINNsFormer
 - PINO
@@ -140,9 +146,10 @@ Version 0.5 exposes **39 executable native reference models** through one interf
 - RiemannONet
 - DeepM&Mnet
 
-### Deep-learning, geometry, and foundation-style models
+### Geometry, graph, transformer, and foundation-style learning
 
 - MeshGraphNets
+- DoMINO reference
 - Universal Physics Transformer
 - DPOT
 - Poseidon
@@ -154,20 +161,43 @@ Version 0.5 exposes **39 executable native reference models** through one interf
 - Tadpole
 - ReViT
 
-Inspect availability:
+### Generative, correction, preconditioning, adaptation, and uncertainty
 
-```python
-from navier_cfd import list_models
+- FourierFlow reference
+- PDE-Refiner reference
+- Solver-in-the-Loop corrector
+- Indirect Neural Corrector
+- NeuroSEM corrector reference
+- Neural-operator preconditioned Newton reference
+- Geometry-aware neural preconditioner
+- Conformalized-DeepONet reference
+- TANTE-style adaptation
+- Energy Transformer reconstruction reference
+- FunDiff reference
+- Flow Matching for PDEs reference
 
-for handle in list_models():
-    print(handle.id, handle.status.mode, handle.status.executable)
-```
+The three remaining catalog entries—**PICT, diffSPH, and NeuralDEM**—remain specialized external integrations because meaningful execution requires their dedicated CFD/particle solver runtimes rather than a generic field-network substitute.
 
-## Scientific scope of native models
+## Scientific scope
 
-A **native reference implementation** is executable, trainable, shape-tested, backward-tested, and connected to the common dataset/trainer API. It is not automatically a bit-for-bit reproduction of an author repository, unpublished preprocessing pipeline, private checkpoint, or paper table.
+A NAVIER-CFD **native reference implementation** is:
 
-Every native reference object carries:
+- importable from the PyPI package;
+- executable with PyTorch;
+- connected to the dataset-aware configuration system;
+- trainable with the common trainer;
+- checkpointable;
+- forward- and backward-tested;
+- compatible with adapter conformance tests.
+
+It is **not automatically**:
+
+- a bit-for-bit copy of an author repository;
+- a reproduction of unpublished preprocessing;
+- a redistribution of private weights;
+- numerically identical to every result in the originating paper.
+
+Each reference model carries provenance and scope metadata such as:
 
 ```python
 model.navier_reference_model_id
@@ -176,60 +206,9 @@ model.navier_dataset_id
 model.navier_build_plan
 ```
 
-Numerical claims must still cite and validate the original method, official implementation, dataset split, preprocessing, loss, and checkpoint.
+Numerical reproduction claims must still validate the official architecture, code revision, dataset split, preprocessing, losses, checkpoint, and evaluation protocol.
 
-## Unified dataset and experiment API
-
-```python
-from navier_cfd import Experiment, TaskSpec, TrainerConfig
-
-experiment = Experiment(
-    dataset_id="pdebench",
-    model_id="pino",
-    task=TaskSpec(
-        problem="navier_stokes",
-        task_type="forecasting",
-        dimension=2,
-        mesh_type="structured",
-        temporal_mode="autoregressive",
-        geometry_mode="fixed",
-        physics=("incompressible_navier_stokes",),
-    ),
-    trainer_config=TrainerConfig(
-        epochs=100,
-        optimizer="adamw",
-        learning_rate=1e-3,
-        mixed_precision=True,
-    ),
-    batch_size=8,
-    output_dir="runs/pino-pdebench",
-)
-
-result = experiment.run(raw_dataset)
-print(result.metrics)
-print(result.build_plan)
-print(result.manifest_path)
-```
-
-The pipeline is:
-
-```text
-raw dataset
-   ↓
-dataset adapter
-   ↓
-CFDSample / CFDBatch
-   ↓
-dataset-aware model configuration
-   ↓
-native or external model adapter
-   ↓
-common trainer
-   ↓
-checkpoint + CFD metrics + experiment manifest
-```
-
-## Canonical data layer
+## Canonical dataset layer
 
 ```python
 from navier_cfd import AdaptedDataset, AdapterRegistry, make_dataloaders
@@ -253,9 +232,16 @@ loaders = make_dataloaders(
 )
 ```
 
-The loaders support structured grids, point clouds, mesh nodes, variable-size samples, padding, validity masks, deterministic splits, and parameter dictionaries.
+The canonical `CFDSample`/`CFDBatch` layer supports:
 
-## Training and checkpoints
+- structured 1D, 2D, and 3D fields;
+- point clouds and mesh nodes;
+- variable-size samples;
+- padding and validity masks;
+- coordinates, parameters, and metadata;
+- deterministic train/validation/test splits.
+
+## Unified training
 
 ```python
 from navier_cfd import CFDTrainer, TrainerConfig
@@ -266,6 +252,7 @@ trainer = CFDTrainer(
     config=TrainerConfig(
         epochs=200,
         optimizer="adamw",
+        learning_rate=1e-3,
         loss="mse",
         scheduler="cosine",
         gradient_clip=1.0,
@@ -280,26 +267,76 @@ training = trainer.fit(loaders["train"], loaders["validation"])
 metrics = trainer.evaluate(loaders["test"], velocity=True)
 ```
 
-Checkpoint directories contain weights, optimizer state, scheduler state, metrics, configuration, and provenance metadata.
+Supported optimizers and training features include Adam, AdamW, SGD, LBFGS, mixed precision, gradient clipping, cosine and plateau schedulers, early stopping, best checkpoints, periodic checkpoints, and custom forward/loss functions.
+
+## High-level experiment API
+
+```python
+from navier_cfd import Experiment, TaskSpec, TrainerConfig
+
+experiment = Experiment(
+    dataset_id="pdebench",
+    model_id="pino",
+    task=TaskSpec(
+        problem="navier_stokes",
+        task_type="forecasting",
+        dimension=2,
+        mesh_type="structured",
+        temporal_mode="autoregressive",
+        geometry_mode="fixed",
+        physics=("incompressible_navier_stokes",),
+    ),
+    trainer_config=TrainerConfig(
+        epochs=100,
+        optimizer="adamw",
+        mixed_precision=True,
+    ),
+    batch_size=8,
+    output_dir="runs/pino-pdebench",
+)
+
+result = experiment.run(raw_dataset)
+print(result.metrics)
+print(result.build_plan)
+print(result.manifest_path)
+```
+
+Pipeline:
+
+```text
+raw dataset
+   ↓
+dataset adapter
+   ↓
+CFDSample / CFDBatch
+   ↓
+dataset-aware model configuration
+   ↓
+native or official external adapter
+   ↓
+common trainer
+   ↓
+checkpoint + CFD metrics + experiment manifest
+```
 
 ## CFD evaluation
 
-The evaluation layer includes:
+Built-in metrics include:
 
-- RMSE and MAE
-- normalized RMSE
-- relative L2
-- R²
-- cosine similarity
-- maximum absolute error
-- spectral relative error
-- divergence RMS
-- kinetic-energy relative error
-- rollout error curves
+- RMSE and MAE;
+- normalized RMSE;
+- relative L2;
+- R²;
+- cosine similarity;
+- maximum absolute error;
+- spectral relative error;
+- velocity-divergence RMS;
+- kinetic-energy relative error;
+- rollout error curves.
 
-Geometry-dependent drag, lift, pressure coefficient, and wall-shear evaluation require case-specific surface normals, areas, reference quantities, and integration rules.
+Drag, lift, pressure coefficient, wall shear, and other geometry-integrated quantities require case-specific surface normals, areas, reference quantities, and integration rules.
 
-## Adapter conformance testing
+## Adapter conformance
 
 ```python
 from navier_cfd import validate_model_adapter
@@ -313,11 +350,9 @@ report = validate_model_adapter(
 print(report.to_dict())
 ```
 
-Conformance checks registration, dependency availability, dataset-specific construction, forward pass, shape compatibility, and backward propagation.
+Conformance checks registration, dependency availability, dataset-specific construction, parameter count, forward pass, output compatibility, and backward propagation.
 
 ## Evidence-aware recommendation
-
-The recommender combines hard compatibility filtering with task-matched paper evidence, evidence quality, metric comparability, Bayesian shrinkage, confidence, and coverage reporting.
 
 ```bash
 navier recommend \
@@ -332,23 +367,7 @@ navier recommend \
   --memory-gb 80
 ```
 
-## External official implementations
-
-Models without a native reference can still be connected through an explicit installed entrypoint:
-
-```python
-from navier_cfd import ModelHub
-
-hub = ModelHub()
-hub.register_external(
-    "domino",
-    entrypoint="installed_domino_package:DoMINO",
-    install_spec="installed-domino-package",
-)
-model = hub.load("domino", hidden_dim=256)
-```
-
-NAVIER-CFD never silently clones or executes arbitrary repositories. External adapters require a reviewed constructor, version, dependency set, tensor contract, license, and smoke test.
+The recommender combines architecture compatibility with task-matched paper evidence, evidence quality, metric comparability, Bayesian shrinkage, confidence, and coverage reporting.
 
 ## Validation
 
@@ -357,8 +376,16 @@ pytest tests/test_model_hub.py tests/test_pibert_pipeline.py tests/test_native_s
 node --test website/recommender/recommender-core.test.mjs
 ```
 
-The native CI job constructs, forwards, and backpropagates through the dataset-configured native suite using CPU PyTorch.
+The dedicated CPU-PyTorch CI job constructs, forwards, and backpropagates through all 52 native reference models and checks dataset-driven configuration for structured, 3D volumetric, point-cloud, and unstructured cases.
+
+## Documentation
+
+- Project website: https://samsomyajit.github.io/NAVIER-CFD/
+- Interactive recommender: https://samsomyajit.github.io/NAVIER-CFD/recommender/
+- Technical documentation: https://samsomyajit.github.io/NAVIER-CFD/docs/
+- Native suite guide: `docs/NATIVE_MODEL_SUITE.md`
+- Unified experiments and PIBERT: `docs/UNIFIED_EXPERIMENTS.md`
 
 ## License
 
-NAVIER-CFD is licensed under Apache-2.0. Original models, datasets, code repositories, and checkpoints retain their own licenses and citation requirements.
+NAVIER-CFD is licensed under Apache-2.0. Original papers, repositories, datasets, model weights, and numerical solvers retain their own licenses and citation requirements.
