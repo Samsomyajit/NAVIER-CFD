@@ -21,8 +21,10 @@ from .hub import (  # noqa: E402
     load_model,
     model_info,
 )
+from .conformance import AdapterConformanceReport, validate_model_adapter  # noqa: E402
 
 __all__ = [
+    "AdapterConformanceReport",
     "ExternalInstallDisabledError",
     "ExternalModelAdapter",
     "ExternalModelRecipe",
@@ -48,4 +50,5 @@ __all__ = [
     "load_model",
     "model_info",
     "translate_model_config",
+    "validate_model_adapter",
 ]
