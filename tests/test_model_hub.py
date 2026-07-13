@@ -37,8 +37,8 @@ def test_core_native_models_are_reported_as_executable() -> None:
 
 def test_external_entrypoint_can_be_connected_without_package_fork() -> None:
     hub = ModelHub()
-    hub.register_external("domino", entrypoint="collections:Counter")
-    result = hub.load("domino", "abca")
+    hub.register_external("pict", entrypoint="collections:Counter")
+    result = hub.load("pict", "abca")
     assert result["a"] == 2
     assert result["b"] == 1
 
@@ -46,7 +46,7 @@ def test_external_entrypoint_can_be_connected_without_package_fork() -> None:
 def test_metadata_only_model_explains_how_to_connect_adapter() -> None:
     hub = ModelHub()
     with pytest.raises(ModelNotExecutableError, match="register_external|entrypoint"):
-        hub.load("fourierflow", task=_task())
+        hub.load("neuraldem", task=_task())
 
 
 def test_native_models_forward_when_torch_is_installed() -> None:
