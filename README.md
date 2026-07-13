@@ -21,6 +21,20 @@
 
 NAVIER-CFD is a CFD-first Python platform for importing, configuring, training, testing, comparing, and recommending neural PDE/CFD models across standardized datasets. Version 0.5 makes the **dataset a first-class model-construction argument** and provides 52 executable native reference models under one common PyTorch workflow.
 
+## Authors and affiliation
+
+**Somyajit Chakraborty¹, Xizhong Chen¹\***
+
+¹State Key Laboratory of Synergistic Chem-Bio Synthesis, Department of Chemical Engineering,  
+School of Chemistry and Chemical Engineering, Shanghai Jiao Tong University, Shanghai 200240, China
+
+**Correspondence**
+
+- **Xizhong Chen（陈锡忠）:** [chenxizh@sjtu.edu.cn](mailto:chenxizh@sjtu.edu.cn)
+- **Somyajit Chakraborty（叶一明）:** [chksomyajit@sjtu.edu.cn](mailto:chksomyajit@sjtu.edu.cn)
+
+\* Corresponding author.
+
 ## Install
 
 ```bash
@@ -383,6 +397,7 @@ The dedicated CPU-PyTorch CI job constructs, forwards, and backpropagates throug
 - Project website: https://samsomyajit.github.io/NAVIER-CFD/
 - Interactive recommender: https://samsomyajit.github.io/NAVIER-CFD/recommender/
 - Technical documentation: https://samsomyajit.github.io/NAVIER-CFD/docs/
+- Simplified Chinese documentation: https://samsomyajit.github.io/NAVIER-CFD/docs/zh/
 - Native suite guide: `docs/NATIVE_MODEL_SUITE.md`
 - Unified experiments and PIBERT: `docs/UNIFIED_EXPERIMENTS.md`
 
