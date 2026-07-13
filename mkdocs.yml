@@ -38,6 +38,8 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Experiments:
+      - Unified Pipeline and PIBERT: UNIFIED_EXPERIMENTS.md
   - Models:
       - Executable Model Hub: MODEL_HUB.md
       - Model Catalog: MODEL_CATALOG.md
