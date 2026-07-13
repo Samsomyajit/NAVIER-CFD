@@ -7,36 +7,168 @@
 <p align="center"><strong>Neural and Agentic Verification, Integration, Evaluation, and Recommendation for Computational Fluid Dynamics</strong></p>
 
 <p align="center">
-  <a href="https://github.com/Samsomyajit/NAVIER-CFD/releases"><img src="https://img.shields.io/badge/version-0.3.0-2f6f9f.svg" alt="Version"></a>
   <a href="https://pypi.org/project/navier-cfd/"><img src="https://img.shields.io/pypi/v/navier-cfd.svg?label=PyPI" alt="PyPI"></a>
   <a href="https://pypi.org/project/navier-cfd/"><img src="https://img.shields.io/pypi/pyversions/navier-cfd.svg" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-4c8c6b.svg" alt="Apache 2.0"></a>
   <a href="https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml"><img src="https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://samsomyajit.github.io/NAVIER-CFD/"><img src="https://img.shields.io/badge/project-website-0d6fdc.svg" alt="Project website"></a>
   <a href="https://samsomyajit.github.io/NAVIER-CFD/recommender/"><img src="https://img.shields.io/badge/tool-recommender-13b7d8.svg" alt="Interactive recommender"></a>
+  <img src="https://img.shields.io/badge/version-0.4.0-2f6f9f.svg" alt="Version 0.4.0">
   <img src="https://img.shields.io/badge/models-55-7c6aa6.svg" alt="55 models">
-  <img src="https://img.shields.io/badge/native_models-PINN%20%7C%20DeepONet%20%7C%20FNO-008b8b.svg" alt="Native executable models">
-  <img src="https://img.shields.io/badge/datasets-11-5d8f72.svg" alt="11 datasets">
-  <img src="https://img.shields.io/badge/scoring-paper--evidence--aware-7057c7.svg" alt="Paper-evidence-aware scoring">
+  <img src="https://img.shields.io/badge/native-PINN%20%7C%20DeepONet%20%7C%20FNO%20%7C%20PIBERT-008b8b.svg" alt="Native executable models">
+  <img src="https://img.shields.io/badge/dataset_profiles-11-5d8f72.svg" alt="11 dataset profiles">
 </p>
 
-NAVIER-CFD is a CFD-first Python platform for executable neural PDE models, hybrid numerical acceleration, benchmark datasets, paper-evidence-aware task recommendation, Hugging Face integration, and agentic experiment planning.
+NAVIER-CFD is a CFD-first Python platform for executable neural PDE models, standardized dataset adaptation, reproducible training, checkpoints, CFD-aware metrics, evidence-aware recommendation, Hugging Face data access, and agentic experiment planning.
 
-## Project website and interactive tool
+## Install
 
-- **Project website:** https://samsomyajit.github.io/NAVIER-CFD/
-- **Interactive model and dataset recommender:** https://samsomyajit.github.io/NAVIER-CFD/recommender/
-- **Technical documentation:** https://samsomyajit.github.io/NAVIER-CFD/docs/
+Core package:
 
-The web recommender runs entirely in the browser. It applies hard compatibility filters, explains every score, recommends suitable benchmark datasets, and exports a reproducible run manifest.
+```bash
+pip install navier-cfd
+```
 
-> A recommendation is a task-specific hypothesis, not proof that one architecture is universally superior. Report the final score together with evidence confidence, metric coverage, matched paper records, and the target benchmark.
+Executable models and training:
 
-## Executable model hub
+```bash
+pip install "navier-cfd[models]"
+```
 
-Version 0.3 adds a common Python runtime for model discovery, status inspection, construction, dependency installation, and upstream adapter registration.
+## What version 0.4 adds
 
-Every one of the 55 catalog entries is addressable through a uniform `ModelHandle`:
+- A canonical `CFDSample` and `CFDBatch` schema for structured grids, point clouds, unstructured meshes, and variable-size samples.
+- Adapter profiles for PDEBench, CFDBench, RealPDEBench, The Well, APEBench, ScalarFlow, AirfRANS, DrivAerNet++, DrivAerML, ShapeNet-Car, and EAGLE.
+- Reproducible train/validation/test splitting and PyTorch data loaders with padding and masks.
+- Model-configuration translation from canonical samples.
+- A common `CFDTrainer` with Adam, AdamW, SGD, LBFGS, mixed precision, schedulers, gradient clipping, early stopping, and checkpoints.
+- Directory checkpoints containing weights, optimizer state, scheduler state, and a JSON manifest.
+- Expanded CFD evaluation: RMSE, MAE, normalized RMSE, relative L2, R², cosine similarity, spectral error, divergence, kinetic-energy error, and rollout-error curves.
+- A high-level `Experiment` API joining dataset adaptation, model construction, training, evaluation, and manifests.
+- A native executable PIBERT reference implementation with Fourier coordinate embeddings, multiscale wavelet-detail embeddings, physics-biased attention, transformer blocks, and a field prediction head.
+
+## One experiment API
+
+```python
+from navier_cfd import Experiment, TaskSpec, TrainerConfig
+
+experiment = Experiment(
+    dataset_id="pdebench",
+    model_id="pibert",
+    task=TaskSpec(
+        problem="navier_stokes",
+        task_type="forecasting",
+        dimension=2,
+        mesh_type="structured",
+        temporal_mode="autoregressive",
+        geometry_mode="fixed",
+        physics=("incompressible_navier_stokes",),
+    ),
+    trainer_config=TrainerConfig(
+        epochs=100,
+        optimizer="adamw",
+        learning_rate=1e-3,
+        mixed_precision=True,
+    ),
+    batch_size=8,
+    output_dir="runs/pibert-pdebench",
+)
+
+# raw_dataset may be a Hugging Face Dataset, list of mapping records,
+# or another indexable dataset returning dictionaries.
+result = experiment.run(raw_dataset)
+print(result.metrics)
+print(result.manifest_path)
+```
+
+Load a registered Hugging Face dataset first:
+
+```python
+raw_dataset = experiment.load_huggingface(split="train")
+result = experiment.run(raw_dataset)
+```
+
+Dataset releases do not always use identical field names. The adapter can be made explicit:
+
+```python
+experiment.adapter_options = {
+    "input_key": "history",
+    "target_key": "future",
+    "coordinate_key": "grid",
+    "target_fields": ("u", "v", "p"),
+}
+```
+
+## Direct PIBERT use
+
+```python
+from navier_cfd import load_model
+
+model = load_model(
+    "pibert",
+    input_dim=4,
+    output_dim=3,
+    coordinate_dim=2,
+    hidden_dim=128,
+    num_layers=6,
+    num_heads=8,
+    num_frequencies=16,
+    wavelet_scales=(1, 2, 4),
+)
+
+# Structured grid: [batch, nx, ny, channels]
+prediction = model(fields, coordinates=grid)
+
+# Point sequence: [batch, points, channels]
+point_prediction = model(point_features, coordinates=point_coordinates, mask=point_mask)
+```
+
+The implementation is functional and tested, but it is a NAVIER-CFD reference implementation. Results should be validated against the exact architecture, preprocessing, losses, and splits described in the associated PIBERT study.
+
+## Canonical dataset API
+
+```python
+from navier_cfd import AdaptedDataset, AdapterRegistry, make_dataloaders
+
+adapter = AdapterRegistry().adapter(
+    "airfrans",
+    input_key="node_features",
+    target_key="fields",
+    coordinate_key="pos",
+    input_fields=("normal_x", "normal_y", "distance"),
+    target_fields=("pressure", "velocity_x", "velocity_y"),
+)
+
+dataset = AdaptedDataset(raw_airfrans, adapter)
+loaders = make_dataloaders(
+    dataset,
+    batch_size=4,
+    train=0.70,
+    validation=0.15,
+    test=0.15,
+    seed=42,
+)
+```
+
+Each canonical sample contains:
+
+```text
+inputs         structured field or [points, channels]
+targets        target field or quantity
+coordinates    optional grid, mesh, or point coordinates
+parameters     Reynolds number, boundary values, controls, and other scalars
+mask           optional valid-domain or valid-point mask
+metadata       case identifiers and provenance
+```
+
+## Native executable models
+
+| ID | Model | Status | Typical input |
+|---|---|---|---|
+| `pinn` | Physics-Informed Neural Network backbone | Native | Coordinates/parameters |
+| `deeponet` | DeepONet | Native | Branch sensors + trunk coordinates |
+| `fno` | 1D/2D/3D Fourier Neural Operator | Native | Structured fields |
+| `pibert` | Fourier-wavelet physics-biased transformer | Native | Structured fields or point sequences |
 
 ```python
 from navier_cfd import list_models
@@ -45,73 +177,7 @@ for handle in list_models():
     print(handle.id, handle.status.mode, handle.status.executable)
 ```
 
-Three broadly used reference implementations are shipped natively and can be constructed directly:
-
-- `pinn` — coordinate-network PINN backbone;
-- `deeponet` — branch/trunk DeepONet;
-- `fno` — dimension-generic 1D, 2D, and 3D Fourier Neural Operator.
-
-Install the executable-model extra:
-
-```bash
-pip install "navier-cfd[models]"
-```
-
-Construct a 2D FNO:
-
-```python
-from navier_cfd import TaskSpec, load_model
-
-flow_task = TaskSpec(
-    problem="cylinder_wake",
-    task_type="forecasting",
-    dimension=2,
-    mesh_type="structured",
-    temporal_mode="autoregressive",
-    geometry_mode="fixed",
-    physics=("incompressible_navier_stokes",),
-)
-
-model = load_model(
-    "fno",
-    task=flow_task,
-    in_channels=3,
-    out_channels=2,
-    modes=(16, 16),
-    width=64,
-    n_layers=4,
-)
-```
-
-Construct a PINN backbone:
-
-```python
-pinn = load_model(
-    "pinn",
-    task=flow_task,
-    input_dim=3,   # x, y, t
-    output_dim=3,  # u, v, p
-    hidden_channels=128,
-    depth=5,
-)
-```
-
-Construct a DeepONet:
-
-```python
-deeponet = load_model(
-    "deeponet",
-    task=flow_task,
-    branch_input_dim=256,
-    trunk_input_dim=2,
-    output_dim=3,
-    latent_dim=128,
-)
-```
-
-### Connecting an upstream implementation
-
-Many research repositories do not expose a stable PyPI package or common constructor. NAVIER-CFD therefore never silently clones or executes them. An installed upstream implementation can still be connected under the same API:
+All 55 catalog models have a common `ModelHandle`. Four are currently implemented natively. Other models can be connected to reviewed upstream implementations through an explicit adapter:
 
 ```python
 from navier_cfd import ModelHub
@@ -119,104 +185,54 @@ from navier_cfd import ModelHub
 hub = ModelHub()
 hub.register_external(
     "transolver",
-    entrypoint="my_transolver_package:Transolver",
-    install_spec="my-transolver-package",
+    entrypoint="installed_transolver_package:Transolver",
+    install_spec="installed-transolver-package",
 )
-
 model = hub.load("transolver", hidden_dim=256, num_layers=8)
 ```
 
-External installation is opt-in and never runs merely by importing `navier_cfd`:
+NAVIER-CFD never silently clones or executes arbitrary research repositories. Exact adapters are added only when the upstream constructor, version, dependencies, license, tensor contract, and smoke test are known.
+
+## Training and checkpoints
 
 ```python
-hub.model("transolver").install(allow_external=True)
+from navier_cfd import CFDTrainer, TrainerConfig
+
+trainer = CFDTrainer(
+    model,
+    model_id="pibert",
+    config=TrainerConfig(
+        epochs=200,
+        optimizer="adamw",
+        loss="mse",
+        scheduler="cosine",
+        gradient_clip=1.0,
+        mixed_precision=True,
+        checkpoint_dir="runs/checkpoints",
+        checkpoint_every=25,
+        early_stopping_patience=20,
+    ),
+)
+
+training = trainer.fit(loaders["train"], loaders["validation"])
+metrics = trainer.evaluate(loaders["test"], velocity=True)
 ```
 
-This design brings all registered models under one discovery and adapter interface while respecting upstream licenses, dependency conflicts, and model-specific constructor APIs. Exact upstream implementations become directly executable as stable adapters are added; a metadata card is not misrepresented as runnable code.
+Checkpoint layout:
+
+```text
+checkpoint/
+  weights.pt
+  optimizer.pt
+  scheduler.pt
+  manifest.json
+```
 
 ## Evidence-aware recommendation
 
-Version 0.2 introduced a traceable paper-result layer. Each quantitative claim is stored with the paper, benchmark, metric, baseline, physical regime, dimension, mesh, geometry, temporal mode, fidelity, code/data availability, evidence level, and caveats.
-
-The recommender combines:
-
-1. **Hard compatibility filtering** for dimension, representation, geometry/mesh transfer, numerical role, temporal mode, and hardware.
-2. **Task-to-paper similarity** across physics, discretization, geometry, temporal regime, role, and fidelity.
-3. **Metric-aware utility** that prefers same-pipeline baseline comparisons and refuses to compare scale-dependent absolute MSE values across unrelated datasets.
-4. **Evidence quality weighting** for independent reproduction, peer review, code/data availability, cases, seeds, and baseline quality.
-5. **Bayesian shrinkage** toward a neutral prior when evidence is sparse.
-6. **Confidence and coverage reporting** so a high score with one weak paper cannot masquerade as a mature result.
-
-Citation counts, venue prestige, author prestige, and coauthorship centrality are deliberately excluded from performance scoring. Bibliometrics are used for paper discovery and provenance, not as a proxy for CFD accuracy.
-
-See [Evidence Scoring](docs/EVIDENCE_SCORING.md) and the frozen catalog at `src/navier_cfd/data/paper_evidence.json`.
-
-## Scientific pipeline
-
-<p align="center">
-  <img src="docs/assets/navier_pipeline.svg" alt="NAVIER-CFD scientific pipeline" width="100%">
-</p>
-
-The workflow keeps the learned numerical role explicit—surrogate, closure, corrector, preconditioner, inverse model, controller, or generator—and connects each experiment to versioned data, traceable model cards, executable adapters, CFD-aware metrics, paper evidence, and a reproducible run manifest.
-
-## Why NAVIER-CFD
-
-- **Unified executable model hub:** one API for native models, installed upstream entrypoints, dependency status, and adapter registration.
-- **55-model taxonomy:** acceleration frameworks, surrogates, general PDE solvers, specialized CFD, geometry and unstructured-mesh models, foundation models, inverse methods, uncertainty, particle and multiphase models, and generative methods.
-- **11 first-class datasets:** PDEBench, CFDBench, RealPDEBench, AirfRANS, DrivAerNet++, DrivAerML, The Well, APEBench, ScalarFlow, ShapeNet-Car, and EAGLE.
-- **Paper-level evidence:** traceable benchmark claims with task context, provenance, quality, confidence, and comparability limits.
-- **Full Hugging Face support:** discovery, inspection, selective downloads, revision pinning, authentication, streaming, caching, and arbitrary CFD dataset identifiers.
-- **Explainable recommendation:** compatibility filtering plus evidence-aware ranking by physics, dimension, mesh, geometry, temporal regime, numerical role, fidelity, memory, conservation, uncertainty, and transfer requirements.
-- **Agentic AI:** deterministic offline planning and provider-neutral interfaces for external LLM agents.
-- **CFD-aware benchmarking:** field, spectral, rollout, conservation, OOD, quantity-of-interest, uncertainty, wall-clock, memory, and break-even metrics.
-
-## Installation
-
-Core platform:
+The recommender filters incompatible models and combines architecture compatibility with task-matched paper evidence. It reports final score, evidence score, confidence, coverage, supporting records, reasons, and cautions.
 
 ```bash
-pip install navier-cfd
-```
-
-Core platform plus executable native models:
-
-```bash
-pip install "navier-cfd[models]"
-```
-
-From source:
-
-```bash
-git clone https://github.com/Samsomyajit/NAVIER-CFD.git
-cd NAVIER-CFD
-pip install -e ".[models]"
-
-# development, tests, and documentation
-pip install -e ".[dev,docs,models]"
-```
-
-## Command-line quick start
-
-```bash
-# Explore catalogs
-navier models list
-navier models list --category acceleration
-navier datasets list
-
-# Inspect registered paper evidence
-navier evidence list
-navier evidence list --model-id gino
-navier evidence coverage
-
-# Search Hugging Face
-navier datasets discover "computational fluid dynamics" --limit 20
-
-# Download a CFDBench subset
-navier datasets download cfdbench \
-  --local-dir ./data/cfdbench \
-  --pattern "cylinder/**"
-
-# Evidence-aware recommendation
 navier recommend \
   --problem vehicle_drag \
   --task surrogate \
@@ -226,100 +242,55 @@ navier recommend \
   --geometry varying \
   --physics aerodynamics \
   --fidelity rans \
-  --memory-gb 80 \
-  --top-k 10
-
-# Generate an agentic experiment plan
-navier agent plan \
-  "Benchmark RealPDEBench cylinder sim-to-real forecasting with 24 GB VRAM, conservation and uncertainty"
+  --memory-gb 80
 ```
 
-## Python recommendation API
+Citation counts, venue prestige, and author prestige are not used as substitutes for CFD performance.
 
-```python
-from navier_cfd import Catalog, TaskSpec, recommend_models
+## Dataset profiles
 
-catalog = Catalog.load_builtin()
-task = TaskSpec(
-    problem="3d_vehicle_aerodynamics",
-    task_type="surrogate",
-    dimension=3,
-    mesh_type="point_cloud",
-    temporal_mode="steady",
-    geometry_mode="varying",
-    physics=("aerodynamics",),
-    fidelity="rans",
-    requires_geometry_transfer=True,
-    requires_mesh_transfer=True,
-    hardware_memory_gb=80,
-)
+| Dataset | Main representation | Default use |
+|---|---|---|
+| PDEBench | Structured | PDE surrogate and rollout |
+| CFDBench | Structured | Boundary/property/geometry shifts |
+| RealPDEBench | Structured | Simulation-to-real forecasting |
+| The Well | Structured 2D/3D | Multiphysics pretraining and forecasting |
+| APEBench | Structured 1D/2D/3D | Autoregressive emulation |
+| ScalarFlow | Structured 3D | Scalar transport |
+| AirfRANS | Point cloud/unstructured | Airfoil RANS |
+| DrivAerNet++ | Surface point cloud | Vehicle aerodynamics |
+| DrivAerML | Unstructured 3D | Vehicle CFD |
+| ShapeNet-Car | Point cloud | Geometry-conditioned prediction |
+| EAGLE | Structured/unstructured | Geometry-aware fluid learning |
 
-for result in recommend_models(task, catalog.models, top_k=8):
-    print(result.model.name, result.score)
-    print("evidence:", result.evidence_score)
-    print("confidence:", result.evidence_confidence)
-    print("coverage:", result.evidence_coverage)
-    print("records:", result.evidence_count)
-    print("reasons:", result.reasons)
-    print("cautions:", result.cautions)
-```
+Profiles provide field aliases and representation metadata. They are not a claim that every historical release of every dataset has the same schema. Use explicit adapter keys for the exact release being benchmarked.
 
-## Registered model families
+## Project website
 
-- **Physics-informed:** PINN, NSFnets, PINNsFormer, PINO, PI-MFM, and RiemannONet.
-- **Operator learning:** DeepONet, MIONet, Fourier-DeepONet, Fourier-MIONet, FNO, F-FNO, U-FNO, U-NO, LSM, MWT, Laplace NO, and state-space NO.
-- **Geometry and transformer solvers:** Geo-FNO, GINO, GNOT, Transolver, UPT, MeshGraphNets, DoMINO, and ReViT.
-- **CFD-specialized:** PIBERT, FourierFlow, P3D, AeroTransformer, NeuralDEM, DeepM&Mnet, and Energy Transformer.
-- **Foundation and generative:** DPOT, Poseidon, PROSE-FD, BCAT, PDEformer-1, Tadpole, PDE-Refiner, FunDiff, and Flow Matching for PDEs.
-- **Acceleration:** Solver-in-the-Loop, INC, PICT, diffSPH, NeuroSEM, neural-operator preconditioned Newton, and geometry-aware neural preconditioning.
-- **Uncertainty and adaptation:** Conformalized-DeepONet and TANTE.
-
-“Included” means that every model has a uniform card and `ModelHandle`. “Native” means NAVIER-CFD ships an executable implementation. “External adapter” means NAVIER-CFD knows how to import an installed upstream implementation. “Metadata” means an executable adapter is still required.
-
-## Repository map
-
-```text
-src/navier_cfd/
-  agents/          deterministic and LLM-ready planning
-  benchmarks/      CFD metrics and benchmark plans
-  datasets/        Hugging Face discovery, download, streaming
-  models/          native models, ModelHub, and external adapters
-  data/            frozen paper-evidence catalog
-  catalogs.py      model and dataset registries
-  evidence.py      task similarity, quality, utility, shrinkage
-  recommender.py   compatibility prior + evidence ranking
-
-website/
-  index.html       standalone project website
-  recommender/     interactive browser recommender
-  data/            static model and dataset catalogs
-
-docs/              MkDocs technical documentation
-case_studies/      detailed benchmark study guides
-configs/tasks/     reusable task specifications
-```
+- Project site: https://samsomyajit.github.io/NAVIER-CFD/
+- Interactive recommender: https://samsomyajit.github.io/NAVIER-CFD/recommender/
+- Documentation: https://samsomyajit.github.io/NAVIER-CFD/docs/
 
 ## Validation
 
 ```bash
-pytest tests/test_recommender.py tests/test_evidence_recommender.py tests/test_model_hub.py
+pytest
 node --test website/recommender/recommender-core.test.mjs
 ```
 
-The test suite covers task-specific evidence transfer, geometry-aware ranking, hybrid acceleration selection, evidence provenance, uniform model handles, native model construction, and browser-runtime execution.
+CI covers Python 3.10–3.12, the evidence recommender, dataset adapters, browser runtime, model-hub behavior, native FNO/PINN/DeepONet construction, PIBERT structured and point-sequence forward passes, training, metrics, and checkpoint round trips.
 
-## Packaging and deployment
+## Scientific and licensing responsibility
 
-- Package: `navier-cfd`
-- Import namespace: `navier_cfd`
-- Current version: `0.3.0`
-- Evidence algorithm: `0.2.0-evidence`
-- Build backend: Hatchling
-- Website source: `website/`
-- Documentation source: `docs/`
-- Branch publisher: `.github/workflows/pages-branch.yml`
-- PyPI Trusted Publishing workflow: `.github/workflows/publish-pypi.yml`
+A shared API does not make different model families scientifically interchangeable. Users must preserve and report:
 
-## License
+- variable definitions and nondimensionalization;
+- boundary and initial conditions;
+- mesh/grid/point representation;
+- temporal horizon and rollout protocol;
+- training and validation splits;
+- upstream model and checkpoint versions;
+- dataset and model licenses;
+- original model, dataset, and solver citations.
 
-Licensed under the [Apache License 2.0](LICENSE). Cite NAVIER-CFD and the original model, dataset, upstream implementation, benchmark, and numerical-solver references used in every experiment.
+NAVIER-CFD is licensed under the [Apache License 2.0](LICENSE). Upstream implementations, pretrained weights, and datasets retain their own licenses.
