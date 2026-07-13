@@ -14,6 +14,7 @@ from navier_cfd import (
     ModelHub,
     TrainerConfig,
     make_dataloaders,
+    validate_model_adapter,
 )
 
 pytestmark = pytest.mark.skipif(importlib.util.find_spec("torch") is None, reason="PyTorch is optional")
@@ -55,14 +56,36 @@ def test_pibert_is_native_and_supports_structured_and_point_sequences() -> None:
         num_heads=4,
         num_frequencies=2,
         wavelet_scales=(1,),
+        attention_chunk_size=3,
     )
     structured = torch.randn(2, 3, 2, 3)
     coordinates = torch.randn(2, 3, 2, 2)
-    assert model(structured, coordinates=coordinates).shape == (2, 3, 2, 2)
+    residuals = torch.randn(2, 6)
+    assert model(structured, coordinates=coordinates, pde_residuals=residuals).shape == (2, 3, 2, 2)
 
     points = torch.randn(2, 5, 3)
     point_coordinates = torch.randn(2, 5, 2)
-    assert model(points, coordinates=point_coordinates).shape == (2, 5, 2)
+    point_mask = torch.tensor([[1, 1, 1, 1, 1], [1, 1, 1, 0, 0]], dtype=torch.bool)
+    assert model(points, coordinates=point_coordinates, mask=point_mask).shape == (2, 5, 2)
+
+
+def test_pibert_adapter_conformance() -> None:
+    sample = AdapterRegistry().adapter("pdebench").adapt(_records(1)[0])
+    report = validate_model_adapter(
+        "pibert",
+        sample,
+        overrides={
+            "hidden_dim": 8,
+            "num_layers": 1,
+            "num_heads": 2,
+            "num_frequencies": 2,
+            "wavelet_scales": (1,),
+            "attention_chunk_size": 2,
+        },
+    )
+    assert report.passed, report.error
+    assert report.parameter_count > 0
+    assert report.checks["backward"] is True
 
 
 def test_unified_training_and_checkpoint_roundtrip(tmp_path: Path) -> None:
@@ -85,6 +108,7 @@ def test_unified_training_and_checkpoint_roundtrip(tmp_path: Path) -> None:
         num_heads=2,
         num_frequencies=2,
         wavelet_scales=(1,),
+        attention_chunk_size=2,
     )
     trainer = CFDTrainer(
         model,
