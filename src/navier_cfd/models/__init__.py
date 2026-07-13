@@ -1,5 +1,10 @@
 from .base import ExternalModelAdapter, ModelAdapter, ModelFactory
-from .config import ModelBuildPlan, translate_model_config
+from .config import (
+    DATASET_MODEL_DEFAULTS,
+    DatasetModelDefaults,
+    ModelBuildPlan,
+    translate_model_config,
+)
 from .native import MissingTorchDependency, NATIVE_BUILDERS, build_deeponet, build_fno, build_pinn
 from .native_suite import NATIVE_REFERENCE_FAMILIES, REFERENCE_BUILDERS, build_native_reference
 from .pibert import PIBERT, build_pibert
@@ -20,13 +25,15 @@ from .hub import (  # noqa: E402
     get_model_hub,
     install_model,
     list_models,
-    load_model,
     model_info,
 )
+from .dataset_factory import configure_model_for_dataset, load_model  # noqa: E402
 from .conformance import AdapterConformanceReport, validate_model_adapter  # noqa: E402
 
 __all__ = [
     "AdapterConformanceReport",
+    "DATASET_MODEL_DEFAULTS",
+    "DatasetModelDefaults",
     "ExternalInstallDisabledError",
     "ExternalModelAdapter",
     "ExternalModelRecipe",
@@ -48,6 +55,7 @@ __all__ = [
     "build_native_reference",
     "build_pibert",
     "build_pinn",
+    "configure_model_for_dataset",
     "get_model_hub",
     "install_model",
     "list_models",
