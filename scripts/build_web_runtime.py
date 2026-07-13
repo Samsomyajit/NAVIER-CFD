@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import zipfile
-from dataclasses import fields, is_dataclass
+from dataclasses import fields, is_dataclass, replace
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -37,11 +37,23 @@ def jsonable(value: Any) -> Any:
 
 def build_catalog() -> dict[str, Any]:
     from navier_cfd import Catalog
+    from navier_cfd.runtime_registry import NATIVE_REFERENCE_MODEL_IDS
 
     catalog = Catalog.load_builtin()
+    models = [
+        replace(model, integration="native")
+        if model.id in NATIVE_REFERENCE_MODEL_IDS
+        else model
+        for model in catalog.models
+    ]
     return {
-        "models": [jsonable(model) for model in catalog.models],
+        "models": [jsonable(model) for model in models],
         "datasets": [jsonable(dataset) for dataset in catalog.datasets],
+        "runtime": {
+            "native_reference_models": len(NATIVE_REFERENCE_MODEL_IDS),
+            "catalog_models": len(models),
+            "dataset_profiles": len(catalog.datasets),
+        },
     }
 
 
@@ -50,15 +62,22 @@ BRIDGE = r'''from __future__ import annotations
 import inspect
 import json
 import pkgutil
-from dataclasses import fields, is_dataclass
+from dataclasses import fields, is_dataclass, replace
 from enum import Enum
 from typing import Any, get_args, get_origin, get_type_hints
 
 from navier_cfd import Catalog, TaskSpec, recommend_models
 from navier_cfd.evidence import EvidenceRecord
+from navier_cfd.runtime_registry import NATIVE_REFERENCE_MODEL_IDS
 import navier_cfd.recommender as _recommender_module
 
 _CATALOG = Catalog.load_builtin()
+_CATALOG.models = [
+    replace(model, integration="native")
+    if model.id in NATIVE_REFERENCE_MODEL_IDS
+    else model
+    for model in _CATALOG.models
+]
 _EVIDENCE_BYTES = pkgutil.get_data("navier_cfd", "data/paper_evidence.json")
 if _EVIDENCE_BYTES is None:
     raise RuntimeError("NAVIER-CFD paper evidence catalog is missing from the browser runtime")
@@ -144,6 +163,7 @@ def health_json() -> str:
     return json.dumps({
         "engine": "navier_cfd.recommender",
         "models": len(_CATALOG.models),
+        "native_reference_models": len(NATIVE_REFERENCE_MODEL_IDS),
         "datasets": len(_CATALOG.datasets),
         "evidence_records": len(_EVIDENCE),
         "status": "ready",
@@ -181,7 +201,11 @@ def main() -> None:
     catalog = build_catalog()
     (DATA / "catalog.json").write_text(json.dumps(catalog, indent=2), encoding="utf-8")
     archive = write_runtime_zip()
-    print(f"Exported {len(catalog['models'])} models and {len(catalog['datasets'])} datasets")
+    print(
+        f"Exported {len(catalog['models'])} models, "
+        f"{catalog['runtime']['native_reference_models']} native references, "
+        f"and {len(catalog['datasets'])} datasets"
+    )
     print(f"Runtime: {archive}")
 
 
