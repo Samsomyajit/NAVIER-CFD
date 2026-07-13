@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="NAVIER-CFD: a CFD-first platform for neural PDE solvers, datasets, benchmarking, and agentic model recommendation.">
-  <title>NAVIER-CFD | Neural and Agentic CFD Platform</title>
+  <meta name="description" content="NAVIER-CFD: dataset-configured native neural operators, physics-informed models, CFD datasets, training, benchmarks, and evidence-aware recommendation.">
+  <title>NAVIER-CFD | Dataset-configured Neural CFD Platform</title>
   <link rel="icon" href="./assets/navier-cfd-icon.svg">
   <link rel="stylesheet" href="./assets/site.css">
 </head>
@@ -13,7 +13,7 @@
   <div class="container nav">
     <a class="brand" href="./"><img src="./assets/navier-cfd-icon.svg" alt="">NAVIER-CFD</a>
     <nav class="nav-links">
-      <a href="#platform">Platform</a><a href="#workflow">Workflow</a>
+      <a href="#native-models">Native models</a><a href="#dataset-api">Dataset API</a><a href="#workflow">Workflow</a>
       <a href="./docs/">Documentation</a><a class="button" href="./recommender/">Open recommender</a>
     </nav>
   </div>
@@ -21,41 +21,135 @@
 <main>
   <section class="container hero">
     <div>
-      <span class="eyebrow">CFD-first scientific machine learning</span>
-      <h1>One interface for neural CFD models, data, and verification.</h1>
-      <p class="lead">NAVIER-CFD connects benchmark datasets, 55 neural-numerical model families, explainable task matching, Hugging Face access, and CFD-aware validation in a reproducible platform.</p>
+      <span class="eyebrow">NAVIER-CFD 0.5 · executable scientific ML</span>
+      <h1>Pass the dataset. Import the model. Run the CFD experiment.</h1>
+      <p class="lead">NAVIER-CFD now provides 39 executable native reference models across neural operators, transformer and graph learning, and physics-informed ML—configured automatically for 11 registered CFD/PDE datasets.</p>
       <div class="hero-actions">
-        <a class="button" href="./recommender/">Try the model recommender</a>
-        <a class="button secondary" href="./docs/">Read the documentation</a>
+        <a class="button" href="#dataset-api">See the Python API</a>
+        <a class="button secondary" href="./recommender/">Try the recommender</a>
         <a class="button ghost" href="https://github.com/Samsomyajit/NAVIER-CFD">View GitHub</a>
       </div>
-      <div class="badges"><span class="badge">55 models</span><span class="badge">11 datasets</span><span class="badge">Python ≥ 3.10</span><span class="badge">Apache 2.0</span><span class="badge">Hugging Face</span></div>
+      <div class="badges">
+        <span class="badge">39 native reference models</span>
+        <span class="badge">55 catalog models</span>
+        <span class="badge">11 dataset profiles</span>
+        <span class="badge">PyTorch training</span>
+        <span class="badge">Apache 2.0</span>
+      </div>
     </div>
     <div><img class="hero-logo" src="./assets/navier-cfd-logo.svg" alt="NAVIER-CFD logo combining fluid streamlines, a neural mesh, and the letter N"></div>
   </section>
 
-  <section id="platform" class="section alt">
+  <section id="dataset-api" class="section alt">
+    <div class="container two-column">
+      <div>
+        <div class="kicker">Dataset-aware import</div>
+        <h2>The dataset determines the model configuration.</h2>
+        <p class="lead">The loader resolves dimension, input and output channels, coordinate size, mesh representation, spectral modes, hidden width, attention mode, and forward dispatch from the dataset profile. A real sample overrides default assumptions.</p>
+        <div class="badges">
+          <span class="badge">PDEBench</span><span class="badge">CFDBench</span><span class="badge">RealPDEBench</span>
+          <span class="badge">The Well</span><span class="badge">AirfRANS</span><span class="badge">DrivAerML</span>
+          <span class="badge">ScalarFlow</span><span class="badge">EAGLE</span>
+        </div>
+      </div>
+      <pre class="codebox code-large"><code>from navier_cfd import load_model
+
+# Structured 2D CFD
+fno = load_model(
+    "fno",
+    dataset="cfdbench",
+)
+
+# Point-cloud geometry CFD
+transolver = load_model(
+    "transolver",
+    dataset="airfrans",
+)
+
+# Actual sample wins over defaults
+pibert, plan = load_model(
+    "pibert",
+    dataset="realpdebench",
+    sample=sample,
+    return_plan=True,
+)</code></pre>
+    </div>
+  </section>
+
+  <section id="native-models" class="section">
     <div class="container">
-      <div class="section-head"><div class="kicker">Platform scope</div><h2>Designed around CFD decisions, not only architectures.</h2><p class="lead">Every recommendation states why a model fits, where evidence is weak, and which benchmark should test the claim.</p></div>
-      <div class="grid">
-        <article class="card"><strong class="metric">55</strong><h3>Model families</h3><p>Surrogates, acceleration frameworks, PINNs, neural operators, geometry models, foundation models, generative methods, and particle approaches.</p></article>
-        <article class="card"><strong class="metric">11</strong><h3>Benchmark datasets</h3><p>PDEBench, CFDBench, RealPDEBench, AirfRANS, DrivAer, The Well, APEBench, ScalarFlow, EAGLE, and more.</p></article>
-        <article class="card"><strong class="metric">2-stage</strong><h3>Explainable ranking</h3><p>Hard compatibility screening followed by transparent scoring for task, physics, transfer, rollout, conservation, UQ, and memory.</p></article>
+      <div class="section-head">
+        <div class="kicker">Native model coverage</div>
+        <h2>Neural operators, deep learning, and physics-informed ML under one API.</h2>
+        <p class="lead">Every native reference model is executable, trainable, shape-tested, backward-tested, and connected to the same dataset, trainer, checkpoint, and metric layers.</p>
+      </div>
+      <div class="grid model-grid">
+        <article class="card">
+          <strong class="metric">21</strong>
+          <h3>Operator-learning models</h3>
+          <p>DeepONet, MIONet, Fourier-DeepONet, FNO, PINO, Geo-FNO, GINO, U-FNO, F-FNO, U-NO, LSM, GNOT, Galerkin Transformer, MWT, FactFormer, ONO, Transolver, Laplace NO, State-Space NO, and related variants.</p>
+        </article>
+        <article class="card">
+          <strong class="metric">9</strong>
+          <h3>Physics-informed models</h3>
+          <p>PINN, NSFnets, PINNsFormer, PINO, PIBERT, PI-MFM, RiemannONet, and DeepM&amp;Mnet-style multi-physics models.</p>
+        </article>
+        <article class="card">
+          <strong class="metric">10</strong>
+          <h3>Geometry and foundation-style models</h3>
+          <p>MeshGraphNets, UPT, DPOT, Poseidon, PROSE-FD, BCAT, PDEformer-1, P3D, AeroTransformer, Tadpole, and ReViT.</p>
+        </article>
+      </div>
+      <div class="notice">
+        <strong>Scientific scope:</strong> native reference implementations are working NAVIER-CFD architectures, not automatic claims of bit-for-bit reproduction of every author repository, unpublished preprocessing step, private checkpoint, or paper table.
       </div>
     </div>
   </section>
 
-  <section id="workflow" class="section">
+  <section id="workflow" class="section alt">
     <div class="container">
-      <div class="section-head"><div class="kicker">Scientific workflow</div><h2>From problem definition to numerical accountability.</h2></div>
+      <div class="section-head"><div class="kicker">Unified experiment system</div><h2>One reproducible path from raw CFD data to tested model results.</h2></div>
+      <div class="workflow-strip">
+        <span>Raw dataset</span><b>→</b><span>Dataset adapter</span><b>→</b><span>Model configuration</span><b>→</b><span>Native model</span><b>→</b><span>Trainer</span><b>→</b><span>Checkpoint</span><b>→</b><span>CFD metrics</span>
+      </div>
       <img class="pipeline" src="./docs/assets/navier_pipeline.svg" alt="NAVIER-CFD scientific pipeline">
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><div class="kicker">Experiment API</div><h2>Train and evaluate through one interface.</h2></div>
+      <pre class="codebox code-large"><code>from navier_cfd import Experiment, TaskSpec, TrainerConfig
+
+experiment = Experiment(
+    dataset_id="pdebench",
+    model_id="pino",
+    task=TaskSpec(
+        problem="navier_stokes",
+        task_type="forecasting",
+        dimension=2,
+        mesh_type="structured",
+        temporal_mode="autoregressive",
+        geometry_mode="fixed",
+        physics=("incompressible_navier_stokes",),
+    ),
+    trainer_config=TrainerConfig(
+        epochs=100,
+        optimizer="adamw",
+        mixed_precision=True,
+    ),
+)
+
+result = experiment.run(raw_dataset)
+print(result.metrics)
+print(result.build_plan)</code></pre>
     </div>
   </section>
 
   <section class="section alt">
     <div class="container callout">
-      <div><h2 style="margin:0;color:#fff">Match a CFD task to models and datasets.</h2><p>The browser tool runs locally, stores no data, and mirrors the Python recommender logic.</p></div>
-      <a class="button secondary" href="./recommender/">Launch tool</a>
+      <div><h2 style="margin:0;color:#fff">Choose the right model before spending compute.</h2><p>Use the evidence-aware browser recommender, then import the selected native model with the target dataset as an argument.</p></div>
+      <a class="button secondary" href="./recommender/">Launch recommender</a>
     </div>
   </section>
 </main>
