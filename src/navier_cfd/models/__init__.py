@@ -6,6 +6,7 @@ from .config import (
     translate_model_config,
 )
 from .native import MissingTorchDependency, NATIVE_BUILDERS, build_deeponet, build_fno, build_pinn
+from .native_extended import EXTENDED_BUILDERS
 from .native_latent import LATENT_BUILDERS, build_latent_reference
 from .native_suite import NATIVE_REFERENCE_FAMILIES, REFERENCE_BUILDERS, build_native_reference
 from .pibert import PIBERT, build_pibert
@@ -13,6 +14,7 @@ from .pibert import PIBERT, build_pibert
 NATIVE_BUILDERS.setdefault("pibert", build_pibert)
 NATIVE_BUILDERS.update({model_id: builder for model_id, builder in REFERENCE_BUILDERS.items() if model_id not in NATIVE_BUILDERS})
 NATIVE_BUILDERS.update(LATENT_BUILDERS)
+NATIVE_BUILDERS.update(EXTENDED_BUILDERS)
 
 from .hub import (  # noqa: E402
     ExternalInstallDisabledError,
@@ -36,6 +38,7 @@ __all__ = [
     "AdapterConformanceReport",
     "DATASET_MODEL_DEFAULTS",
     "DatasetModelDefaults",
+    "EXTENDED_BUILDERS",
     "ExternalInstallDisabledError",
     "ExternalModelAdapter",
     "ExternalModelRecipe",
