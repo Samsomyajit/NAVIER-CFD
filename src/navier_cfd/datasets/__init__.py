@@ -8,12 +8,11 @@ from .core import (
     DatasetAdapterError,
     DatasetProfile,
     DatasetSubset,
-    collate_cfd_samples,
-    make_dataloaders,
     split_dataset,
     split_indices,
 )
 from .huggingface import HuggingFaceDatasetManager
+from .loaders import collate_cfd_samples, make_dataloaders
 
 __all__ = [
     "AdaptedDataset",
