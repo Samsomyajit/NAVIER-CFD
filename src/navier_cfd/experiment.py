@@ -6,7 +6,7 @@ from typing import Any, Mapping
 
 from .catalogs import Catalog
 from .datasets import AdaptedDataset, AdapterRegistry, HuggingFaceDatasetManager, make_dataloaders
-from .models import ModelHub, translate_model_config
+from .models import load_model
 from .specs import TaskSpec
 from .training import CFDTrainer, TrainerConfig, TrainingResult
 
@@ -23,11 +23,7 @@ class ExperimentResult:
 
 @dataclass
 class Experiment:
-    """High-level model–dataset experiment orchestration.
-
-    Resolved adapters, model dimensions, split seed, and training settings remain
-    explicit and are saved in a reproducible manifest.
-    """
+    """High-level dataset-aware model training and evaluation orchestration."""
 
     dataset_id: str
     model_id: str
@@ -45,16 +41,13 @@ class Experiment:
         if len(dataset) < 1:
             raise ValueError("The dataset is empty")
         sample = dataset[0]
-        plan = translate_model_config(
+        model, plan = load_model(
             self.model_id,
-            sample,
+            dataset=self.dataset_id,
+            sample=sample,
             task=self.task,
             overrides=self.model_overrides,
-        )
-        model = ModelHub().load(
-            self.model_id,
-            task=self.task,
-            **dict(plan.builder_kwargs),
+            return_plan=True,
         )
         loaders = make_dataloaders(dataset, batch_size=self.batch_size, seed=self.split_seed)
         return model, loaders, plan
@@ -78,12 +71,7 @@ class Experiment:
             dataset_id=self.dataset_id,
             training=training,
             metrics=metrics,
-            build_plan={
-                "model_id": plan.model_id,
-                "builder_kwargs": dict(plan.builder_kwargs),
-                "input_mode": plan.input_mode,
-                "notes": list(plan.notes),
-            },
+            build_plan=plan.to_dict(),
             manifest_path=manifest_path,
         )
 
@@ -114,16 +102,12 @@ class Experiment:
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / "experiment-manifest.json"
         payload = {
-            "schema": "navier-cfd.experiment/v1",
+            "schema": "navier-cfd.experiment/v2",
             "dataset_id": self.dataset_id,
             "model_id": self.model_id,
             "task": self.task.to_dict(),
             "adapter_options": dict(self.adapter_options),
-            "model_plan": {
-                "builder_kwargs": dict(plan.builder_kwargs),
-                "input_mode": plan.input_mode,
-                "notes": list(plan.notes),
-            },
+            "model_plan": plan.to_dict(),
             "trainer": asdict(self.trainer_config),
             "split_seed": self.split_seed,
             "training": {
