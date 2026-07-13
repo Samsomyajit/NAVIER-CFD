@@ -53,6 +53,10 @@ addopts = "-q"
 line-length = 120
 target-version = "py310"
 
+[tool.ruff.lint.per-file-ignores]
+"src/navier_cfd/models/native_suite.py" = ["F401"]
+"tests/test_native_suite.py" = ["F401"]
+
 [tool.mypy]
 python_version = "3.10"
 warn_return_any = true
