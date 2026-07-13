@@ -6,6 +6,7 @@ repo_name: Samsomyajit/NAVIER-CFD
 
 theme:
   name: material
+  language: en
   logo: assets/navier-cfd-icon.svg
   favicon: assets/navier-cfd-icon.svg
   features:
@@ -24,6 +25,53 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+
+plugins:
+  - search:
+      lang:
+        - en
+        - zh
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: zh
+          name: 简体中文
+          build: true
+          site_name: NAVIER-CFD 中文文档
+          nav_translations:
+            Home: 首页
+            Experiments: 实验
+            Unified Pipeline and PIBERT: 统一流程与 PIBERT
+            Models: 模型
+            Dataset-configured Native Suite: 数据集配置原生模型套件
+            Executable Model Hub: 可执行模型中心
+            Model Catalog: 模型目录
+            Model Atlas: 模型图谱
+            Recommender: 推荐系统
+            Overview: 概览
+            Evidence Scoring: 证据评分
+            Platform: 平台
+            Architecture: 架构
+            Dataset Catalog: 数据集目录
+            Agentic AI: 智能体 AI
+            Roadmap: 路线图
+            Dataset Cards: 数据集卡片
+            Case Studies: 案例研究
+            PDEBench Navier–Stokes: PDEBench Navier–Stokes
+            CFDBench Cavity: CFDBench 方腔流
+            CFDBench Cylinder: CFDBench 圆柱绕流
+            RealPDEBench Cylinder: RealPDEBench 圆柱案例
+            RealPDEBench FSI: RealPDEBench 流固耦合
+            AirfRANS Geometry: AirfRANS 几何泛化
+            Automotive 3D: 汽车三维空气动力学
+            Hybrid Acceleration: 混合加速
 
 markdown_extensions:
   - admonition
