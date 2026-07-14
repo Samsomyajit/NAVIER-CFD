@@ -92,7 +92,7 @@ def load_cfd_dataset(
             cache_dir=local_path,
             **kwargs,
         )
-    if spec.provider == "apebench":
+    if spec.id == "apebench":
         if not configuration:
             raise ValueError(
                 "APEBench requires a scenario configuration, for example configuration='Advection'."
@@ -111,9 +111,9 @@ def load_cfd_dataset(
             split=split,
             **kwargs,
         )
-    if spec.provider in LOCAL_DATASET_CONTRACTS:
+    if spec.id in LOCAL_DATASET_CONTRACTS:
         if local_path is None:
-            contract = LOCAL_DATASET_CONTRACTS[spec.provider]
+            contract = LOCAL_DATASET_CONTRACTS[spec.id]
             raise ValueError(
                 f"{spec.name} requires local_path pointing to an official local export. "
                 f"Obtain the data from {contract.source_url} and probe it before loading."
@@ -123,7 +123,7 @@ def load_cfd_dataset(
         if not adapt:
             raise ValueError(f"{spec.name} local loading always returns canonical CFDSample objects")
         return LocalScientificDatasetManager().load(
-            spec.provider,
+            spec.id,
             local_path=local_path,
             configuration=configuration,
             split=split,
