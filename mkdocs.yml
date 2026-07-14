@@ -54,6 +54,10 @@ plugins:
             Executable Model Hub: 可执行模型中心
             Model Catalog: 模型目录
             Model Atlas: 模型图谱
+            Evaluation Metrics: 评价指标
+            Metrics Overview: 指标概览
+            Data-oriented: 数据导向
+            Physics-oriented: 物理导向
             Recommender: 推荐系统
             Overview: 概览
             Evidence Scoring: 证据评分
@@ -93,6 +97,10 @@ nav:
       - Executable Model Hub: MODEL_HUB.md
       - Model Catalog: MODEL_CATALOG.md
       - Model Atlas: models/README.md
+  - Evaluation Metrics:
+      - Metrics Overview: METRICS.md
+      - Data-oriented: METRICS_DATA.md
+      - Physics-oriented: METRICS_PHYSICS.md
   - Recommender:
       - Overview: RECOMMENDER.md
       - Evidence Scoring: EVIDENCE_SCORING.md
