@@ -10,7 +10,6 @@ from ..metrics import (
     divergence_rms as _divergence_rms,
     kinetic_energy_relative_error,
     mae as _mae,
-    nrmse,
     r2 as _r2,
     relative_l2 as _relative_l2,
     rmse as _rmse,
