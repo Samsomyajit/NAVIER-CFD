@@ -36,6 +36,8 @@ def _finite_sample(sample: Any) -> dict[str, Any]:
         else list(np.asarray(sample.coordinates).shape),
         "provider": sample.metadata.get("provider"),
         "source_file": sample.metadata.get("source_file"),
+        "input_fields": list(sample.metadata.get("input_fields", ())),
+        "target_fields": list(sample.metadata.get("target_fields", ())),
     }
 
 
@@ -58,7 +60,9 @@ def validate_drivaerml(output_dir: Path) -> dict[str, Any]:
     manager = OfficialDatasetManager()
     repo = manager.source("drivaerml").repository
     assert repo is not None
-    requested = "run_1/boundary_1.vtp"
+    # A full boundary file is about 660 MB. This publisher-hosted CFD slice is small enough
+    # for pull-request CI while retaining real flow-field variables in VTP format.
+    requested = "run_1/slices/xNormal_m15000.vtp"
     revision = "main"
     resolved_url = f"https://huggingface.co/datasets/{repo}/resolve/{revision}/{requested}"
     request = Request(
@@ -73,7 +77,7 @@ def validate_drivaerml(output_dir: Path) -> dict[str, Any]:
         size_text = linked_size or content_length
         size = None if size_text is None else int(size_text)
         status = getattr(response, "status", 200)
-    limit = 300 * 1024**2
+    limit = 50 * 1024**2
     if status >= 400:
         raise RuntimeError(f"Official DrivAerML smoke file returned HTTP {status}")
     if size is not None and size > limit:
