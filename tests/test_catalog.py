@@ -6,7 +6,9 @@ def test_builtin_catalog_loads():
     assert len(catalog.models) >= 50
     assert len(catalog.datasets) >= 10
     assert catalog.model("pibert").name == "PIBERT"
-    assert catalog.dataset("cfdbench").hf_repo_id == "chen-yingfa/CFDBench"
+    cfdbench = catalog.dataset("cfdbench")
+    assert cfdbench.provider == "cfdbench"
+    assert cfdbench.hf_repo_id == "chen-yingfa/CFDBench-raw"
 
 
 def test_model_ids_are_unique():
