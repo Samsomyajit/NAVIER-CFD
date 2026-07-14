@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 from typing import Any
+from urllib.request import Request, urlopen
 
 import numpy as np
 
@@ -58,15 +59,31 @@ def validate_drivaerml(output_dir: Path) -> dict[str, Any]:
     repo = manager.source("drivaerml").repository
     assert repo is not None
     requested = "run_1/boundary_1.vtp"
-    entries = manager.huggingface.list_file_entries(repo)
-    matching = [entry for entry in entries if entry["path"] == requested]
-    if not matching:
-        raise RuntimeError(f"Official DrivAerML file not found: {requested}")
-    size = matching[0].get("size")
+    revision = "main"
+    resolved_url = f"https://huggingface.co/datasets/{repo}/resolve/{revision}/{requested}"
+    request = Request(
+        resolved_url,
+        method="HEAD",
+        headers={"User-Agent": "navier-cfd-upstream-validation/0.8"},
+    )
+    with urlopen(request, timeout=60.0) as response:
+        final_url = response.geturl()
+        content_length = response.headers.get("Content-Length")
+        linked_size = response.headers.get("X-Linked-Size")
+        size_text = linked_size or content_length
+        size = None if size_text is None else int(size_text)
+        status = getattr(response, "status", 200)
     limit = 300 * 1024**2
-    if size is not None and int(size) > limit:
+    if status >= 400:
+        raise RuntimeError(f"Official DrivAerML smoke file returned HTTP {status}")
+    if size is not None and size > limit:
         raise RuntimeError(f"Official DrivAerML smoke file is too large for CI: {size} bytes")
-    result = manager.download("drivaerml", output_dir, artifacts=[requested])
+    result = manager.download(
+        "drivaerml",
+        output_dir,
+        artifacts=[requested],
+        revision=revision,
+    )
     dataset = load_cfd_dataset(
         "drivaerml",
         local_path=result.files[0],
@@ -79,6 +96,8 @@ def validate_drivaerml(output_dir: Path) -> dict[str, Any]:
         "grade": "real_official_file_loaded",
         "dataset": "drivaerml",
         "upstream_file": requested,
+        "upstream_url": resolved_url,
+        "resolved_url": final_url,
         "upstream_size": size,
         "download": result.to_dict(),
         "sample": _finite_sample(sample),
