@@ -8,6 +8,7 @@ from .catalogs import Catalog
 from .datasets import (
     AdaptedDataset,
     AdapterRegistry,
+    CFDSample,
     HuggingFaceDatasetManager,
     load_cfd_dataset,
     make_dataloaders,
@@ -47,8 +48,11 @@ class Experiment:
     output_dir: str | None = None
 
     def _adapt_dataset(self, raw_dataset: Any) -> Any:
-        if self.dataset_id == "the_well" and hasattr(raw_dataset, "adapter"):
+        if hasattr(raw_dataset, "adapter"):
             return raw_dataset
+        if hasattr(raw_dataset, "__len__") and hasattr(raw_dataset, "__getitem__"):
+            if len(raw_dataset) > 0 and isinstance(raw_dataset[0], CFDSample):
+                return raw_dataset
         adapter = AdapterRegistry().adapter(self.dataset_id, **dict(self.adapter_options))
         return AdaptedDataset(raw_dataset, adapter)
 
@@ -58,6 +62,16 @@ class Experiment:
             return False
         keys = set(raw_dataset)
         return "train" in keys and "test" in keys and bool({"validation", "valid"} & keys)
+
+    @staticmethod
+    def _access_plan(raw_dataset: Any) -> Any:
+        if isinstance(raw_dataset, Mapping):
+            plans = {
+                name: getattr(dataset, "access_plan", None)
+                for name, dataset in raw_dataset.items()
+            }
+            return {name: plan for name, plan in plans.items() if plan is not None} or None
+        return getattr(raw_dataset, "access_plan", None)
 
     def prepare(self, raw_dataset: Any) -> tuple[Any, dict[str, Any], Any, str]:
         if self._is_split_mapping(raw_dataset):
@@ -74,7 +88,7 @@ class Experiment:
                 batch_size=self.batch_size,
                 seed=self.split_seed,
             )
-            split_policy = "official"
+            split_policy = "provider_declared"
         else:
             sample_dataset = self._adapt_dataset(raw_dataset)
             loaders = make_dataloaders(
@@ -105,6 +119,7 @@ class Experiment:
         metric_suites: str | Sequence[str] | None = None,
         metric_context: MetricContext | None = None,
     ) -> ExperimentResult:
+        dataset_access = self._access_plan(raw_dataset)
         model, loaders, plan, split_policy = self.prepare(raw_dataset)
         config = self.trainer_config
         if self.output_dir and not config.checkpoint_dir:
@@ -133,6 +148,7 @@ class Experiment:
                 split_policy=split_policy,
                 metric_suites=selected_suites,
                 metric_context=selected_context,
+                dataset_access=dataset_access,
             )
             if self.output_dir
             else None
@@ -152,7 +168,7 @@ class Experiment:
         split: str = "train",
         streaming: bool = False,
         local_path: str | None = None,
-        token: str | None = None,
+        token: str | bool | None = None,
         adapt: bool = True,
         **kwargs: Any,
     ) -> Any:
@@ -172,7 +188,7 @@ class Experiment:
         *,
         streaming: bool = False,
         local_path: str | None = None,
-        token: str | None = None,
+        token: str | bool | None = None,
         adapt: bool = True,
         **kwargs: Any,
     ) -> dict[str, Any]:
@@ -206,10 +222,15 @@ class Experiment:
         config: str | None = None,
         streaming: bool = False,
         revision: str | None = None,
-        token: str | None = None,
+        token: str | bool | None = None,
         **kwargs: Any,
     ) -> Any:
         dataset_spec = Catalog.load_builtin().dataset(self.dataset_id)
+        if dataset_spec.provider != "huggingface":
+            raise ValueError(
+                f"Dataset {self.dataset_id!r} uses provider {dataset_spec.provider!r}; "
+                "call load_dataset() so NAVIER-CFD can route it correctly."
+            )
         return HuggingFaceDatasetManager(token=token).load(
             dataset_spec,
             split=split,
@@ -228,6 +249,7 @@ class Experiment:
         split_policy: str,
         metric_suites: str | Sequence[str],
         metric_context: MetricContext,
+        dataset_access: Any = None,
     ) -> str:
         import json
 
@@ -236,10 +258,11 @@ class Experiment:
         path = directory / "experiment-manifest.json"
         suite_names = [metric_suites] if isinstance(metric_suites, str) else list(metric_suites)
         payload = {
-            "schema": "navier-cfd.experiment/v3",
+            "schema": "navier-cfd.experiment/v4",
             "dataset_id": self.dataset_id,
             "dataset_configuration": self.dataset_configuration,
             "dataset_provider": Catalog.load_builtin().dataset(self.dataset_id).provider,
+            "dataset_access": dataset_access,
             "split_policy": split_policy,
             "model_id": self.model_id,
             "task": self.task.to_dict(),
@@ -258,6 +281,3 @@ class Experiment:
         }
         path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
         return str(path)
-
-
-__all__ = ["Experiment", "ExperimentResult"]

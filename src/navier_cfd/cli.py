@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections import Counter
 import json
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -12,7 +11,13 @@ from rich.table import Table
 
 from .agents import AgentOrchestrator
 from .catalogs import Catalog
-from .datasets import HuggingFaceDatasetManager, TheWellDatasetManager
+from .datasets import (
+    CFDBenchDatasetManager,
+    HuggingFaceDatasetManager,
+    PDEBenchDatasetManager,
+    RealPDEBenchDatasetManager,
+    TheWellDatasetManager,
+)
 from .evidence import ALGORITHM_VERSION, load_builtin_evidence
 from .models import ModelHub, ModelHubError
 from .recommender import recommend_models
@@ -20,7 +25,7 @@ from .specs import TaskSpec
 
 app = typer.Typer(help="NAVIER-CFD: neural and agentic CFD datasets, models, benchmarks, recommendation, and planning.")
 models_app = typer.Typer(help="Browse and load model integrations.")
-datasets_app = typer.Typer(help="Discover and download datasets through registered providers.")
+datasets_app = typer.Typer(help="Discover, inspect, and download datasets through registered providers.")
 evidence_app = typer.Typer(help="Inspect paper-level benchmark evidence used by the recommender.")
 agent_app = typer.Typer(help="Agentic experiment planning.")
 app.add_typer(models_app, name="models")
@@ -133,9 +138,19 @@ def datasets_info(dataset_id: str) -> None:
     console.print_json(json.dumps(dataset.to_dict()))
 
 
+@datasets_app.command("auth-status")
+def datasets_auth_status(
+    endpoint: Optional[str] = typer.Option(None, help="Optional Hugging Face endpoint or mirror."),
+) -> None:
+    """Show credential source without printing the token."""
+
+    manager = HuggingFaceDatasetManager(endpoint=endpoint)
+    console.print_json(json.dumps(manager.auth_status(verify=True)))
+
+
 @datasets_app.command("discover")
 def datasets_discover(query: str, limit: int = 20, endpoint: Optional[str] = None) -> None:
-    manager = HuggingFaceDatasetManager(token=os.getenv("HF_TOKEN"), endpoint=endpoint)
+    manager = HuggingFaceDatasetManager(endpoint=endpoint)
     table = Table(title=f"Hugging Face dataset search: {query}")
     table.add_column("Repository")
     table.add_column("Downloads")
@@ -145,10 +160,47 @@ def datasets_discover(query: str, limit: int = 20, endpoint: Optional[str] = Non
     console.print(table)
 
 
+@datasets_app.command("probe")
+def datasets_probe(
+    dataset_id: str,
+    configuration: Optional[str] = typer.Option(None, help="Provider configuration/scenario."),
+    revision: Optional[str] = typer.Option(None, help="Hub revision to inspect."),
+    endpoint: Optional[str] = typer.Option(None, help="Optional Hugging Face endpoint or mirror."),
+) -> None:
+    """Classify access, authentication, and storage layout before downloading data."""
+
+    spec = Catalog.load_builtin().dataset(dataset_id)
+    if spec.provider == "pdebench":
+        if not configuration:
+            raise typer.BadParameter("PDEBench requires --configuration")
+        probe = PDEBenchDatasetManager(endpoint=endpoint).probe(configuration, revision=revision)
+    elif spec.provider == "cfdbench":
+        probe = CFDBenchDatasetManager(endpoint=endpoint).probe(revision=revision)
+    elif spec.provider == "realpdebench":
+        probe = RealPDEBenchDatasetManager(endpoint=endpoint).probe(revision=revision)
+    elif spec.provider == "huggingface":
+        probe = HuggingFaceDatasetManager(endpoint=endpoint).probe(spec, revision=revision)
+    elif spec.provider == "the_well":
+        console.print_json(
+            json.dumps(
+                {
+                    "provider": "the_well",
+                    "access_backend": spec.access_backend,
+                    "access_base_path": spec.access_base_path,
+                    "configuration_required": True,
+                    "available_configurations": len(TheWellDatasetManager().list_datasets()),
+                }
+            )
+        )
+        return
+    else:
+        console.print_json(json.dumps(spec.to_dict()))
+        return
+    console.print_json(json.dumps(probe.to_dict()))
+
+
 @datasets_app.command("well-list")
 def datasets_well_list() -> None:
-    """List available The Well provider configurations."""
-
     names = TheWellDatasetManager().list_datasets()
     table = Table(title=f"The Well configurations ({len(names)})")
     table.add_column("well_dataset_name")
@@ -160,21 +212,26 @@ def datasets_well_list() -> None:
 @datasets_app.command("download")
 def datasets_download(
     dataset_id: str,
-    local_dir: Path = typer.Option(..., help="Destination base directory."),
+    local_dir: Path = typer.Option(..., help="Destination/cache directory."),
     configuration: Optional[str] = typer.Option(
         None,
         "--configuration",
         "--well-dataset-name",
-        help="Provider-native configuration; required for The Well.",
+        help="Provider-native configuration or scenario.",
     ),
-    split: Optional[str] = typer.Option(None, help="Provider split, such as train, valid, or test."),
+    split: Optional[str] = typer.Option(None, help="Provider split."),
     revision: Optional[str] = None,
-    pattern: list[str] = typer.Option(None, "--pattern", help="Repeatable HF allow pattern."),
+    pattern: list[str] = typer.Option(None, "--pattern", help="Repeatable file allow pattern."),
     endpoint: Optional[str] = None,
+    case: Optional[str] = typer.Option(None, help="CFDBench case number/name."),
+    data_type: str = typer.Option("real", help="RealPDEBench data type: real or numerical."),
+    max_files: int = typer.Option(1, min=1, help="Maximum Arrow shards for subset mode."),
+    max_file_size_gb: Optional[float] = typer.Option(None, help="Reject files above this size."),
     first_only: bool = typer.Option(False, help="The Well: download only the first data file."),
     parallel: bool = typer.Option(False, help="The Well: use parallel curl downloads."),
 ) -> None:
     dataset = Catalog.load_builtin().dataset(dataset_id)
+    selected_split = split or "train"
     if dataset.provider == "the_well":
         if not configuration:
             console.print("[red]The Well requires --configuration <well_dataset_name>.[/red]")
@@ -186,22 +243,63 @@ def datasets_download(
             first_only=first_only,
             parallel=parallel,
         )
-        console.print_json(
-            json.dumps(
-                {
-                    "provider": "the_well",
-                    "dataset_name": configuration,
-                    "split": split,
-                    "local_path": str(local_dir),
-                }
-            )
+        result = {
+            "provider": "the_well",
+            "dataset_name": configuration,
+            "split": split,
+            "local_path": str(local_dir),
+        }
+    elif dataset.provider == "pdebench":
+        if not configuration:
+            raise typer.BadParameter("PDEBench requires --configuration")
+        loaded = PDEBenchDatasetManager(endpoint=endpoint).load(
+            configuration,
+            split=selected_split,
+            revision=revision,
+            file_pattern=pattern[0] if pattern else None,
+            cache_dir=local_dir,
+            max_file_size_gb=max_file_size_gb,
+            max_windows=1,
         )
-        return
-    if split is not None:
-        console.print("[yellow]--split is provider-specific and ignored for generic HF snapshots.[/yellow]")
-    manager = HuggingFaceDatasetManager(token=os.getenv("HF_TOKEN"), endpoint=endpoint)
-    result = manager.download(dataset, local_dir, revision=revision, allow_patterns=pattern or None)
-    console.print_json(json.dumps(result.__dict__))
+        result = loaded.access_plan
+    elif dataset.provider == "cfdbench":
+        if not configuration:
+            raise typer.BadParameter("CFDBench requires --configuration")
+        loaded = CFDBenchDatasetManager(endpoint=endpoint).load(
+            configuration,
+            split=selected_split,
+            revision=revision,
+            case=case,
+            file_pattern=pattern[0] if pattern else None,
+            cache_dir=local_dir,
+            max_file_size_gb=max_file_size_gb or 2.0,
+            max_samples=2,
+        )
+        result = loaded.access_plan
+    elif dataset.provider == "realpdebench":
+        if not configuration:
+            raise typer.BadParameter("RealPDEBench requires --configuration")
+        loaded = RealPDEBenchDatasetManager(endpoint=endpoint).load(
+            configuration,
+            split=selected_split,
+            data_type=data_type,
+            revision=revision,
+            cache_dir=local_dir,
+            max_arrow_files=max_files,
+            max_file_size_gb=max_file_size_gb or 2.5,
+            max_windows=1,
+        )
+        result = loaded.access_plan
+    else:
+        manager = HuggingFaceDatasetManager(endpoint=endpoint)
+        downloaded = manager.download(
+            dataset,
+            local_dir,
+            revision=revision,
+            allow_patterns=pattern or None,
+        )
+        result = downloaded.__dict__
+    console.print_json(json.dumps(result))
 
 
 @evidence_app.command("list")
@@ -214,7 +312,6 @@ def evidence_list(
         records = [record for record in records if record.model_id == model_id]
     if metric_group:
         records = [record for record in records if record.metric_group == metric_group]
-
     table = Table(title=f"Paper evidence ({len(records)}) · algorithm {ALGORITHM_VERSION}")
     table.add_column("Model")
     table.add_column("Benchmark")
@@ -240,7 +337,6 @@ def evidence_coverage() -> None:
     models = Catalog.load_builtin().models
     counts = Counter(record.model_id for record in records)
     groups = Counter(record.metric_group for record in records)
-
     table = Table(title=f"Evidence coverage · {len(records)} records")
     table.add_column("Model")
     table.add_column("Registered records", justify="right")

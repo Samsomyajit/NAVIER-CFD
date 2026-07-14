@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable, Mapping, Sequence
 
-from .native import MissingTorchDependency, build_deeponet, build_fno
+from .native import MissingTorchDependency, build_fno
 
 
 def _require_torch() -> tuple[Any, Any, Any]:

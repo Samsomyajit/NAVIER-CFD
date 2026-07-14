@@ -7,6 +7,7 @@ from typing import Iterable
 
 from .specs import DatasetSpec, ModelSpec
 
+
 _MODEL_ROWS = [
     ("pinn", "Physics-Informed Neural Network", ("physics_informed", "general_pde_solver", "inverse")),
     ("nsfnets", "NSFnets", ("physics_informed", "specialized")),
@@ -14,11 +15,7 @@ _MODEL_ROWS = [
     ("deeponet", "DeepONet", ("surrogate", "general_pde_solver", "physics_informed")),
     ("mionet", "MIONet", ("surrogate", "general_pde_solver")),
     ("fourier_deeponet", "Fourier-DeepONet", ("surrogate", "specialized")),
-    (
-        "nested_fourier_deeponet",
-        "Nested Fourier-DeepONet",
-        ("surrogate", "specialized", "particle_multiphase"),
-    ),
+    ("nested_fourier_deeponet", "Nested Fourier-DeepONet", ("surrogate", "specialized", "particle_multiphase")),
     ("fourier_mionet", "Fourier-MIONet", ("surrogate", "specialized", "particle_multiphase")),
     ("fno", "Fourier Neural Operator", ("surrogate", "general_pde_solver")),
     ("pino", "Physics-Informed Neural Operator", ("physics_informed", "surrogate", "general_pde_solver")),
@@ -149,7 +146,6 @@ def _models() -> list[ModelSpec]:
             mesh_types = ("unstructured", "point_cloud", "structured")
         else:
             mesh_types = ("structured", "meshfree")
-
         result.append(
             ModelSpec(
                 id=model_id,
@@ -190,27 +186,76 @@ def _datasets() -> list[DatasetSpec]:
     common = {
         "tasks": ("surrogate", "benchmark"),
         "physics": ("fluid_dynamics", "general_pde"),
-        "notes": ("Pin dataset revisions and preserve official splits.",),
+        "notes": ("Pin dataset revisions and record provider-specific subset rules.",),
     }
     return [
         DatasetSpec(
-            id="pdebench", name="PDEBench", description="Extensive time-dependent PDE benchmark",
-            dimensions=(1, 2, 3), mesh_types=("structured",), geometry_modes=("fixed",),
-            temporal_modes=("autoregressive",), hf_repo_id="AI4Science-WestlakeU/PDEBench",
-            scenarios=("navier_stokes", "advection", "reaction_diffusion"), official_splits=("train", "validation", "test"),
-            **common,
+            id="pdebench",
+            name="PDEBench",
+            description="Scientific HDF5 provider family for time-dependent PDE benchmarks",
+            dimensions=(1, 2, 3),
+            mesh_types=("structured",),
+            geometry_modes=("fixed",),
+            temporal_modes=("autoregressive",),
+            hf_repo_id=None,
+            scenarios=("burgers", "advection", "navier_stokes", "reaction_diffusion"),
+            provider="pdebench",
+            access_backend="NAVIER-CFD PDEBench HDF5 adapter",
+            access_base_path="hf://datasets/pdebench/<configuration>",
+            requires_configuration=True,
+            source_url="https://huggingface.co/pdebench",
+            license="CC-BY-4.0; verify selected repository card",
+            tasks=common["tasks"],
+            physics=common["physics"],
+            notes=(
+                "PDEBench Hub repositories contain scientific HDF5 files, not a tabular datasets.load_dataset schema.",
+                "Small-compute loading selectively downloads one HDF5 file and splits by trajectory.",
+            ),
         ),
         DatasetSpec(
-            id="cfdbench", name="CFDBench", description="CFD benchmark with boundary, property, and geometry shifts",
-            dimensions=(2,), mesh_types=("structured",), geometry_modes=("fixed", "varying"),
-            temporal_modes=("steady", "autoregressive"), hf_repo_id="chen-yingfa/CFDBench",
-            scenarios=("cavity", "tube", "dam", "cylinder"), **common,
+            id="cfdbench",
+            name="CFDBench",
+            description="Case-archive provider for CFD boundary, property, and geometry shifts",
+            dimensions=(2,),
+            mesh_types=("structured", "point_cloud"),
+            geometry_modes=("fixed", "varying"),
+            temporal_modes=("steady", "autoregressive"),
+            hf_repo_id="chen-yingfa/CFDBench-raw",
+            scenarios=("cavity", "tube", "dam", "cylinder"),
+            provider="cfdbench",
+            access_backend="NAVIER-CFD CFDBench archive adapter",
+            requires_configuration=True,
+            source_url="https://huggingface.co/datasets/chen-yingfa/CFDBench-raw",
+            license="Apache-2.0",
+            tasks=common["tasks"],
+            physics=common["physics"],
+            notes=(
+                "The raw Hub repository stores scenario case ZIP archives; generic datasets.load_dataset is not the execution path.",
+                "NAVIER-CFD downloads one selected case archive and never executes pickle payloads.",
+            ),
         ),
         DatasetSpec(
-            id="realpdebench", name="RealPDEBench", description="Paired real-world and simulated spatiotemporal systems",
-            dimensions=(2,), mesh_types=("structured",), geometry_modes=("fixed", "varying"),
-            temporal_modes=("autoregressive",), hf_repo_id="AI4Science-WestlakeU/RealPDEBench",
-            scenarios=("cylinder", "fsi", "controlled_cylinder", "foil", "combustion"), **common,
+            id="realpdebench",
+            name="RealPDEBench",
+            description="Paired real and simulated trajectories stored as scenario-level Arrow shards",
+            dimensions=(2,),
+            mesh_types=("structured",),
+            geometry_modes=("fixed", "varying"),
+            temporal_modes=("autoregressive",),
+            hf_repo_id="AI4Science-WestlakeU/RealPDEBench",
+            scenarios=("cylinder", "fsi", "controlled_cylinder", "foil", "combustion"),
+            provider="realpdebench",
+            access_backend="NAVIER-CFD RealPDEBench Arrow adapter",
+            requires_configuration=True,
+            official_splits=(),
+            source_url="https://huggingface.co/datasets/AI4Science-WestlakeU/RealPDEBench",
+            license="CC-BY-NC-4.0",
+            tasks=common["tasks"],
+            physics=common["physics"],
+            notes=(
+                "The Hub release uses saved Arrow trajectories and JSON indexes under scenario folders.",
+                "Small-compute mode downloads selected Arrow shards and labels its splits as subset splits, not official full-data splits.",
+            ),
         ),
         DatasetSpec(
             id="airfrans", name="AirfRANS", description="RANS airfoil geometry and operating-condition benchmark",
