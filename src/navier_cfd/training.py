@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Mapping, Sequence
 
 import numpy as np
 
 from .benchmarks.metrics import compute_metric_bundle
 from .checkpoints import CheckpointManager
 from .datasets.core import CFDBatch
+from .metrics import MetricContext, MetricSuite
 from .models.forward import forward_model
 
 
@@ -247,9 +248,20 @@ class CFDTrainer:
         *,
         velocity: bool = False,
         spacing: tuple[float, ...] | None = None,
-    ) -> Mapping[str, float]:
+        metric_suites: str | Sequence[str] | None = None,
+        metric_context: MetricContext | None = None,
+        include_metric_records: bool = False,
+    ) -> Mapping[str, Any]:
         prediction, target = self.predict(loader)
-        return compute_metric_bundle(prediction, target, velocity=velocity, spacing=spacing)
+        if metric_suites is None:
+            return compute_metric_bundle(prediction, target, velocity=velocity, spacing=spacing)
+        suite_names = (metric_suites,) if isinstance(metric_suites, str) else tuple(metric_suites)
+        suite = MetricSuite.combine(suite_names)
+        context = metric_context or MetricContext(spacing=spacing)
+        results = suite.evaluate(prediction, target, context=context)
+        if include_metric_records:
+            return MetricSuite.records(results)
+        return MetricSuite.values(results)
 
 
 __all__ = ["CFDTrainer", "TrainerConfig", "TrainingResult"]
