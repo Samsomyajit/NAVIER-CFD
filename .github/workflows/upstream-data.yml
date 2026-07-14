@@ -1,0 +1,102 @@
+name: Validate official upstream datasets
+
+on:
+  pull_request:
+    paths:
+      - "src/navier_cfd/datasets/**"
+      - "scripts/validate_official_upstreams.py"
+      - "tests/test_official_upstream_sources.py"
+      - ".github/workflows/upstream-data.yml"
+      - "pyproject.toml"
+  workflow_dispatch:
+  schedule:
+    - cron: "23 3 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  upstream-contract:
+    name: Official source contract and security
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip --quiet
+      - run: pip install -e ".[dev]" --quiet
+      - run: pytest tests/test_official_upstream_sources.py -q --tb=short
+
+  upstream-probes:
+    name: Probe published official endpoints
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip --quiet
+      - run: pip install -e . --quiet
+      - run: python scripts/validate_official_upstreams.py probes --output-dir upstream-validation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: official-upstream-probes
+          path: upstream-validation
+
+  drivaerml-real-file:
+    name: Download and parse real DrivAerML CFD file
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip --quiet
+      - run: pip install -e ".[mesh-data]" --quiet
+      - run: python scripts/validate_official_upstreams.py drivaerml --output-dir upstream-validation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: drivaerml-real-file-report
+          path: upstream-validation
+
+  apebench-official-api:
+    name: Generate real APEBench trajectory
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip --quiet
+      - run: pip install -e ".[apebench]" --quiet
+      - run: python scripts/validate_official_upstreams.py apebench --output-dir upstream-validation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apebench-official-api-report
+          path: upstream-validation
+
+  drivaernetpp-official-files:
+    name: Download official DrivAerNet++ split files
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip --quiet
+      - run: pip install -e . --quiet
+      - run: python scripts/validate_official_upstreams.py drivaernetpp --output-dir upstream-validation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: drivaernetpp-official-files-report
+          path: upstream-validation
