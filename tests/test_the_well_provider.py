@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 from types import SimpleNamespace
 
 import numpy as np
@@ -83,6 +84,8 @@ def test_official_provider_builds_and_adapts_records(monkeypatch) -> None:
     assert sample.metadata["field_names"] == ("density", "velocity_x", "velocity_y")
     assert dataset.access_plan["base_path"] == "hf://datasets/polymathic-ai/"
 
+    if importlib.util.find_spec("torch") is None:
+        return
     model, plan = load_model(
         "fno",
         dataset="the_well",
