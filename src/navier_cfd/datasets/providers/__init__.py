@@ -25,6 +25,14 @@ from .realpdebench import (
     RealPDEBenchDatasetManager,
     RealPDEBenchTrajectoryDataset,
 )
+from .upstream import (
+    OFFICIAL_DATASET_SOURCES,
+    OfficialDatasetAccessError,
+    OfficialDatasetManager,
+    OfficialDatasetSource,
+    OfficialDownloadResult,
+    OfficialUpstreamProbe,
+)
 
 __all__ = [
     "APEBenchDatasetManager",
@@ -38,6 +46,12 @@ __all__ = [
     "LocalScientificDatasetManager",
     "MissingAPEBenchDependency",
     "MissingPDEBenchDependency",
+    "OFFICIAL_DATASET_SOURCES",
+    "OfficialDatasetAccessError",
+    "OfficialDatasetManager",
+    "OfficialDatasetSource",
+    "OfficialDownloadResult",
+    "OfficialUpstreamProbe",
     "PDEBENCH_REPOSITORIES",
     "PDEBenchDatasetManager",
     "PDEBenchHDF5Dataset",
