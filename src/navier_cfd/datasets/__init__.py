@@ -26,10 +26,16 @@ from .huggingface import (
 )
 from .loaders import collate_cfd_samples, make_dataloaders, make_split_dataloaders
 from .providers import (
+    APEBenchDatasetManager,
     CFDBENCH_REPO,
     CFDBENCH_SCENARIOS,
     CFDBenchDatasetManager,
+    LOCAL_DATASET_CONTRACTS,
     ListCFDDataset,
+    LocalDatasetContract,
+    LocalDatasetProbe,
+    LocalScientificDatasetManager,
+    MissingAPEBenchDependency,
     MissingPDEBenchDependency,
     PDEBENCH_REPOSITORIES,
     PDEBenchDatasetManager,
@@ -38,6 +44,7 @@ from .providers import (
     REALPDEBENCH_SCENARIOS,
     RealPDEBenchDatasetManager,
     RealPDEBenchTrajectoryDataset,
+    SUPPORTED_SUFFIXES,
     ScientificDatasetAccessPlan,
 )
 from .the_well import (
@@ -52,6 +59,7 @@ from .the_well import (
 )
 
 __all__ = [
+    "APEBenchDatasetManager",
     "AdaptedDataset",
     "AdapterRegistry",
     "BUILTIN_DATASET_PROFILES",
@@ -73,7 +81,12 @@ __all__ = [
     "HuggingFaceNetworkError",
     "HuggingFaceRepositoryError",
     "KNOWN_WELL_DATASETS",
+    "LOCAL_DATASET_CONTRACTS",
     "ListCFDDataset",
+    "LocalDatasetContract",
+    "LocalDatasetProbe",
+    "LocalScientificDatasetManager",
+    "MissingAPEBenchDependency",
     "MissingPDEBenchDependency",
     "MissingTheWellDependency",
     "PDEBENCH_REPOSITORIES",
@@ -83,6 +96,7 @@ __all__ = [
     "REALPDEBENCH_SCENARIOS",
     "RealPDEBenchDatasetManager",
     "RealPDEBenchTrajectoryDataset",
+    "SUPPORTED_SUFFIXES",
     "ScientificDatasetAccessPlan",
     "THE_WELL_HF_BASE",
     "TheWellAccessPlan",
