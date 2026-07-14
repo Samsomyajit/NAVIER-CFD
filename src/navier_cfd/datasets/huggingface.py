@@ -59,8 +59,8 @@ class HuggingFaceDatasetManager:
             if dataset.provider == "the_well":
                 raise ValueError(
                     "The Well is not one datasets.load_dataset repository. "
-                    "Use TheWellDatasetManager.load(dataset_name=...) or load_cfd_dataset(" 
-                    "'the_well', configuration=...)."
+                    "Use TheWellDatasetManager.load(dataset_name=...) or "
+                    "load_cfd_dataset('the_well', configuration=...)."
                 )
             raise ValueError(
                 f"Dataset {dataset.id!r} uses provider {dataset.provider!r}; "
@@ -99,8 +99,8 @@ class HuggingFaceDatasetManager:
         allow_patterns: Iterable[str] | None = None,
         ignore_patterns: Iterable[str] | None = None,
     ) -> DownloadResult:
-        _, snapshot_download = self._hub()
         repo_id = self._repo_id(dataset)
+        _, snapshot_download = self._hub()
         allow = tuple(allow_patterns or ())
         path = snapshot_download(
             repo_id=repo_id,
@@ -123,8 +123,8 @@ class HuggingFaceDatasetManager:
         revision: str | None = None,
         **kwargs: Any,
     ) -> Any:
-        load_dataset = self._datasets()
         repo_id = self._repo_id(dataset)
+        load_dataset = self._datasets()
         if isinstance(dataset, DatasetSpec) and config is None:
             config = dataset.hf_config
         return load_dataset(
