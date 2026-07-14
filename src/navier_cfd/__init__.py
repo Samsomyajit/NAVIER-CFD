@@ -23,6 +23,7 @@ from .datasets import (
     load_cfd_dataset,
     load_the_well,
     make_dataloaders,
+    make_split_dataloaders,
     split_dataset,
     split_indices,
 )
@@ -156,6 +157,7 @@ __all__ = [
     "load_model",
     "load_the_well",
     "make_dataloaders",
+    "make_split_dataloaders",
     "mean_velocity_profile_error",
     "model_info",
     "recommend_models",
