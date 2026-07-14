@@ -1,68 +1,64 @@
-# 数据集目录
+# 数据集目录与提供器访问
 
-NAVIER-CFD 将 11 个 PDE/CFD 数据集登记为一等对象。数据集卡描述物理问题、维度、网格类型、几何变化、时间模式、下载位置和适用模型类别。
+NAVIER-CFD 将 11 个 PDE/CFD 数据集家族登记为一等对象。数据集卡记录物理问题、维度、表示方式、几何与时间模式、数据提供器、官方划分和访问契约。
 
-## 已注册数据集
+| 数据集 | 主要任务 | 提供器与访问方式 |
+|---|---|---|
+| PDEBench | 广泛的时变 PDE 基准 | Hugging Face：`AI4Science-WestlakeU/PDEBench` |
+| CFDBench | 边界、物性与几何变化 | Hugging Face：`chen-yingfa/CFDBench` |
+| RealPDEBench | 配对仿真与真实测量 | Hugging Face：`AI4Science-WestlakeU/RealPDEBench` |
+| The Well | 跨物理仿真数据与预训练 | 官方 `the_well.data.WellDataset`；基础路径 `hf://datasets/polymathic-ai/` 加具体 `well_dataset_name` |
+| AirfRANS | 二维 RANS 与几何泛化 | 上游来源与 NAVIER-CFD 适配器 |
+| APEBench | 自回归可微 PDE 基准 | 上游生成器与适配器 |
+| DrivAerNet++ / DrivAerML | 真实三维车辆空气动力学 | 上游来源与几何适配器 |
+| ScalarFlow | 真实体积标量输运 | 上游来源与结构化适配器 |
+| ShapeNet-Car | 几何设计 | 上游来源与点云适配器 |
+| EAGLE | 流体预测与重建 | 上游来源与混合适配器 |
 
-| 数据集 | 表示 | 默认维度 | 主要任务 |
-|---|---|---:|---|
-| PDEBench | 结构化 | 2D，实际样本支持 1D–3D | PDE 预测与算子学习 |
-| CFDBench | 结构化 | 2D | 方腔、管流、溃坝、圆柱绕流 |
-| RealPDEBench | 结构化 | 2D | 仿真到真实系统预测 |
-| The Well | 结构化 | 3D 默认 | 大规模多物理场 |
-| APEBench | 结构化 | 2D 默认 | 自回归 PDE 模拟器 |
-| ScalarFlow | 结构化体数据 | 3D | 标量输运 |
-| AirfRANS | 点云/非结构 | 2D | 翼型 RANS 与几何泛化 |
-| DrivAerNet++ | 点云 | 3D | 车辆空气动力学 |
-| DrivAerML | 非结构网格 | 3D | 高保真车辆 CFD |
-| ShapeNet-Car | 点云 | 3D | 几何条件车辆场预测 |
-| EAGLE | 结构化/非结构 | 2D–3D | 流体与几何学习 |
-
-## 使用内置配置
+## 通用 Hugging Face 访问
 
 ```python
-from navier_cfd import configure_model_for_dataset
+from navier_cfd.datasets import HuggingFaceDatasetManager
 
-plan = configure_model_for_dataset(
-    "transolver",
-    "airfrans",
+manager = HuggingFaceDatasetManager(token=None)
+print(manager.discover("CFD fluid dynamics", limit=50))
+manager.download("chen-yingfa/CFDBench", "./data/cfdbench", revision="<commit>")
+stream = manager.load(
+    "AI4Science-WestlakeU/RealPDEBench",
+    split="train",
+    streaming=True,
 )
-
-print(plan.dataset_configuration)
-print(plan.builder_kwargs)
 ```
 
-## 使用真实样本
+## The Well 原生提供器访问
 
-数据集版本可能在变量命名、通道顺序、分辨率和目标定义上不同，因此正式实验应传入真实样本：
+The Well 不是一个单独的 `datasets.load_dataset` 仓库。应通过提供器分发接口选择具体配置：
 
 ```python
-model, plan = load_model(
-    "fno",
-    dataset="pdebench",
-    sample=sample,
-    return_plan=True,
+from navier_cfd import load_cfd_dataset
+
+active_matter = load_cfd_dataset(
+    "the_well",
+    configuration="active_matter",
+    split="train",
+    streaming=True,
+    n_steps_input=4,
+    n_steps_output=1,
 )
+```
+
+命令行下载：
+
+```bash
+navier datasets well-list
+navier datasets download the_well \
+  --configuration active_matter \
+  --split train \
+  --local-dir ./data/the_well
 ```
 
 ## 数据划分原则
 
-不要在以下场景中仅使用随机逐样本划分：
+存在官方划分时必须优先保留。不能把同一轨迹中的重叠时间窗口随机分配到训练集和测试集。几何泛化应按几何身份划分；工况泛化应按案例或参数区间划分。
 
-- 同一几何的相邻时间帧；
-- 同一雷诺数附近的连续工况；
-- 同一车辆或翼型的网格变体；
-- 仿真和真实数据成对样本。
-
-应优先采用按几何、工况、时间窗口、实验批次或物理参数分组的严格留出测试。
-
-## 归一化与单位
-
-每个实验应保存：
-
-- 原始物理单位；
-- 无量纲化定义；
-- 训练集统计量；
-- 掩码和边界定义；
-- 输入历史长度与预测范围；
-- 数据集版本和文件校验信息。
+实验清单应记录提供器版本、数据集修订、配置名称、归一化统计量、单位、掩码、边界、历史长度、预测范围和划分策略。
