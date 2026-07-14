@@ -7,7 +7,10 @@ from ..catalogs import Catalog
 from .auth import resolve_hf_auth
 from .huggingface import HuggingFaceDatasetManager
 from .providers import (
+    APEBenchDatasetManager,
     CFDBenchDatasetManager,
+    LOCAL_DATASET_CONTRACTS,
+    LocalScientificDatasetManager,
     PDEBenchDatasetManager,
     RealPDEBenchDatasetManager,
 )
@@ -30,7 +33,8 @@ def load_cfd_dataset(
 
     Authentication resolves as explicit ``token`` > ``HF_TOKEN`` > the credential saved
     by ``hf auth login`` > anonymous. Scientific Hub repositories use provider-specific
-    HDF5, archive, or Arrow loaders instead of assuming ``datasets.load_dataset``.
+    HDF5, archive, or Arrow loaders. Procedural and licensed/local datasets use their
+    official Python API or secure local adapters and still return canonical ``CFDSample``.
     """
 
     spec = Catalog.load_builtin().dataset(dataset_id)
@@ -88,6 +92,43 @@ def load_cfd_dataset(
             cache_dir=local_path,
             **kwargs,
         )
+    if spec.provider == "apebench":
+        if not configuration:
+            raise ValueError(
+                "APEBench requires a scenario configuration, for example configuration='Advection'."
+            )
+        if local_path is not None:
+            raise ValueError(
+                "APEBench is generated procedurally and does not use local_path. "
+                "Pass scenario_kwargs and sample/window limits instead."
+            )
+        if streaming:
+            raise ValueError("APEBench procedural generation does not support streaming=True")
+        if not adapt:
+            raise ValueError("APEBench generation always returns canonical CFDSample objects")
+        return APEBenchDatasetManager().load(
+            configuration,
+            split=split,
+            **kwargs,
+        )
+    if spec.provider in LOCAL_DATASET_CONTRACTS:
+        if local_path is None:
+            contract = LOCAL_DATASET_CONTRACTS[spec.provider]
+            raise ValueError(
+                f"{spec.name} requires local_path pointing to an official local export. "
+                f"Obtain the data from {contract.source_url} and probe it before loading."
+            )
+        if streaming:
+            raise ValueError(f"{spec.name} local provider does not support streaming=True")
+        if not adapt:
+            raise ValueError(f"{spec.name} local loading always returns canonical CFDSample objects")
+        return LocalScientificDatasetManager().load(
+            spec.provider,
+            local_path=local_path,
+            configuration=configuration,
+            split=split,
+            **kwargs,
+        )
     if spec.provider == "huggingface":
         if local_path is not None:
             raise ValueError(
@@ -103,7 +144,7 @@ def load_cfd_dataset(
         )
     raise ValueError(
         f"Dataset {dataset_id!r} uses provider {spec.provider!r}, which has no built-in "
-        "runtime loader yet. Use the dataset's official loader and NAVIER-CFD adapter."
+        "runtime loader."
     )
 
 
