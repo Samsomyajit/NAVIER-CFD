@@ -82,9 +82,7 @@ def _to_numpy(value: Any) -> np.ndarray:
 def _flatten_time_channels(value: Any) -> np.ndarray:
     array = _to_numpy(value)
     if array.ndim < 3:
-        raise DatasetAdapterError(
-            "The Well fields must have shape [time, spatial..., channels]"
-        )
+        raise DatasetAdapterError("The Well fields must have shape [time, spatial..., channels]")
     moved = np.moveaxis(array, 0, -2)
     return moved.reshape(*moved.shape[:-2], moved.shape[-2] * moved.shape[-1])
 
@@ -112,8 +110,8 @@ def _metadata_value(metadata: Any, name: str, default: Any = None) -> Any:
     return getattr(metadata, name, default)
 
 
-def _field_names(metadata: Any, channels: int) -> tuple[str, ...]:
-    grouped = _metadata_value(metadata, "field_names", {})
+def _ordered_names(metadata: Any, name: str, channels: int) -> tuple[str, ...]:
+    grouped = _metadata_value(metadata, name, {})
     names: list[str] = []
     if isinstance(grouped, Mapping):
         for order in sorted(grouped, key=lambda value: str(value)):
@@ -121,17 +119,38 @@ def _field_names(metadata: Any, channels: int) -> tuple[str, ...]:
     elif isinstance(grouped, Sequence) and not isinstance(grouped, (str, bytes)):
         names.extend(str(item) for item in grouped)
     if len(names) < channels:
-        names.extend(f"field_{index}" for index in range(len(names), channels))
+        prefix = "field" if name == "field_names" else "constant_field"
+        names.extend(f"{prefix}_{index}" for index in range(len(names), channels))
     return tuple(names[:channels])
+
+
+def _named_vector(value: Any, names: Sequence[str], prefix: str) -> dict[str, Any]:
+    if value is None:
+        return {}
+    if isinstance(value, Mapping):
+        return dict(value)
+    array = _to_numpy(value)
+    if array.size == 0:
+        return {}
+    flat = array.reshape(-1)
+    resolved = list(names)
+    if len(resolved) < len(flat):
+        resolved.extend(f"{prefix}_{index}" for index in range(len(resolved), len(flat)))
+    return {resolved[index]: flat[index] for index in range(len(flat))}
+
+
+def _type_name(value: Any | None) -> str | None:
+    if value is None:
+        return None
+    return getattr(value, "__name__", value.__class__.__name__)
 
 
 class TheWellDatasetAdapter:
     """Map official ``WellDataset`` records to channel-last :class:`CFDSample` objects.
 
-    The official records store fields as ``[time, spatial..., channels]``. By default,
-    NAVIER-CFD flattens time and fields into the final channel axis so dataset-derived
-    model construction sees only the physical spatial dimensions. The original time
-    grids and field semantics are preserved in sample metadata.
+    Official records store variable fields as ``[time, spatial..., channels]``. By
+    default, NAVIER-CFD flattens history and field channels into the final axis and
+    concatenates constant fields, while preserving field semantics in metadata.
     """
 
     def __init__(
@@ -141,40 +160,70 @@ class TheWellDatasetAdapter:
         dataset_name: str,
         split: str,
         flatten_time_to_channels: bool = True,
+        include_constant_fields: bool = True,
     ) -> None:
         self.raw_dataset = raw_dataset
         self.dataset_name = dataset_name
         self.split = split
         self.flatten_time_to_channels = flatten_time_to_channels
+        self.include_constant_fields = include_constant_fields
 
     def adapt(self, record: Mapping[str, Any], *, index: int | None = None) -> CFDSample:
         if "input_fields" not in record or "output_fields" not in record:
-            raise DatasetAdapterError(
-                "Official The Well records must contain input_fields and output_fields"
-            )
+            raise DatasetAdapterError("Official The Well records must contain input_fields and output_fields")
         raw_inputs = _to_numpy(record["input_fields"])
         raw_targets = _to_numpy(record["output_fields"])
+        provider_metadata = getattr(self.raw_dataset, "metadata", None)
+        field_names = _ordered_names(provider_metadata, "field_names", raw_inputs.shape[-1])
+
+        constant_fields = record.get("constant_fields")
+        constant_array = None
+        if constant_fields is not None:
+            constant_array = _to_numpy(constant_fields)
+            if constant_array.size == 0:
+                constant_array = None
+
         if self.flatten_time_to_channels:
             inputs = _flatten_time_channels(raw_inputs)
             targets = _flatten_time_channels(raw_targets)
             layout = "spatial_channel_last_time_flattened"
+            input_channel_names = tuple(
+                f"t{time_index}:{field_name}"
+                for time_index in range(raw_inputs.shape[0])
+                for field_name in field_names
+            )
+            if self.include_constant_fields and constant_array is not None:
+                if constant_array.shape[:-1] != inputs.shape[:-1]:
+                    raise DatasetAdapterError(
+                        "The Well constant_fields spatial shape does not match input_fields"
+                    )
+                inputs = np.concatenate((inputs, constant_array), axis=-1)
+                constant_names = _ordered_names(
+                    provider_metadata,
+                    "constant_field_names",
+                    constant_array.shape[-1],
+                )
+                input_channel_names = input_channel_names + constant_names
         else:
             inputs = raw_inputs
             targets = raw_targets
             layout = "time_spatial_channel_last"
+            input_channel_names = field_names
+            if self.include_constant_fields and constant_array is not None:
+                raise DatasetAdapterError(
+                    "include_constant_fields=True requires flatten_time_to_channels=True"
+                )
 
         coordinates = _space_grid(record.get("space_grid"))
         raw_mask = record.get("valid_mask")
         mask = _to_numpy(raw_mask).astype(bool) if raw_mask is not None else None
-        provider_metadata = getattr(self.raw_dataset, "metadata", None)
-        field_names = _field_names(provider_metadata, raw_inputs.shape[-1])
-
-        parameters: dict[str, Any] = {}
-        constant_scalars = record.get("constant_scalars")
-        if isinstance(constant_scalars, Mapping):
-            parameters.update(constant_scalars)
-        elif constant_scalars is not None:
-            parameters["constant_scalars"] = constant_scalars
+        constant_scalar_names = tuple(_metadata_value(provider_metadata, "constant_scalar_names", ()))
+        scalar_names = tuple(_metadata_value(provider_metadata, "scalar_names", ()))
+        parameters = _named_vector(
+            record.get("constant_scalars"),
+            constant_scalar_names,
+            "constant_scalar",
+        )
 
         metadata: dict[str, Any] = {
             "dataset_id": "the_well",
@@ -184,23 +233,23 @@ class TheWellDatasetAdapter:
             "representation": "structured",
             "layout": layout,
             "field_names": field_names,
+            "input_channel_names": input_channel_names,
             "input_steps": int(raw_inputs.shape[0]),
             "output_steps": int(raw_targets.shape[0]),
             "physical_field_channels": int(raw_inputs.shape[-1]),
             "input_time_grid": record.get("input_time_grid"),
             "output_time_grid": record.get("output_time_grid"),
+            "input_scalars": record.get("input_scalars"),
+            "output_scalars": record.get("output_scalars"),
+            "scalar_names": scalar_names,
             "boundary_conditions": record.get("boundary_conditions"),
             "normalization": {
                 "enabled": bool(getattr(self.raw_dataset, "use_normalization", False)),
+                "type": _type_name(getattr(self.raw_dataset, "normalization_type", None)),
                 "source": "official_the_well_statistics",
             },
         }
-        for name in (
-            "spatial_dimensions",
-            "n_spatial_dims",
-            "n_fields",
-            "dataset_name",
-        ):
+        for name in ("spatial_resolution", "n_spatial_dims", "n_fields", "dataset_name", "grid_type"):
             value = _metadata_value(provider_metadata, name)
             if value is not None:
                 metadata[name] = value
@@ -237,9 +286,9 @@ class TheWellAdaptedDataset:
 class TheWellDatasetManager:
     """Official-provider access for The Well datasets.
 
-    The Well is a provider family. It is intentionally not routed through
-    ``datasets.load_dataset('polymathic-ai/the_well')``. Streaming uses fsspec through
-    the official ``WellDataset`` with ``hf://datasets/polymathic-ai/`` as base path.
+    The Well is not routed through ``datasets.load_dataset('polymathic-ai/the_well')``.
+    Streaming uses fsspec through the official ``WellDataset`` with
+    ``hf://datasets/polymathic-ai/`` as the provider base path.
     """
 
     hf_base_path = THE_WELL_HF_BASE
@@ -253,6 +302,16 @@ class TheWellDatasetManager:
                 "Official The Well support requires `pip install navier-cfd[the-well]`."
             ) from exc
         return WellDataset
+
+    @staticmethod
+    def _default_normalization_type() -> Any:
+        try:
+            from the_well.data.normalization import ZScoreNormalization
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise MissingTheWellDependency(
+                "The Well normalization requires `pip install navier-cfd[the-well]`."
+            ) from exc
+        return ZScoreNormalization
 
     @staticmethod
     def _download_function() -> Any:
@@ -272,7 +331,11 @@ class TheWellDatasetManager:
             return None
 
     def list_datasets(self) -> tuple[str, ...]:
-        return KNOWN_WELL_DATASETS
+        try:
+            from the_well.data.utils import WELL_DATASETS
+        except ImportError:
+            return KNOWN_WELL_DATASETS
+        return tuple(str(name) for name in WELL_DATASETS)
 
     def load(
         self,
@@ -284,16 +347,17 @@ class TheWellDatasetManager:
         n_steps_input: int = 1,
         n_steps_output: int = 1,
         use_normalization: bool = False,
-        normalization_type: str | None = None,
+        normalization_type: Any | None = None,
         min_dt_stride: int = 1,
         max_dt_stride: int = 1,
         flatten_tensors: bool = True,
         return_grid: bool = True,
-        boundary_return_type: str = "padding",
+        boundary_return_type: str | None = "padding",
         full_trajectory_mode: bool = False,
         storage_options: Mapping[str, Any] | None = None,
         adapt: bool = True,
         flatten_time_to_channels: bool = True,
+        include_constant_fields: bool = True,
         **kwargs: Any,
     ) -> Any:
         if split not in {"train", "valid", "test"}:
@@ -303,6 +367,10 @@ class TheWellDatasetManager:
         resolved_base = str(base_path or self.hf_base_path)
         if not streaming and base_path is None:
             raise ValueError("A local base_path is required when streaming=False")
+        if use_normalization and normalization_type is None:
+            normalization_type = self._default_normalization_type()
+        if not use_normalization:
+            normalization_type = None
 
         constructor: dict[str, Any] = {
             "well_base_path": resolved_base,
@@ -311,6 +379,7 @@ class TheWellDatasetManager:
             "n_steps_input": n_steps_input,
             "n_steps_output": n_steps_output,
             "use_normalization": use_normalization,
+            "normalization_type": normalization_type,
             "min_dt_stride": min_dt_stride,
             "max_dt_stride": max_dt_stride,
             "flatten_tensors": flatten_tensors,
@@ -320,8 +389,6 @@ class TheWellDatasetManager:
             "storage_options": dict(storage_options or {}) or None,
             **kwargs,
         }
-        if normalization_type is not None:
-            constructor["normalization_type"] = normalization_type
         raw = self._dataset_class()(**constructor)
         plan = TheWellAccessPlan(
             dataset_name=dataset_name,
@@ -330,7 +397,7 @@ class TheWellDatasetManager:
             n_steps_input=n_steps_input,
             n_steps_output=n_steps_output,
             use_normalization=use_normalization,
-            normalization_type=normalization_type,
+            normalization_type=_type_name(normalization_type),
             full_trajectory_mode=full_trajectory_mode,
             provider_version=self.provider_version(),
         )
@@ -342,6 +409,7 @@ class TheWellDatasetManager:
             dataset_name=dataset_name,
             split=split,
             flatten_time_to_channels=flatten_time_to_channels,
+            include_constant_fields=include_constant_fields,
         )
         return TheWellAdaptedDataset(raw, adapter)
 
@@ -351,6 +419,8 @@ class TheWellDatasetManager:
         *,
         base_path: str | Path,
         split: str | None = None,
+        first_only: bool = False,
+        parallel: bool = False,
     ) -> Any:
         if split is not None and split not in {"train", "valid", "test"}:
             raise ValueError("The Well split must be 'train', 'valid', or 'test'")
@@ -358,6 +428,8 @@ class TheWellDatasetManager:
             base_path=str(base_path),
             dataset=dataset_name,
             split=split,
+            first_only=first_only,
+            parallel=parallel,
         )
 
 
