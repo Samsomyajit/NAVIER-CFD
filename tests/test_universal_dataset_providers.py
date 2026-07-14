@@ -64,8 +64,8 @@ def test_drivaernetpp_local_point_cloud_adapter(tmp_path) -> None:
 
 
 def test_scalarflow_local_temporal_windows(tmp_path) -> None:
-    density = np.arange(6 * 4 * 20, dtype=np.float32).reshape(6, 4, 20)
-    velocity = np.ones((6, 4, 20, 2), dtype=np.float32)
+    density = np.arange(6 * 20 * 20, dtype=np.float32).reshape(6, 20, 20)
+    velocity = np.ones((6, 20, 20, 2), dtype=np.float32)
     np.savez(tmp_path / "reconstruction.npz", density=density, velocity=velocity)
 
     dataset = load_cfd_dataset(
@@ -79,9 +79,9 @@ def test_scalarflow_local_temporal_windows(tmp_path) -> None:
     )
     assert len(dataset) == 2
     sample = dataset[0]
-    assert sample.inputs.shape == (4, 20, 6)
-    assert sample.targets.shape == (4, 20, 3)
-    assert sample.coordinates.shape == (4, 20, 2)
+    assert sample.inputs.shape == (20, 20, 6)
+    assert sample.targets.shape == (20, 20, 3)
+    assert sample.coordinates.shape == (20, 20, 2)
     assert sample.metadata["provider"] == "scalarflow_local"
 
 
