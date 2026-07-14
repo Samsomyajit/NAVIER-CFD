@@ -12,7 +12,7 @@ from rich.table import Table
 
 from .agents import AgentOrchestrator
 from .catalogs import Catalog
-from .datasets import HuggingFaceDatasetManager
+from .datasets import HuggingFaceDatasetManager, TheWellDatasetManager
 from .evidence import ALGORITHM_VERSION, load_builtin_evidence
 from .models import ModelHub, ModelHubError
 from .recommender import recommend_models
@@ -20,7 +20,7 @@ from .specs import TaskSpec
 
 app = typer.Typer(help="NAVIER-CFD: neural and agentic CFD datasets, models, benchmarks, recommendation, and planning.")
 models_app = typer.Typer(help="Browse and load model integrations.")
-datasets_app = typer.Typer(help="Discover and download datasets.")
+datasets_app = typer.Typer(help="Discover and download datasets through registered providers.")
 evidence_app = typer.Typer(help="Inspect paper-level benchmark evidence used by the recommender.")
 agent_app = typer.Typer(help="Agentic experiment planning.")
 app.add_typer(models_app, name="models")
@@ -113,9 +113,17 @@ def datasets_list() -> None:
     table.add_column("ID")
     table.add_column("Name")
     table.add_column("Scenarios")
-    table.add_column("Hugging Face")
+    table.add_column("Provider")
+    table.add_column("Access")
     for dataset in datasets:
-        table.add_row(dataset.id, dataset.name, ", ".join(dataset.scenarios), dataset.hf_repo_id or "external")
+        access = dataset.hf_repo_id or dataset.access_base_path or dataset.source_url or "external"
+        table.add_row(
+            dataset.id,
+            dataset.name,
+            ", ".join(dataset.scenarios),
+            dataset.provider,
+            access,
+        )
     console.print(table)
 
 
@@ -137,15 +145,60 @@ def datasets_discover(query: str, limit: int = 20, endpoint: Optional[str] = Non
     console.print(table)
 
 
+@datasets_app.command("well-list")
+def datasets_well_list() -> None:
+    """List available The Well provider configurations."""
+
+    names = TheWellDatasetManager().list_datasets()
+    table = Table(title=f"The Well configurations ({len(names)})")
+    table.add_column("well_dataset_name")
+    for name in names:
+        table.add_row(name)
+    console.print(table)
+
+
 @datasets_app.command("download")
 def datasets_download(
     dataset_id: str,
-    local_dir: Path = typer.Option(..., help="Destination directory."),
+    local_dir: Path = typer.Option(..., help="Destination base directory."),
+    configuration: Optional[str] = typer.Option(
+        None,
+        "--configuration",
+        "--well-dataset-name",
+        help="Provider-native configuration; required for The Well.",
+    ),
+    split: Optional[str] = typer.Option(None, help="Provider split, such as train, valid, or test."),
     revision: Optional[str] = None,
     pattern: list[str] = typer.Option(None, "--pattern", help="Repeatable HF allow pattern."),
     endpoint: Optional[str] = None,
+    first_only: bool = typer.Option(False, help="The Well: download only the first data file."),
+    parallel: bool = typer.Option(False, help="The Well: use parallel curl downloads."),
 ) -> None:
     dataset = Catalog.load_builtin().dataset(dataset_id)
+    if dataset.provider == "the_well":
+        if not configuration:
+            console.print("[red]The Well requires --configuration <well_dataset_name>.[/red]")
+            raise typer.Exit(code=2)
+        TheWellDatasetManager().download(
+            configuration,
+            base_path=local_dir,
+            split=split,
+            first_only=first_only,
+            parallel=parallel,
+        )
+        console.print_json(
+            json.dumps(
+                {
+                    "provider": "the_well",
+                    "dataset_name": configuration,
+                    "split": split,
+                    "local_path": str(local_dir),
+                }
+            )
+        )
+        return
+    if split is not None:
+        console.print("[yellow]--split is provider-specific and ignored for generic HF snapshots.[/yellow]")
     manager = HuggingFaceDatasetManager(token=os.getenv("HF_TOKEN"), endpoint=endpoint)
     result = manager.download(dataset, local_dir, revision=revision, allow_patterns=pattern or None)
     console.print_json(json.dumps(result.__dict__))

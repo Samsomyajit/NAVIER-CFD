@@ -4,13 +4,25 @@ from typing import Any
 
 import numpy as np
 
+from ..metrics import (
+    MetricContext,
+    cosine_similarity as _cosine_similarity,
+    divergence_rms as _divergence_rms,
+    kinetic_energy_relative_error,
+    mae as _mae,
+    r2 as _r2,
+    relative_l2 as _relative_l2,
+    rmse as _rmse,
+    spectral_relative_error as _spectral_relative_error,
+)
+
 
 def rmse(pred: np.ndarray, target: np.ndarray) -> float:
-    return float(np.sqrt(np.mean((pred - target) ** 2)))
+    return _rmse(pred, target)
 
 
 def mae(pred: np.ndarray, target: np.ndarray) -> float:
-    return float(np.mean(np.abs(pred - target)))
+    return _mae(pred, target)
 
 
 def normalized_rmse(pred: np.ndarray, target: np.ndarray, eps: float = 1e-12) -> float:
@@ -19,55 +31,41 @@ def normalized_rmse(pred: np.ndarray, target: np.ndarray, eps: float = 1e-12) ->
 
 
 def relative_l2(pred: np.ndarray, target: np.ndarray, eps: float = 1e-12) -> float:
-    return float(np.linalg.norm(pred - target) / (np.linalg.norm(target) + eps))
+    return _relative_l2(pred, target, eps=eps)
 
 
 def r2(pred: np.ndarray, target: np.ndarray, eps: float = 1e-12) -> float:
-    residual = np.sum((target - pred) ** 2)
-    total = np.sum((target - np.mean(target)) ** 2)
-    return float(1.0 - residual / (total + eps))
+    return _r2(pred, target, eps=eps)
 
 
 def cosine_similarity(pred: np.ndarray, target: np.ndarray, eps: float = 1e-12) -> float:
-    p = pred.reshape(-1)
-    t = target.reshape(-1)
-    return float(np.dot(p, t) / ((np.linalg.norm(p) * np.linalg.norm(t)) + eps))
+    return _cosine_similarity(pred, target, eps=eps)
 
 
 def spectral_relative_error(pred: np.ndarray, target: np.ndarray, eps: float = 1e-12) -> float:
-    if pred.ndim < 2:
-        return relative_l2(pred, target, eps)
-    axes = tuple(range(-min(3, pred.ndim - 1), -1)) if pred.ndim > 2 else (-1,)
-    p = np.abs(np.fft.rfftn(pred, axes=axes))
-    t = np.abs(np.fft.rfftn(target, axes=axes))
-    return float(np.linalg.norm(p - t) / (np.linalg.norm(t) + eps))
+    return _spectral_relative_error(pred, target, eps=eps)
 
 
 def divergence_rms(velocity: np.ndarray, spacing: tuple[float, ...] | None = None) -> float:
-    """Approximate RMS divergence for structured arrays shaped (..., spatial..., components)."""
-    velocity = np.asarray(velocity)
-    if velocity.shape[-1] not in {2, 3}:
-        raise ValueError("velocity must store 2 or 3 components in the final axis")
-    ncomp = velocity.shape[-1]
-    spacing = spacing or tuple(1.0 for _ in range(ncomp))
-    if len(spacing) != ncomp:
-        raise ValueError("spacing length must equal the number of velocity components")
-    if velocity.ndim < ncomp + 1:
-        raise ValueError("velocity array does not contain enough spatial dimensions")
-    div: Any = 0.0
-    first_spatial_axis = velocity.ndim - ncomp - 1
-    for component in range(ncomp):
-        axis = first_spatial_axis + component
-        div = div + np.gradient(velocity[..., component], spacing[component], axis=axis)
-    return float(np.sqrt(np.mean(np.asarray(div) ** 2)))
+    ncomp = int(np.asarray(velocity).shape[-1])
+    return _divergence_rms(
+        velocity,
+        MetricContext(
+            velocity_channels=tuple(range(ncomp)),
+            spacing=spacing,
+            sample_axis=0 if np.asarray(velocity).ndim > ncomp + 1 else None,
+        ),
+    )
 
 
 def kinetic_energy_error(pred: np.ndarray, target: np.ndarray, eps: float = 1e-12) -> float:
-    if pred.shape[-1] not in {2, 3}:
-        raise ValueError("kinetic energy requires 2D or 3D velocity components")
-    predicted_energy = 0.5 * np.sum(pred**2, axis=-1)
-    target_energy = 0.5 * np.sum(target**2, axis=-1)
-    return float(np.linalg.norm(predicted_energy - target_energy) / (np.linalg.norm(target_energy) + eps))
+    ncomp = int(np.asarray(pred).shape[-1])
+    return kinetic_energy_relative_error(
+        pred,
+        target,
+        MetricContext(velocity_channels=tuple(range(ncomp))),
+        eps=eps,
+    )
 
 
 def rollout_error_curve(pred: np.ndarray, target: np.ndarray, time_axis: int = 1) -> list[float]:

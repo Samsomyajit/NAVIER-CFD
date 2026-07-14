@@ -106,13 +106,18 @@ class DatasetSpec:
     size: str | None = None
     scenarios: tuple[str, ...] = field(default_factory=tuple)
     notes: tuple[str, ...] = field(default_factory=tuple)
+    provider: str = "huggingface"
+    access_backend: str | None = None
+    access_base_path: str | None = None
+    requires_configuration: bool = False
+    official_splits: tuple[str, ...] = field(default_factory=tuple)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "DatasetSpec":
         d = dict(data)
         for key in (
             "tasks", "physics", "dimensions", "mesh_types", "geometry_modes",
-            "temporal_modes", "scenarios", "notes",
+            "temporal_modes", "scenarios", "notes", "official_splits",
         ):
             d[key] = tuple(d.get(key, ()))
         return cls(**d)

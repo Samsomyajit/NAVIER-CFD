@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any, Mapping, Sequence
 
 import numpy as np
 
@@ -92,6 +92,49 @@ def collate_cfd_samples(samples: Sequence[CFDSample]) -> CFDBatch:
     )
 
 
+def make_split_dataloaders(
+    datasets: Mapping[str, Any],
+    *,
+    batch_size: int = 8,
+    seed: int = 0,
+    num_workers: int = 0,
+    pin_memory: bool = False,
+    drop_last: bool = False,
+) -> dict[str, Any]:
+    """Create loaders from already separated provider-native datasets.
+
+    Accepted validation keys are ``validation`` or ``valid``. No additional random
+    splitting is performed, which prevents trajectory leakage across official splits.
+    """
+
+    torch = _require_torch()
+    normalized = dict(datasets)
+    if "validation" not in normalized and "valid" in normalized:
+        normalized["validation"] = normalized.pop("valid")
+    required = {"train", "validation", "test"}
+    missing = required - set(normalized)
+    if missing:
+        raise ValueError(f"official split datasets are missing: {', '.join(sorted(missing))}")
+    for name in required:
+        if len(normalized[name]) < 1:
+            raise ValueError(f"official {name} dataset is empty")
+
+    generator = torch.Generator().manual_seed(seed)
+    return {
+        name: torch.utils.data.DataLoader(
+            normalized[name],
+            batch_size=batch_size,
+            shuffle=name == "train",
+            generator=generator if name == "train" else None,
+            num_workers=num_workers,
+            pin_memory=pin_memory,
+            drop_last=drop_last and name == "train",
+            collate_fn=collate_cfd_samples,
+        )
+        for name in ("train", "validation", "test")
+    }
+
+
 def make_dataloaders(
     dataset: Any,
     *,
@@ -128,4 +171,4 @@ def make_dataloaders(
     }
 
 
-__all__ = ["collate_cfd_samples", "make_dataloaders"]
+__all__ = ["collate_cfd_samples", "make_dataloaders", "make_split_dataloaders"]
