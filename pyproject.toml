@@ -2,6 +2,7 @@
 requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
+# Releases are published from main through PyPI Trusted Publishing.
 [project]
 name = "navier-cfd"
 version = "0.7.0"
