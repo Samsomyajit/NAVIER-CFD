@@ -3,6 +3,7 @@
 from .catalogs import Catalog
 from .checkpoints import CheckpointError, CheckpointManager
 from .datasets import (
+    APEBenchDatasetManager,
     AdaptedDataset,
     AdapterRegistry,
     BUILTIN_DATASET_PROFILES,
@@ -23,7 +24,12 @@ from .datasets import (
     HuggingFaceNetworkError,
     HuggingFaceRepositoryError,
     KNOWN_WELL_DATASETS,
+    LOCAL_DATASET_CONTRACTS,
     ListCFDDataset,
+    LocalDatasetContract,
+    LocalDatasetProbe,
+    LocalScientificDatasetManager,
+    MissingAPEBenchDependency,
     MissingPDEBenchDependency,
     MissingTheWellDependency,
     PDEBENCH_REPOSITORIES,
@@ -31,6 +37,7 @@ from .datasets import (
     PDEBenchHDF5Dataset,
     REALPDEBENCH_REPO,
     REALPDEBENCH_SCENARIOS,
+    SUPPORTED_SUFFIXES,
     ScientificDatasetAccessPlan,
     THE_WELL_HF_BASE,
     TheWellAccessPlan,
@@ -110,6 +117,7 @@ from .training import CFDTrainer, TrainerConfig, TrainingResult
 
 __all__ = [
     "ALGORITHM_VERSION",
+    "APEBenchDatasetManager",
     "AdaptedDataset",
     "AdapterConformanceReport",
     "AdapterRegistry",
@@ -145,12 +153,17 @@ __all__ = [
     "HuggingFaceNetworkError",
     "HuggingFaceRepositoryError",
     "KNOWN_WELL_DATASETS",
+    "LOCAL_DATASET_CONTRACTS",
     "ListCFDDataset",
+    "LocalDatasetContract",
+    "LocalDatasetProbe",
+    "LocalScientificDatasetManager",
     "METRICS",
     "MetricContext",
     "MetricDefinition",
     "MetricResult",
     "MetricSuite",
+    "MissingAPEBenchDependency",
     "MissingPDEBenchDependency",
     "MissingTheWellDependency",
     "ModelBuildPlan",
@@ -171,6 +184,7 @@ __all__ = [
     "Recommendation",
     "RealPDEBenchDatasetManager",
     "RealPDEBenchTrajectoryDataset",
+    "SUPPORTED_SUFFIXES",
     "SUITES",
     "ScientificDatasetAccessPlan",
     "THE_WELL_HF_BASE",
@@ -217,4 +231,4 @@ __all__ = [
     "vorticity_rmse",
 ]
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"

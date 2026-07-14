@@ -64,6 +64,7 @@ plugins:
             Platform: 平台
             Architecture: 架构
             Dataset Catalog: 数据集目录
+            Universal Dataset Providers: 通用数据集提供器
             Agentic AI: 智能体 AI
             Roadmap: 路线图
             Dataset Cards: 数据集卡片
@@ -112,6 +113,7 @@ nav:
   - Platform:
       - Architecture: ARCHITECTURE.md
       - Dataset Catalog: DATASET_CATALOG.md
+      - Universal Dataset Providers: UNIVERSAL_DATASETS.md
       - Agentic AI: AGENTIC_AI.md
       - Roadmap: ROADMAP.md
   - Dataset Cards:
