@@ -17,7 +17,6 @@ PUBLIC_PROBE_DATASETS = (
     "scalarflow",
     "shapenet_car",
     "eagle",
-    "apebench",
 )
 
 

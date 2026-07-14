@@ -149,10 +149,10 @@ OFFICIAL_DATASET_SOURCES: dict[str, OfficialDatasetSource] = {
         public=True,
         repository="eagle-dataset/EagleMeshTransformer",
         artifacts={
-            "clusters": "https://datasets.liris.cnrs.fr/eagle-version1/eagle_clusters.tar.gz",
-            "spline": "https://datasets.liris.cnrs.fr/eagle-version1/spline.tar.gz",
-            "step": "https://datasets.liris.cnrs.fr/eagle-version1/step.tar.gz",
-            "triangular": "https://datasets.liris.cnrs.fr/eagle-version1/triangular.tar.gz",
+            "clusters": "https://dataset-dl.liris.cnrs.fr/eagle_dataset/eagle_clusters.tar.gz",
+            "spline": "https://dataset-dl.liris.cnrs.fr/eagle_dataset/spline.tar.gz",
+            "step": "https://dataset-dl.liris.cnrs.fr/eagle_dataset/step.tar.gz",
+            "triangular": "https://dataset-dl.liris.cnrs.fr/eagle_dataset/triangular.tar.gz",
         },
         checksums={
             "clusters": "f1bbc1dc22b0fbc57a5f8d0243d85f6471c43585fb0ecc7409de19996d3de12c",
@@ -182,6 +182,7 @@ OFFICIAL_DATASET_SOURCES: dict[str, OfficialDatasetSource] = {
 _ALLOWED_HTTP_HOSTS = {
     "data.isir.upmc.fr",
     "dataverse.harvard.edu",
+    "dataset-dl.liris.cnrs.fr",
     "datasets.liris.cnrs.fr",
     "huggingface.co",
     "raw.githubusercontent.com",
