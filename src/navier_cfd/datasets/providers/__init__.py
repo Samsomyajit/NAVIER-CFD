@@ -34,6 +34,22 @@ from .upstream import (
     OfficialUpstreamProbe,
 )
 
+# Keep local-loader error messages and provenance aligned with the verified publisher registry.
+for _dataset_id, _source in OFFICIAL_DATASET_SOURCES.items():
+    if _dataset_id not in LOCAL_DATASET_CONTRACTS:
+        continue
+    _contract = LOCAL_DATASET_CONTRACTS[_dataset_id]
+    LOCAL_DATASET_CONTRACTS[_dataset_id] = LocalDatasetContract(
+        dataset_id=_contract.dataset_id,
+        provider=_contract.provider,
+        source_url=_source.homepage,
+        access_mode=_contract.access_mode,
+        representation=_contract.representation,
+        temporal=_contract.temporal,
+        default_target_fields=_contract.default_target_fields,
+        notes=_contract.notes + ("Stage official files with OfficialDatasetManager before loading.",),
+    )
+
 __all__ = [
     "APEBenchDatasetManager",
     "CFDBENCH_REPO",
