@@ -13,7 +13,7 @@ from .core import (
 )
 from .factory import load_cfd_dataset
 from .huggingface import HuggingFaceDatasetManager
-from .loaders import collate_cfd_samples, make_dataloaders
+from .loaders import collate_cfd_samples, make_dataloaders, make_split_dataloaders
 from .the_well import (
     KNOWN_WELL_DATASETS,
     MissingTheWellDependency,
@@ -47,6 +47,7 @@ __all__ = [
     "load_cfd_dataset",
     "load_the_well",
     "make_dataloaders",
+    "make_split_dataloaders",
     "split_dataset",
     "split_indices",
 ]
