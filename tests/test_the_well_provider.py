@@ -8,7 +8,9 @@ import pytest
 
 from navier_cfd import (
     Catalog,
+    Experiment,
     HuggingFaceDatasetManager,
+    TaskSpec,
     TheWellDatasetManager,
     load_cfd_dataset,
     load_model,
@@ -117,6 +119,35 @@ def test_official_provider_builds_and_adapts_records(monkeypatch) -> None:
     assert model.dimension == 2
     assert plan.builder_kwargs["in_channels"] == 7
     assert plan.builder_kwargs["out_channels"] == 3
+
+
+def test_experiment_loads_official_splits(monkeypatch) -> None:
+    experiment = Experiment(
+        dataset_id="the_well",
+        dataset_configuration="active_matter",
+        model_id="fno",
+        task=TaskSpec(
+            problem="active_matter",
+            task_type="forecasting",
+            dimension=2,
+            mesh_type="structured",
+            temporal_mode="autoregressive",
+            geometry_mode="fixed",
+        ),
+    )
+    calls: list[str] = []
+
+    def fake_load_dataset(*, split: str, **kwargs):
+        calls.append(split)
+        return {"split": split, "kwargs": kwargs}
+
+    monkeypatch.setattr(experiment, "load_dataset", fake_load_dataset)
+    datasets = experiment.load_official_splits(streaming=True)
+
+    assert calls == ["train", "valid", "test"]
+    assert datasets["train"]["split"] == "train"
+    assert datasets["validation"]["split"] == "valid"
+    assert datasets["test"]["split"] == "test"
 
 
 def test_dataset_factory_requires_configuration() -> None:
