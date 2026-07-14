@@ -15,14 +15,24 @@ from navier_cfd import (
 )
 
 
+class FakeZScoreNormalization:
+    pass
+
+
 class FakeWellDataset:
     def __init__(self, **kwargs):
         self.kwargs = kwargs
         self.use_normalization = kwargs.get("use_normalization", False)
+        self.normalization_type = kwargs.get("normalization_type")
         self.metadata = SimpleNamespace(
             field_names={0: ["density"], 1: ["velocity_x", "velocity_y"]},
+            constant_field_names={0: ["porosity"]},
+            scalar_names=["forcing"],
+            constant_scalar_names=["reynolds"],
             n_fields=3,
             n_spatial_dims=2,
+            spatial_resolution=(4, 5),
+            grid_type="cartesian",
             dataset_name=kwargs["well_dataset_name"],
         )
         x = np.arange(2 * 4 * 5 * 3, dtype=np.float32).reshape(2, 4, 5, 3)
@@ -31,8 +41,11 @@ class FakeWellDataset:
             {
                 "input_fields": x,
                 "output_fields": y,
-                "constant_scalars": {"reynolds": 100.0},
-                "boundary_conditions": {"type": "periodic"},
+                "constant_fields": np.ones((4, 5, 1), dtype=np.float32),
+                "input_scalars": np.array([[0.1], [0.2]], dtype=np.float32),
+                "output_scalars": np.array([[0.3]], dtype=np.float32),
+                "constant_scalars": np.array([100.0], dtype=np.float32),
+                "boundary_conditions": np.array([[2, 2], [0, 1]], dtype=np.int64),
                 "space_grid": (np.linspace(0, 1, 4), np.linspace(0, 1, 5)),
                 "input_time_grid": np.array([0.0, 0.1]),
                 "output_time_grid": np.array([0.2]),
@@ -64,6 +77,11 @@ def test_generic_huggingface_manager_rejects_the_well() -> None:
 
 def test_official_provider_builds_and_adapts_records(monkeypatch) -> None:
     monkeypatch.setattr(TheWellDatasetManager, "_dataset_class", staticmethod(lambda: FakeWellDataset))
+    monkeypatch.setattr(
+        TheWellDatasetManager,
+        "_default_normalization_type",
+        staticmethod(lambda: FakeZScoreNormalization),
+    )
     monkeypatch.setattr(TheWellDatasetManager, "provider_version", staticmethod(lambda: "test"))
 
     dataset = TheWellDatasetManager().load(
@@ -76,13 +94,16 @@ def test_official_provider_builds_and_adapts_records(monkeypatch) -> None:
     )
     sample = dataset[0]
 
-    assert sample.inputs.shape == (4, 5, 6)
+    assert sample.inputs.shape == (4, 5, 7)
     assert sample.targets.shape == (4, 5, 3)
     assert sample.coordinates.shape == (4, 5, 2)
-    assert sample.parameters["reynolds"] == 100.0
+    assert sample.parameters["reynolds"] == pytest.approx(100.0)
     assert sample.metadata["well_dataset_name"] == "active_matter"
     assert sample.metadata["field_names"] == ("density", "velocity_x", "velocity_y")
+    assert sample.metadata["input_channel_names"][-1] == "porosity"
+    assert sample.metadata["normalization"]["type"] == "FakeZScoreNormalization"
     assert dataset.access_plan["base_path"] == "hf://datasets/polymathic-ai/"
+    assert dataset.access_plan["normalization_type"] == "FakeZScoreNormalization"
 
     if importlib.util.find_spec("torch") is None:
         return
@@ -94,7 +115,7 @@ def test_official_provider_builds_and_adapts_records(monkeypatch) -> None:
         return_plan=True,
     )
     assert model.dimension == 2
-    assert plan.builder_kwargs["in_channels"] == 6
+    assert plan.builder_kwargs["in_channels"] == 7
     assert plan.builder_kwargs["out_channels"] == 3
 
 
