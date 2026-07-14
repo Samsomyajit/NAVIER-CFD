@@ -41,13 +41,58 @@ def _finite_sample(sample: Any) -> dict[str, Any]:
     }
 
 
+def _read_official_prefix(url: str) -> dict[str, Any]:
+    request = Request(
+        url,
+        headers={
+            "Range": "bytes=0-15",
+            "User-Agent": "navier-cfd-upstream-validation/0.8",
+        },
+    )
+    with urlopen(request, timeout=60.0) as response:
+        prefix = response.read(16)
+        return {
+            "requested_url": url,
+            "resolved_url": response.geturl(),
+            "status": getattr(response, "status", 200),
+            "content_range": response.headers.get("Content-Range"),
+            "prefix_hex": prefix.hex(),
+            "bytes_read": len(prefix),
+        }
+
+
 def validate_probes(output: Path) -> dict[str, Any]:
     manager = OfficialDatasetManager()
     report: dict[str, Any] = {"grade": "official_endpoint_verified", "datasets": {}}
     failures = []
     for dataset_id in PUBLIC_PROBE_DATASETS:
         probe = manager.probe(dataset_id, timeout=30.0, max_entries=15)
-        report["datasets"][dataset_id] = probe.to_dict()
+        details = probe.to_dict()
+        source = manager.source(dataset_id)
+        if probe.reachable and source.backend == "direct_http" and source.artifacts:
+            sample_url = next(iter(source.artifacts.values()))
+            try:
+                details["real_file_prefix"] = _read_official_prefix(sample_url)
+            except Exception as exc:
+                details["real_file_prefix_error"] = str(exc)
+                failures.append(f"{dataset_id} real-byte probe: {exc}")
+        if probe.reachable and dataset_id == "scalarflow":
+            try:
+                staged = manager.download(
+                    "scalarflow",
+                    output.parent,
+                    artifacts=["LICENSE.txt"],
+                    max_bytes=1024**2,
+                )
+                details["official_file_download"] = {
+                    "files": list(staged.files),
+                    "sha256": dict(staged.sha256),
+                    "manifest_path": staged.manifest_path,
+                }
+            except Exception as exc:
+                details["official_file_download_error"] = str(exc)
+                failures.append(f"scalarflow official-file download: {exc}")
+        report["datasets"][dataset_id] = details
         if not probe.reachable:
             failures.append(f"{dataset_id}: {probe.error_category}: {probe.message}")
     output.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
