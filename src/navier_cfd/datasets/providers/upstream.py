@@ -6,7 +6,6 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path, PurePosixPath
-import shutil
 import tarfile
 from typing import Any, Mapping, Sequence
 from urllib.error import HTTPError
@@ -314,7 +313,7 @@ def _extract_archive(path: Path, destination: Path) -> tuple[str, ...]:
                     raise OfficialDatasetAccessError(
                         f"Archive links are not extracted for safety: {member.name}"
                     )
-            archive.extractall(destination, members=members, filter="data")
+            archive.extractall(destination, members=members)
             extracted.extend(member.name for member in members if member.isfile())
     else:
         raise OfficialDatasetAccessError(f"Not a recognized ZIP or TAR archive: {path}")
