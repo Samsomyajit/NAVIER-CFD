@@ -103,6 +103,7 @@ jobs:
             tests/test_native_suite.py \
             tests/test_the_well_provider.py \
             tests/test_scientific_hf_providers.py \
+            tests/test_universal_dataset_providers.py \
             tests/test_metric_suites.py \
             -q --tb=short > native-suite.txt 2>&1
           status=$?
