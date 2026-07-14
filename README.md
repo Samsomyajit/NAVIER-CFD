@@ -13,7 +13,7 @@
   <a href="https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml"><img src="https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://samsomyajit.github.io/NAVIER-CFD/"><img src="https://img.shields.io/badge/project-website-0d6fdc.svg" alt="Project website"></a>
   <a href="https://samsomyajit.github.io/NAVIER-CFD/recommender/"><img src="https://img.shields.io/badge/tool-recommender-13b7d8.svg" alt="Interactive recommender"></a>
-  <img src="https://img.shields.io/badge/version-0.6.0-2f6f9f.svg" alt="Version 0.6.0">
+  <img src="https://img.shields.io/badge/version-0.6.0-2f6f9f.svg" alt="Version 1.1.0">
   <img src="https://img.shields.io/badge/catalog_models-55-7c6aa6.svg" alt="55 catalog models">
   <img src="https://img.shields.io/badge/native_reference_models-52-008b8b.svg" alt="52 native reference models">
   <img src="https://img.shields.io/badge/dataset_profiles-11-5d8f72.svg" alt="11 dataset profiles">
