@@ -13,6 +13,7 @@ NAVIER-CFD（**Neural and Agentic Verification, Integration, Evaluation, and Rec
 - **统一训练与评估**：支持 Adam、AdamW、SGD、LBFGS、混合精度、早停、检查点和 CFD 专用指标。
 - **证据感知推荐**：结合架构兼容性、论文结果、证据质量、覆盖度和置信度推荐模型。
 
+![navier-cfd](./assets/Navier-CFD.png)
 ## 安装
 
 ```bash
