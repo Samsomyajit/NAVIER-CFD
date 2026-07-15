@@ -12,6 +12,7 @@ NAVIER-CFD is a CFD-first Python platform for neural PDE solvers, hybrid acceler
 [Launch the interactive recommender](../recommender/){ .md-button }
 [View the repository](https://github.com/Samsomyajit/NAVIER-CFD){ .md-button }
 
+
 ## What makes it different
 
 - CFD-first taxonomy spanning acceleration, surrogates, general PDE solvers, geometry models, specialized tasks, foundation models, inverse methods, uncertainty, particle/multiphase, and generative models.
@@ -20,6 +21,8 @@ NAVIER-CFD is a CFD-first Python platform for neural PDE solvers, hybrid acceler
 - Deterministic and LLM-ready experiment planning.
 - CFD-aware field, spectral, conservation, rollout, OOD, quantity-of-interest, and computational-cost metrics.
 - Metadata-first external adapters that never execute untrusted repositories automatically.
+
+![navier-cfd](./assets/Navier-CFD.png)
 
 ## Install
 
