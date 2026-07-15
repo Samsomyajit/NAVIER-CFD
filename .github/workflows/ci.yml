@@ -60,7 +60,7 @@ jobs:
         run: node --test website/recommender/recommender-core.test.mjs
 
   native-models:
-    name: Native models, providers, metrics, and training smoke tests
+    name: Native models, providers, metrics, training, and AutoResearch smoke tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
           if missing:
               raise SystemExit(f"The Well API contract changed; missing parameters: {sorted(missing)}")
           PY
-      - name: Run executable model, provider, metric, and experiment tests
+      - name: Run executable model, provider, metric, experiment, and AutoResearch tests
         id: native-tests
         shell: bash
         run: |
@@ -106,6 +106,9 @@ jobs:
             tests/test_universal_dataset_providers.py \
             tests/test_official_upstream_sources.py \
             tests/test_metric_suites.py \
+            tests/test_autoresearch.py \
+            tests/test_autoresearch_tools.py \
+            tests/test_figurelab.py \
             -q --tb=short > native-suite.txt 2>&1
           status=$?
           cat native-suite.txt

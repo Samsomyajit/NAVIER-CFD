@@ -13,7 +13,7 @@
   <a href="https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml"><img src="https://github.com/Samsomyajit/NAVIER-CFD/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://samsomyajit.github.io/NAVIER-CFD/"><img src="https://img.shields.io/badge/project-website-0d6fdc.svg" alt="Project website"></a>
   <a href="https://samsomyajit.github.io/NAVIER-CFD/recommender/"><img src="https://img.shields.io/badge/tool-recommender-13b7d8.svg" alt="Interactive recommender"></a>
-  <img src="https://img.shields.io/badge/version-0.6.0-2f6f9f.svg" alt="Version 1.1.0">
+  <img src="https://img.shields.io/badge/version-1.1.0-2f6f9f.svg" alt="Version 1.1.0">
   <img src="https://img.shields.io/badge/catalog_models-55-7c6aa6.svg" alt="55 catalog models">
   <img src="https://img.shields.io/badge/native_reference_models-52-008b8b.svg" alt="52 native reference models">
   <img src="https://img.shields.io/badge/dataset_profiles-11-5d8f72.svg" alt="11 dataset profiles">
@@ -28,10 +28,11 @@ multi-dataset integration
 + unified training and checkpoints
 + physical metric suites
 + evidence-aware recommendation
++ Codex-integrated AutoResearch
 + chemical-engineering extensions
 ```
 
-Version 0.6 adds an official-provider integration for The Well and structured data-, spectral-, and physics-oriented metric suites without changing this project identity.
+Version 1.1.0 adds NAVIER AutoResearch: persistent research contracts, bounded agent sessions, Codex repository skills, a local read-only MCP server, deterministic CFD diagnostics, and auditable research-grade figure specifications.
 
 ## Authors and affiliation
 
@@ -59,11 +60,65 @@ Official The Well provider support:
 pip install "navier-cfd[models,the-well]"
 ```
 
+Codex, MCP, and research-figure support:
+
+```bash
+pip install "navier-cfd[autoresearch]"
+```
+
 Core catalog, recommendation, evidence, dataset-discovery, and NumPy metric tools:
 
 ```bash
 pip install navier-cfd
 ```
+
+## NAVIER AutoResearch and Codex
+
+Start an approval-aware campaign from a client problem:
+
+```bash
+navier-autoresearch init \
+  "Reconstruct gas and solids velocities from EP_G history across unseen gas velocities" \
+  --workspace runs/bubblenet-autoresearch \
+  --domain gas_solid_multiphase \
+  --mode guided \
+  --max-gpu-hours 24 \
+  --max-experiments 12
+```
+
+The campaign records a research contract, deterministic planner output, action proposals, approvals, findings, resource usage, and stopping decisions.
+
+Codex integration is provided through:
+
+- a repository `AGENTS.md` with scientific-integrity and autonomy rules;
+- six skills under `.agents/skills`;
+- a project MCP example under `.codex/config.toml.example`;
+- the local `navier-autoresearch mcp` STDIO server.
+
+The v1.1.0 MCP tools are intentionally read-only: dataset/model discovery, research planning, recommendation, metric catalog inspection, and figure-spec auditing. Training, solvers, cluster submission, large downloads, overwrites, and deletion are not exposed as automatic tools.
+
+```python
+from navier_cfd import AutoResearchSession, ResearchBudget, ResearchMode
+
+session = AutoResearchSession.create(
+    "runs/client-project",
+    "Predict pressure drop and temperature fields for unseen heat-exchanger geometries",
+    domain="heat_transfer",
+    mode=ResearchMode.GUIDED,
+    budget=ResearchBudget(max_gpu_hours=20, max_experiments=10),
+)
+plan = session.plan()
+```
+
+Detailed documentation:
+
+- [AutoResearch overview](docs/AUTORESEARCH.md)
+- [AutoResearch architecture](docs/AUTORESEARCH_ARCHITECTURE.md)
+- [MCP tools](docs/AUTORESEARCH_TOOLS.md)
+- [Codex skills](docs/CODEX_SKILLS.md)
+- [Research contracts and sessions](docs/AUTORESEARCH_SESSIONS.md)
+- [CFD diagnostics](docs/CFD_DIAGNOSTICS.md)
+- [FigureLab](docs/FIGURELAB.md)
 
 ## Dataset-conditioned model construction
 
@@ -260,6 +315,31 @@ results = suite.evaluate(prediction, target, context=context)
 
 Every result records its category, optimization direction, ideal value, assumptions, validity, and evaluation space. Missing physical metadata returns `valid=False` with an explanation rather than a fabricated quantity.
 
+## Research-grade figures and diagnostics
+
+```python
+from navier_cfd import FigureSpec, audit_figure_spec, analyze_interface_error
+
+spec = FigureSpec(
+    figure_type="truth_prediction_error",
+    fields=("gas_velocity_y",),
+    units="m/s",
+    shared_color_limits=True,
+    error_definition="absolute",
+    mask="fluid_cells",
+)
+assert audit_figure_spec(spec).valid
+
+interface_report = analyze_interface_error(
+    prediction,
+    target,
+    gas_volume_fraction,
+    spatial_axes=(1, 2),
+)
+```
+
+The figure audit detects misleading color scales, missing units, undeclared masks, normalized fields mislabeled as physical quantities, visual smoothing, cherry-picking, low raster resolution, and missing vector output. Optional renderers create truth/prediction/error and profile figures with a `FigureManifest` sidecar.
+
 ## High-level experiment API
 
 ```python
@@ -327,10 +407,12 @@ The recommender combines architecture compatibility with task-matched paper evid
 ```bash
 pytest tests/test_model_hub.py tests/test_pibert_pipeline.py tests/test_native_suite.py
 pytest tests/test_the_well_provider.py tests/test_metric_suites.py
+pytest tests/test_autoresearch.py tests/test_autoresearch_tools.py tests/test_figurelab.py
 node --test website/recommender/recommender-core.test.mjs
+mkdocs build --strict
 ```
 
-CI verifies Python 3.10–3.12, all 52 native reference models, the official The Well constructor contract, provider adaptation, dataset-conditioned model construction, metric analytical cases, the browser recommender, and bilingual documentation.
+CI verifies Python 3.10–3.12, all 52 native reference models, official provider contracts, dataset-conditioned model construction, metric analytical cases, AutoResearch contracts and tools, FigureLab audits, the browser recommender, and bilingual documentation.
 
 ## Documentation
 
@@ -338,6 +420,7 @@ CI verifies Python 3.10–3.12, all 52 native reference models, the official The
 - Interactive recommender: https://samsomyajit.github.io/NAVIER-CFD/recommender/
 - English documentation: https://samsomyajit.github.io/NAVIER-CFD/docs/
 - Simplified Chinese documentation: https://samsomyajit.github.io/NAVIER-CFD/docs/zh/
+- AutoResearch: `docs/AUTORESEARCH.md`
 - Metrics: `docs/METRICS.md`
 - The Well provider: `docs/datasets/the_well.md`
 - Native model suite: `docs/NATIVE_MODEL_SUITE.md`

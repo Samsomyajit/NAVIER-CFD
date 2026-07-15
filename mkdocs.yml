@@ -66,6 +66,15 @@ plugins:
             Dataset Catalog: 数据集目录
             Universal Dataset Providers: 通用数据集提供器
             Agentic AI: 智能体 AI
+            AutoResearch: 自动研究
+            AutoResearch Overview: 自动研究概览
+            AutoResearch Architecture: 自动研究架构
+            MCP Tools: MCP 工具
+            Codex Skills: Codex 技能
+            Research Contracts and Sessions: 研究契约与会话
+            CFD Diagnostics: CFD 诊断
+            FigureLab: 科研绘图实验室
+            Release 1.1.0: 1.1.0 版本
             Roadmap: 路线图
             Dataset Cards: 数据集卡片
             Case Studies: 案例研究
@@ -87,7 +96,11 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
 
@@ -115,6 +128,15 @@ nav:
       - Dataset Catalog: DATASET_CATALOG.md
       - Universal Dataset Providers: UNIVERSAL_DATASETS.md
       - Agentic AI: AGENTIC_AI.md
+      - AutoResearch:
+          - AutoResearch Overview: AUTORESEARCH.md
+          - AutoResearch Architecture: AUTORESEARCH_ARCHITECTURE.md
+          - MCP Tools: AUTORESEARCH_TOOLS.md
+          - Codex Skills: CODEX_SKILLS.md
+          - Research Contracts and Sessions: AUTORESEARCH_SESSIONS.md
+          - CFD Diagnostics: CFD_DIAGNOSTICS.md
+          - FigureLab: FIGURELAB.md
+          - Release 1.1.0: RELEASE_1_1_0.md
       - Roadmap: ROADMAP.md
   - Dataset Cards:
       - CFDBench: datasets/cfdbench.md
