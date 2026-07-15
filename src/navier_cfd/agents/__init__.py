@@ -1,3 +1,3 @@
-from .orchestrator import AgentOrchestrator, AgentPlan
+from .orchestrator import AgentOrchestrator, AgentPlan, LLMBackend
 
-__all__ = ["AgentOrchestrator", "AgentPlan"]
+__all__ = ["AgentOrchestrator", "AgentPlan", "LLMBackend"]

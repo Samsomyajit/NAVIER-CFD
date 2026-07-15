@@ -1,21 +1,40 @@
-# Agentic AI support
+# Agentic AI and NAVIER AutoResearch
 
-The core agent is provider-neutral and can operate offline through deterministic task parsing and rule-based recommendation. An external LLM can be injected as a callable backend without coupling the library to one vendor.
+NAVIER-CFD separates language-model reasoning from deterministic scientific execution.
 
-## Agent tools
-1. list and inspect datasets;
-2. discover Hugging Face resources;
-3. inspect model capabilities and limitations;
-4. validate task/model compatibility;
-5. recommend models with reasons and cautions;
-6. build benchmark splits, metrics, and ablations;
-7. emit a pinned run manifest.
+The existing provider-neutral `AgentOrchestrator` converts a natural-language CFD objective into a structured task, dataset choice, evidence-aware model shortlist, benchmark plan, and rationale. It can operate offline and does not send data, files, or credentials to an LLM by default.
+
+NAVIER-CFD 1.1.0 adds **NAVIER AutoResearch**, a persistent and approval-aware campaign layer around this planner.
+
+## Current agentic capabilities
+
+1. interpret natural-language CFD objectives;
+2. select a relevant registered dataset family;
+3. hard-filter model compatibility;
+4. rank models using task fit and paper evidence;
+5. build benchmark splits, metrics, and ablations;
+6. record a research contract, resource budget, approvals, findings, and stopping decisions;
+7. expose read-only planning and audit tools to Codex through a local MCP server;
+8. provide repository Codex skills for data audit, diagnostics, figures, AutoResearch, and scientific review.
 
 ```python
-from navier_cfd.agents import AgentOrchestrator
-agent = AgentOrchestrator()
-plan = agent.plan("Benchmark sim-to-real cylinder wake forecasting on RealPDEBench, 24 GB GPU, conservation and uncertainty required")
-print(plan.to_dict())
+from navier_cfd import AutoResearchSession, ResearchBudget, ResearchMode
+
+session = AutoResearchSession.create(
+    "runs/vehicle-aerodynamics",
+    "Benchmark unstructured 3D vehicle drag surrogates with geometry holdout",
+    domain="external_aerodynamics",
+    mode=ResearchMode.GUIDED,
+    budget=ResearchBudget(max_gpu_hours=24, max_experiments=8),
+)
+plan = session.plan()
+print(plan["planner"])
 ```
 
-The library never sends files, credentials, or datasets to an LLM by default.
+## Scientific boundary
+
+The language model plans and interprets. NAVIER-CFD calculates, validates, ranks, audits, and records.
+
+The v1.1.0 MCP tools are intentionally read-only. Training, downloads, OpenFOAM/MFiX/DEM execution, Slurm submission, overwrites, and deletion are not automatically exposed. Future execution connectors must use the same ResearchContract approvals, budgets, provenance, and stop policies.
+
+See [NAVIER AutoResearch and Codex integration](AUTORESEARCH.md) for setup and API details.

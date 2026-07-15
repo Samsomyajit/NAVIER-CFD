@@ -1,0 +1,19 @@
+# Copy this file to .codex/config.toml in a trusted NAVIER-CFD checkout.
+# Install first: pip install -e ".[autoresearch]"
+
+[mcp_servers.navier_cfd]
+command = "navier-autoresearch"
+args = ["mcp"]
+enabled = true
+required = true
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+default_tools_approval_mode = "auto"
+enabled_tools = [
+  "list_datasets",
+  "list_models",
+  "plan_research",
+  "recommend_models",
+  "list_metric_suites",
+  "audit_figure_spec",
+]

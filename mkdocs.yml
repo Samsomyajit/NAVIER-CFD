@@ -66,6 +66,8 @@ plugins:
             Dataset Catalog: 数据集目录
             Universal Dataset Providers: 通用数据集提供器
             Agentic AI: 智能体 AI
+            AutoResearch and Codex: 自动研究与 Codex
+            Release 1.1.0: 1.1.0 版本
             Roadmap: 路线图
             Dataset Cards: 数据集卡片
             Case Studies: 案例研究
@@ -115,6 +117,8 @@ nav:
       - Dataset Catalog: DATASET_CATALOG.md
       - Universal Dataset Providers: UNIVERSAL_DATASETS.md
       - Agentic AI: AGENTIC_AI.md
+      - AutoResearch and Codex: AUTORESEARCH.md
+      - Release 1.1.0: RELEASE_1_1_0.md
       - Roadmap: ROADMAP.md
   - Dataset Cards:
       - CFDBench: datasets/cfdbench.md
