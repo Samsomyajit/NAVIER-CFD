@@ -1,25 +1,53 @@
 # NAVIER-CFD 1.1.0
 
-## AutoResearch and Codex integration
+NAVIER-CFD 1.1.0 introduces the first Codex-integrated AutoResearch foundation.
 
-NAVIER-CFD 1.1.0 promotes the existing deterministic agentic planner into a persistent, approval-aware research-campaign foundation.
+## Main additions
 
-### Added
+- structured `ResearchObjective`, `ResearchContract`, `ResearchBudget`, and `StopPolicy`;
+- persistent `AutoResearchSession` workspaces;
+- assistant, guided, and bounded autonomy modes;
+- action risk classification and approval recording;
+- deterministic budget and stopping decisions;
+- a local read-only MCP server;
+- six repository Codex skills;
+- deterministic field, worst-case, and multiphase-interface diagnostics;
+- `FigureSpec`, figure auditing, Matplotlib renderers, and `FigureManifest`;
+- repository scientific-integrity rules in `AGENTS.md`;
+- project MCP configuration example;
+- focused tests and CI integration.
 
-- `ResearchObjective`, `ResearchContract`, `ResearchBudget`, `StopPolicy`, and research modes;
-- persistent `AutoResearchSession` workspaces with action proposals, approvals, findings, resource usage, and stopping decisions;
-- local STDIO MCP server for Codex with read-only planning, recommendation, metric, and figure-audit tools;
-- repository `AGENTS.md` with CFD scientific-integrity and autonomy rules;
-- six Codex skills under `.agents/skills`;
-- `navier-autoresearch` command-line entry point;
-- `FigureSpec`, `FigureManifest`, scientific figure audit, and optional Matplotlib rendering;
-- deterministic field, worst-case, and phase-interface diagnostics;
-- focused tests and documentation.
+## Documentation
 
-### Safety boundary
+The release includes a complete documentation set:
 
-The v1.1.0 MCP tools are read-only. Expensive training, solver execution, cluster submission, large downloads, overwrites, and deletion are not exposed as automatic tools. They require future explicit execution adapters with approval and budget enforcement.
+- [AutoResearch overview](AUTORESEARCH.md)
+- [Architecture](AUTORESEARCH_ARCHITECTURE.md)
+- [MCP tools](AUTORESEARCH_TOOLS.md)
+- [Codex skills](CODEX_SKILLS.md)
+- [Contracts and sessions](AUTORESEARCH_SESSIONS.md)
+- [CFD diagnostics](CFD_DIAGNOSTICS.md)
+- [FigureLab](FIGURELAB.md)
 
-### Compatibility
+## Validation
 
-The existing `AgentOrchestrator`, model hub, dataset providers, recommender, trainer, metrics, checkpoints, and experiment API remain available. AutoResearch composes these systems rather than replacing them.
+The release branch is validated through:
+
+- Python 3.10, 3.11, and 3.12 tests;
+- Ruff;
+- browser recommender tests;
+- native model/provider/metric/training and AutoResearch smoke tests;
+- strict documentation build;
+- official-source security and live upstream validation.
+
+## Compatibility
+
+Existing dataset providers, model hub APIs, recommendation, training, checkpoints, metrics, experiments, CLI workflows, and the original `AgentOrchestrator` remain available.
+
+AutoResearch composes these systems rather than replacing them.
+
+## Safety and scope
+
+The v1.1.0 MCP tools are intentionally read-only. The release does not claim automatic training, solver execution, cluster submission, active simulation generation, or autonomous laboratory control.
+
+Those capabilities require separate approved execution adapters.
