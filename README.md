@@ -110,7 +110,15 @@ session = AutoResearchSession.create(
 plan = session.plan()
 ```
 
-See `docs/AUTORESEARCH.md`.
+Detailed documentation:
+
+- [AutoResearch overview](docs/AUTORESEARCH.md)
+- [AutoResearch architecture](docs/AUTORESEARCH_ARCHITECTURE.md)
+- [MCP tools](docs/AUTORESEARCH_TOOLS.md)
+- [Codex skills](docs/CODEX_SKILLS.md)
+- [Research contracts and sessions](docs/AUTORESEARCH_SESSIONS.md)
+- [CFD diagnostics](docs/CFD_DIAGNOSTICS.md)
+- [FigureLab](docs/FIGURELAB.md)
 
 ## Dataset-conditioned model construction
 
@@ -401,9 +409,10 @@ pytest tests/test_model_hub.py tests/test_pibert_pipeline.py tests/test_native_s
 pytest tests/test_the_well_provider.py tests/test_metric_suites.py
 pytest tests/test_autoresearch.py tests/test_autoresearch_tools.py tests/test_figurelab.py
 node --test website/recommender/recommender-core.test.mjs
+mkdocs build --strict
 ```
 
-CI verifies Python 3.10–3.12, all 52 native reference models, official provider contracts, provider adaptation, dataset-conditioned model construction, metric analytical cases, AutoResearch contracts and tools, diagnostics, figure audits, the browser recommender, and bilingual documentation.
+CI verifies Python 3.10–3.12, all 52 native reference models, official provider contracts, dataset-conditioned model construction, metric analytical cases, AutoResearch contracts and tools, FigureLab audits, the browser recommender, and bilingual documentation.
 
 ## Documentation
 
