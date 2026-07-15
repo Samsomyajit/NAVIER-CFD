@@ -1,18 +1,6 @@
 # Architecture
 
-```mermaid
-flowchart LR
-  U[User / Agent / CLI] --> T[Typed TaskSpec]
-  T --> R[Compatibility Filter + Explainable Recommender]
-  C[(55-model Catalog)] --> R
-  D[(11-dataset Catalog)] --> H[Hugging Face Manager]
-  R --> P[Benchmark Planner]
-  H --> P
-  P --> X[Runner Adapters]
-  X --> M[CFD Metrics + QoIs + Stability]
-  M --> V[Run Manifest, Provenance, Leaderboard]
-  A[Optional LLM Backend] --> U
-```
+![Navier-CFD](./assets/FlowNavier.png)
 
 ## Layers
 
