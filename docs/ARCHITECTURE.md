@@ -1,13 +1,17 @@
 # NAVIER-CFD architecture
 
-![NAVIER-CFD](./assets/FlowNavier.png)
+
 
 NAVIER-CFD is a layered platform. The model and dataset catalogues are not the platform by themselves; they are connected to canonical data adaptation, dataset-conditioned construction, training, physical evaluation, evidence-aware recommendation, and the AutoResearch governance layer.
 
 ## Platform flow
 
 ```mermaid
-flowchart LR
+---
+config:
+  layout: elk
+---
+flowchart 
     U[User, Codex, or CLI]
     T[TaskSpec or ResearchContract]
     R[Compatibility and evidence recommender]
