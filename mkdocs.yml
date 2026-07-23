@@ -115,7 +115,19 @@ nav:
       - Dataset-configured Native Suite: NATIVE_MODEL_SUITE.md
       - Executable Model Hub: MODEL_HUB.md
       - Model Catalog: MODEL_CATALOG.md
-      - Model Atlas: models/README.md
+      - Model Atlas:
+          - Overview: models/README.md
+          - PIBERT: models/pibert.md
+          - GINO: models/gino.md
+          - Transolver: models/transolver.md
+          - Universal Physics Transformer: models/upt.md
+          - P3D: models/p3d.md
+          - AeroTransformer: models/aerotransformer.md
+          - DoMINO: models/domino.md
+          - FourierFlow: models/fourierflow.md
+          - Indirect Neural Corrector: models/inc.md
+          - PICT: models/pict.md
+          - Geometry-Aware Neural Preconditioner: models/geometry_preconditioner.md
   - Evaluation Metrics:
       - Metrics Overview: METRICS.md
       - Data-oriented: METRICS_DATA.md
