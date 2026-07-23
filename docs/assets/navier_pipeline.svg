@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">NAVIER-CFD scientific workflow</title>
+  <desc id="desc">A clean scientific pipeline showing task definition, Hugging Face datasets, task-aware recommendation, model families, unified training and inference, CFD-aware evaluation, and agentic feedback.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#4b5563"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2f6f9f"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#111827" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .bg { fill:#fbfbfa; }
+      .title { font-family:Arial,Helvetica,sans-serif; font-size:38px; font-weight:700; fill:#17212b; }
+      .subtitle { font-family:Arial,Helvetica,sans-serif; font-size:19px; fill:#4b5563; }
+      .section { font-family:Arial,Helvetica,sans-serif; font-size:19px; font-weight:700; fill:#1f2937; }
+      .body { font-family:Arial,Helvetica,sans-serif; font-size:15px; fill:#374151; }
+      .small { font-family:Arial,Helvetica,sans-serif; font-size:13px; fill:#4b5563; }
+      .tiny { font-family:Arial,Helvetica,sans-serif; font-size:12px; fill:#4b5563; }
+      .box { stroke:#c9ced4; stroke-width:1.5; rx:14; ry:14; filter:url(#shadow); }
+      .line { stroke:#4b5563; stroke-width:2.2; fill:none; marker-end:url(#arrow); }
+      .lineBlue { stroke:#2f6f9f; stroke-width:2.4; fill:none; marker-end:url(#arrowBlue); }
+      .feedback { stroke:#7a8793; stroke-width:1.8; stroke-dasharray:7 6; fill:none; marker-end:url(#arrow); }
+      .label { font-family:Arial,Helvetica,sans-serif; font-size:12px; font-weight:700; fill:#55606d; letter-spacing:.6px; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+  <rect x="42" y="36" width="1516" height="828" rx="22" fill="#ffffff" stroke="#d7dadd" stroke-width="1.5"/>
+
+  <text x="80" y="94" class="title">NAVIER-CFD: a uniform, agentic workflow for trustworthy neural CFD</text>
+  <text x="80" y="129" class="subtitle">From physical task specification and dataset acquisition to model selection, benchmark execution, verification and reproducible deployment</text>
+
+  <!-- 1 Task specification -->
+  <rect class="box" x="80" y="200" width="225" height="235" fill="#eef4f7"/>
+  <text x="105" y="235" class="label">1  DEFINE</text>
+  <text x="105" y="270" class="section">CFD task specification</text>
+  <text x="105" y="305" class="body">• PDE and flow regime</text>
+  <text x="105" y="333" class="body">• DNS / LES / RANS target</text>
+  <text x="105" y="361" class="body">• steady / unsteady rollout</text>
+  <text x="105" y="389" class="body">• geometry and mesh shift</text>
+  <text x="105" y="417" class="body">• QoIs, risk and hardware</text>
+
+  <!-- 2 Data hub -->
+  <rect class="box" x="355" y="175" width="250" height="285" fill="#edf6f1"/>
+  <text x="380" y="210" class="label">2  ACQUIRE</text>
+  <text x="380" y="245" class="section">CFD data hub</text>
+  <text x="380" y="279" class="body">Hugging Face discovery</text>
+  <text x="380" y="305" class="small">revision pinning • streaming • caching</text>
+  <line x1="380" y1="323" x2="580" y2="323" stroke="#b8c8bf"/>
+  <text x="380" y="351" class="body">PDEBench</text>
+  <text x="480" y="351" class="body">CFDBench</text>
+  <text x="380" y="379" class="body">RealPDEBench</text>
+  <text x="500" y="379" class="body">AirfRANS</text>
+  <text x="380" y="407" class="body">DrivAer • The Well • APEBench</text>
+  <text x="380" y="435" class="small">simulation • experiment • sim-to-real</text>
+
+  <!-- 3 recommender -->
+  <rect class="box" x="655" y="175" width="265" height="285" fill="#f6f1e9"/>
+  <text x="680" y="210" class="label">3  RECOMMEND</text>
+  <text x="680" y="245" class="section">Task-aware model ranking</text>
+  <text x="680" y="279" class="body">Hard compatibility filters</text>
+  <text x="680" y="307" class="body">Physics and representation fit</text>
+  <text x="680" y="335" class="body">Memory and rollout constraints</text>
+  <text x="680" y="363" class="body">Conservation and UQ needs</text>
+  <text x="680" y="391" class="body">Evidence-weighted scoring</text>
+  <rect x="680" y="414" width="215" height="27" rx="13" fill="#e6dac7"/>
+  <text x="700" y="433" class="small">explainable reasons + cautions</text>
+
+  <!-- 4 models -->
+  <rect class="box" x="970" y="155" width="330" height="325" fill="#f1eff7"/>
+  <text x="995" y="190" class="label">4  SELECT</text>
+  <text x="995" y="225" class="section">Uniform model atlas</text>
+  <g class="body">
+    <text x="995" y="260">Surrogates</text><text x="1110" y="260">FNO • DeepONet • PIBERT</text>
+    <text x="995" y="290">General PDE</text><text x="1110" y="290">PINO • Poseidon • DPOT</text>
+    <text x="995" y="320">Geometry</text><text x="1110" y="320">GINO • Transolver • UPT</text>
+    <text x="995" y="350">Specialized</text><text x="1110" y="350">FourierFlow • P3D • FSI</text>
+    <text x="995" y="380">Acceleration</text><text x="1110" y="380">INC • PICT • preconditioners</text>
+    <text x="995" y="410">Uncertainty</text><text x="1110" y="410">conformal • ensembles</text>
+    <text x="995" y="440">Particles</text><text x="1110" y="440">diffSPH • NeuralDEM</text>
+  </g>
+
+  <!-- 5 execute -->
+  <rect class="box" x="1350" y="200" width="170" height="235" fill="#edf2f8"/>
+  <text x="1374" y="235" class="label">5  EXECUTE</text>
+  <text x="1374" y="270" class="section">Unified runner</text>
+  <text x="1374" y="305" class="body">Adapters</text>
+  <text x="1374" y="333" class="body">Training</text>
+  <text x="1374" y="361" class="body">Inference</text>
+  <text x="1374" y="389" class="body">Checkpoints</text>
+  <text x="1374" y="417" class="body">Run manifests</text>
+
+  <!-- arrows top -->
+  <path class="line" d="M305 317 C325 317 335 317 355 317"/>
+  <path class="line" d="M605 317 C625 317 635 317 655 317"/>
+  <path class="line" d="M920 317 C940 317 950 317 970 317"/>
+  <path class="line" d="M1300 317 C1320 317 1330 317 1350 317"/>
+
+  <!-- evaluation band -->
+  <rect class="box" x="170" y="555" width="1160" height="185" fill="#f7f7f5"/>
+  <text x="200" y="592" class="label">6  VERIFY AND COMPARE</text>
+  <text x="200" y="627" class="section">CFD-aware benchmark and numerical accountability</text>
+
+  <g>
+    <rect x="205" y="654" width="180" height="58" rx="10" fill="#e8f1f5" stroke="#c6d3d9"/>
+    <text x="225" y="678" class="body">Field accuracy</text>
+    <text x="225" y="699" class="tiny">RMSE • Rel L₂ • localized error</text>
+
+    <rect x="405" y="654" width="180" height="58" rx="10" fill="#edf4ed" stroke="#c8d5c8"/>
+    <text x="425" y="678" class="body">Physics</text>
+    <text x="425" y="699" class="tiny">mass • momentum • energy • residual</text>
+
+    <rect x="605" y="654" width="180" height="58" rx="10" fill="#f5efe5" stroke="#d8ccb8"/>
+    <text x="625" y="678" class="body">Temporal behavior</text>
+    <text x="625" y="699" class="tiny">spectra • stable horizon • blowup rate</text>
+
+    <rect x="805" y="654" width="180" height="58" rx="10" fill="#f0edf5" stroke="#d0c9dc"/>
+    <text x="825" y="678" class="body">Engineering QoIs</text>
+    <text x="825" y="699" class="tiny">drag • lift • pressure loss • heat flux</text>
+
+    <rect x="1005" y="654" width="180" height="58" rx="10" fill="#eef0f2" stroke="#ced2d6"/>
+    <text x="1025" y="678" class="body">Transfer and risk</text>
+    <text x="1025" y="699" class="tiny">OOD • calibration • fallback</text>
+  </g>
+
+  <path class="lineBlue" d="M1435 435 C1435 515 1260 555 1230 555"/>
+  <text x="1320" y="520" class="small">predictions + cost</text>
+
+  <!-- agentic loop -->
+  <rect class="box" x="1370" y="555" width="150" height="185" fill="#eef4f7"/>
+  <text x="1391" y="592" class="label">7  ACT</text>
+  <text x="1391" y="627" class="section">Agentic loop</text>
+  <text x="1391" y="662" class="body">Diagnose</text>
+  <text x="1391" y="688" class="body">Refine task</text>
+  <text x="1391" y="714" class="body">Acquire data</text>
+
+  <path class="feedback" d="M1370 648 C1300 648 1290 520 1205 485 C1050 420 910 500 790 520 C660 542 490 520 350 475 C250 442 175 470 175 515"/>
+  <text x="540" y="514" class="small">evidence-guided iteration: refine data, model, fidelity or solver fallback</text>
+
+  <!-- outputs -->
+  <rect x="170" y="775" width="1350" height="55" rx="12" fill="#17212b"/>
+  <text x="205" y="809" style="font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;fill:#ffffff">Reproducible outputs</text>
+  <text x="390" y="809" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#dce3e8">versioned datasets</text>
+  <text x="575" y="809" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#dce3e8">task and model cards</text>
+  <text x="770" y="809" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#dce3e8">benchmark manifests</text>
+  <text x="965" y="809" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#dce3e8">verified metrics</text>
+  <text x="1125" y="809" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#dce3e8">reports and leaderboards</text>
+  <text x="1370" y="809" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#dce3e8">deployable runs</text>
+
+  <text x="80" y="855" class="tiny">Design principle: the numerical role of learning is explicit—surrogate, closure, corrector, preconditioner, inverse model, controller or generator.</text>
+</svg>

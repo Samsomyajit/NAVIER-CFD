@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="NAVIER-CFD icon">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06185f"/><stop offset=".6" stop-color="#0758a9"/><stop offset="1" stop-color="#13c5e8"/></linearGradient></defs>
+<rect width="512" height="512" rx="96" fill="#fff"/>
+<path d="M58 230 C118 230 142 224 176 199" fill="none" stroke="#0b68b8" stroke-width="10" stroke-linecap="round"/>
+<path d="M52 266 C121 266 150 258 188 231" fill="none" stroke="#12bddd" stroke-width="11" stroke-linecap="round"/>
+<path d="M151 380 C207 348 224 294 247 223 L278 130 L338 130 L386 230 L405 164 C419 117 451 111 478 130 C451 133 437 151 429 183 L377 382 L320 382 L267 270 L248 331 C232 383 195 405 151 399 Z" fill="url(#g)"/>
+<path d="M215 386 C269 407 339 387 375 335 C404 293 409 244 390 210 C382 264 355 289 327 303 C295 319 277 339 281 359 C285 377 304 387 327 383 C364 377 397 348 418 309" fill="none" stroke="#0b8ed4" stroke-width="17" stroke-linecap="round"/>
+<g stroke="#86d6ef" stroke-width="2" fill="none"><path d="M367 123 C430 148 456 214 443 293"/><path d="M351 164 C405 177 436 211 448 252"/><path d="M342 215 C399 221 432 242 447 270"/></g>
+<g fill="#0b3f91"><circle cx="366" cy="146" r="6"/><circle cx="410" cy="184" r="7"/><circle cx="441" cy="229" r="8" fill="#13bddc"/><circle cx="354" cy="214" r="6"/><circle cx="408" cy="237" r="7"/></g>
+</svg>

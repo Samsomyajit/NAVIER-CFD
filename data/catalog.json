@@ -1,0 +1,3294 @@
+{
+  "models": [
+    {
+      "id": "pinn",
+      "name": "Physics-Informed Neural Network",
+      "categories": [
+        "physics_informed",
+        "general_pde_solver",
+        "inverse"
+      ],
+      "architecture": "coordinate network with PDE residuals",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Physics-Informed Neural Network",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "nsfnets",
+      "name": "NSFnets",
+      "categories": [
+        "physics_informed",
+        "specialized"
+      ],
+      "architecture": "NSFnets architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "NSFnets",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "pinnsformer",
+      "name": "PINNsFormer",
+      "categories": [
+        "physics_informed",
+        "general_pde_solver"
+      ],
+      "architecture": "PINNsFormer architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "PINNsFormer",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout"
+      ]
+    },
+    {
+      "id": "deeponet",
+      "name": "DeepONet",
+      "categories": [
+        "surrogate",
+        "general_pde_solver",
+        "physics_informed"
+      ],
+      "architecture": "branch-trunk operator network",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Lu et al., Nature Machine Intelligence 2021",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "mionet",
+      "name": "MIONet",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "MIONet architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "MIONet",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "fourier_deeponet",
+      "name": "Fourier-DeepONet",
+      "categories": [
+        "surrogate",
+        "specialized"
+      ],
+      "architecture": "Fourier-DeepONet architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Fourier-DeepONet",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "nested_fourier_deeponet",
+      "name": "Nested Fourier-DeepONet",
+      "categories": [
+        "surrogate",
+        "specialized",
+        "particle_multiphase"
+      ],
+      "architecture": "Nested Fourier-DeepONet architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Nested Fourier-DeepONet",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "fourier_mionet",
+      "name": "Fourier-MIONet",
+      "categories": [
+        "surrogate",
+        "specialized",
+        "particle_multiphase"
+      ],
+      "architecture": "Fourier-MIONet architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Fourier-MIONet",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "fno",
+      "name": "Fourier Neural Operator",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Fourier neural operator",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Li et al., ICLR 2021",
+      "year": null,
+      "repository": "https://github.com/neuraloperator/neuraloperator",
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "pino",
+      "name": "Physics-Informed Neural Operator",
+      "categories": [
+        "physics_informed",
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Physics-Informed Neural Operator architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Physics-Informed Neural Operator",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "geo_fno",
+      "name": "Geo-FNO",
+      "categories": [
+        "geometry",
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Geo-FNO architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Geo-FNO",
+      "year": null,
+      "repository": "https://github.com/neuraloperator/Geo-FNO",
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "gino",
+      "name": "Geometry-Informed Neural Operator",
+      "categories": [
+        "geometry",
+        "surrogate"
+      ],
+      "architecture": "graph lifting, latent FNO, and point projection",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Li et al., NeurIPS 2023",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 24,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "u_fno",
+      "name": "U-FNO",
+      "categories": [
+        "surrogate",
+        "specialized",
+        "particle_multiphase"
+      ],
+      "architecture": "U-FNO architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "U-FNO",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "f_fno",
+      "name": "Factorized FNO",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Factorized FNO architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Factorized FNO",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "u_no",
+      "name": "U-shaped Neural Operator",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "U-shaped Neural Operator architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "U-shaped Neural Operator",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "lsm",
+      "name": "Latent Spectral Model",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Latent Spectral Model architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Latent Spectral Model",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "gnot",
+      "name": "General Neural Operator Transformer",
+      "categories": [
+        "surrogate",
+        "general_pde_solver",
+        "geometry"
+      ],
+      "architecture": "General Neural Operator Transformer architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "General Neural Operator Transformer",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "galerkin_transformer",
+      "name": "Galerkin Transformer",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Galerkin Transformer architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Galerkin Transformer",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "mwt",
+      "name": "Multiwavelet Transformer",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Multiwavelet Transformer architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Multiwavelet Transformer",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "factformer",
+      "name": "FactFormer",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "FactFormer architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "FactFormer",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "ono",
+      "name": "Orthogonal Neural Operator",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Orthogonal Neural Operator architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Orthogonal Neural Operator",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "transolver",
+      "name": "Transolver",
+      "categories": [
+        "geometry",
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "physics-attention transformer on general geometries",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Wu et al., ICML 2024",
+      "year": null,
+      "repository": "https://github.com/thuml/Neural-Solver-Library",
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "upt",
+      "name": "Universal Physics Transformer",
+      "categories": [
+        "foundation",
+        "geometry",
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "latent universal physics transformer",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Alkin et al., NeurIPS 2024",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "meshgraphnets",
+      "name": "MeshGraphNets",
+      "categories": [
+        "geometry",
+        "surrogate"
+      ],
+      "architecture": "MeshGraphNets architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "MeshGraphNets",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "domino",
+      "name": "DoMINO",
+      "categories": [
+        "geometry",
+        "surrogate",
+        "specialized"
+      ],
+      "architecture": "decomposable multiscale iterative neural operator",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "DoMINO",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 24,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "pibert",
+      "name": "PIBERT",
+      "categories": [
+        "surrogate",
+        "physics_informed",
+        "specialized"
+      ],
+      "architecture": "bidirectional transformer with Fourier-wavelet embeddings and physics-biased attention",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Chakraborty, Pan & Chen, 2026",
+      "year": null,
+      "repository": "https://github.com/Samsomyajit/pibert",
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "fourierflow",
+      "name": "FourierFlow",
+      "categories": [
+        "surrogate",
+        "generative",
+        "specialized"
+      ],
+      "architecture": "frequency-guided generative flow model",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "FourierFlow",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "uncertainty",
+        "3d"
+      ]
+    },
+    {
+      "id": "pde_refiner",
+      "name": "PDE-Refiner",
+      "categories": [
+        "surrogate",
+        "generative",
+        "general_pde_solver"
+      ],
+      "architecture": "PDE-Refiner architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "PDE-Refiner",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "dpot",
+      "name": "DPOT",
+      "categories": [
+        "foundation",
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "DPOT architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "DPOT",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "poseidon",
+      "name": "Poseidon",
+      "categories": [
+        "foundation",
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Poseidon architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Poseidon",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "prose_fd",
+      "name": "PROSE-FD",
+      "categories": [
+        "foundation",
+        "surrogate",
+        "specialized"
+      ],
+      "architecture": "PROSE-FD architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "PROSE-FD",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "bcat",
+      "name": "BCAT",
+      "categories": [
+        "foundation",
+        "surrogate",
+        "specialized"
+      ],
+      "architecture": "BCAT architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "BCAT",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "pdeformer1",
+      "name": "PDEformer-1",
+      "categories": [
+        "foundation",
+        "general_pde_solver"
+      ],
+      "architecture": "PDEformer-1 architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "PDEformer-1",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "pi_mfm",
+      "name": "PI-MFM",
+      "categories": [
+        "foundation",
+        "physics_informed",
+        "general_pde_solver"
+      ],
+      "architecture": "PI-MFM architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "PI-MFM",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "laplace_no",
+      "name": "Laplace Neural Operator",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "Laplace Neural Operator architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Laplace Neural Operator",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "state_space_no",
+      "name": "State-Space Neural Operator",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "State-Space Neural Operator architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "State-Space Neural Operator",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "p3d",
+      "name": "P3D",
+      "categories": [
+        "surrogate",
+        "foundation",
+        "specialized"
+      ],
+      "architecture": "scalable 3D global-context surrogate",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "P3D",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 24,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "aerotransformer",
+      "name": "AeroTransformer",
+      "categories": [
+        "foundation",
+        "geometry",
+        "specialized"
+      ],
+      "architecture": "pretrained transformer for 3D aerodynamics",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "AeroTransformer",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 24,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "tadpole",
+      "name": "Tadpole",
+      "categories": [
+        "foundation",
+        "surrogate"
+      ],
+      "architecture": "Tadpole architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Tadpole",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "solver_in_loop",
+      "name": "Solver-in-the-Loop",
+      "categories": [
+        "acceleration",
+        "physics_informed"
+      ],
+      "architecture": "Solver-in-the-Loop architecture",
+      "tasks": [
+        "acceleration",
+        "corrector",
+        "preconditioner"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Solver-in-the-Loop",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "conservative",
+        "3d"
+      ]
+    },
+    {
+      "id": "inc",
+      "name": "Indirect Neural Corrector",
+      "categories": [
+        "acceleration",
+        "physics_informed"
+      ],
+      "architecture": "equation-level indirect neural corrector",
+      "tasks": [
+        "acceleration",
+        "corrector",
+        "preconditioner"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Wei et al., NeurIPS 2025",
+      "year": null,
+      "repository": "https://github.com/tum-pbs/INC",
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "conservative",
+        "3d"
+      ]
+    },
+    {
+      "id": "pict",
+      "name": "PICT",
+      "categories": [
+        "acceleration",
+        "specialized",
+        "physics_informed"
+      ],
+      "architecture": "differentiable GPU multi-block PISO solver",
+      "tasks": [
+        "acceleration",
+        "corrector",
+        "preconditioner"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Franz et al., JCP 2025",
+      "year": null,
+      "repository": null,
+      "integration": "metadata",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "conservative",
+        "3d"
+      ]
+    },
+    {
+      "id": "diffsph",
+      "name": "diffSPH",
+      "categories": [
+        "acceleration",
+        "particle_multiphase",
+        "specialized"
+      ],
+      "architecture": "differentiable smoothed-particle hydrodynamics",
+      "tasks": [
+        "acceleration",
+        "corrector",
+        "preconditioner"
+      ],
+      "physics": [
+        "particle",
+        "granular"
+      ],
+      "mesh_types": [
+        "particle"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Winchenbach & Thuerey, JCP 2026",
+      "year": null,
+      "repository": null,
+      "integration": "metadata",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "conservative",
+        "3d"
+      ]
+    },
+    {
+      "id": "neurosem",
+      "name": "NeuroSEM",
+      "categories": [
+        "acceleration",
+        "physics_informed",
+        "specialized"
+      ],
+      "architecture": "NeuroSEM architecture",
+      "tasks": [
+        "acceleration",
+        "corrector",
+        "preconditioner"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "NeuroSEM",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "conservative",
+        "3d"
+      ]
+    },
+    {
+      "id": "np_newton",
+      "name": "Neural-Operator Preconditioned Newton",
+      "categories": [
+        "acceleration",
+        "general_pde_solver"
+      ],
+      "architecture": "neural-operator preconditioned Newton solver",
+      "tasks": [
+        "acceleration",
+        "corrector",
+        "preconditioner"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Neural-Operator Preconditioned Newton",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "conservative",
+        "3d"
+      ]
+    },
+    {
+      "id": "geometry_preconditioner",
+      "name": "Geometry-Aware Neural Preconditioner",
+      "categories": [
+        "acceleration",
+        "geometry"
+      ],
+      "architecture": "geometry-aware neural iterative preconditioner",
+      "tasks": [
+        "acceleration",
+        "corrector",
+        "preconditioner"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Geometry-Aware Neural Preconditioner",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "long_rollout",
+        "conservative",
+        "3d"
+      ]
+    },
+    {
+      "id": "neuraldem",
+      "name": "NeuralDEM",
+      "categories": [
+        "specialized",
+        "particle_multiphase",
+        "surrogate"
+      ],
+      "architecture": "NeuralDEM architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "particle",
+        "granular"
+      ],
+      "mesh_types": [
+        "particle"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "NeuralDEM",
+      "year": null,
+      "repository": null,
+      "integration": "metadata",
+      "min_memory_gb": 24,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "revit",
+      "name": "ReViT",
+      "categories": [
+        "geometry",
+        "surrogate"
+      ],
+      "architecture": "ReViT architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud",
+        "structured"
+      ],
+      "geometry_modes": [
+        "varying",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "ReViT",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "mesh_transfer",
+        "3d"
+      ]
+    },
+    {
+      "id": "deepmmnet",
+      "name": "DeepM&Mnet",
+      "categories": [
+        "surrogate",
+        "specialized",
+        "physics_informed"
+      ],
+      "architecture": "DeepM&Mnet architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "DeepM&Mnet",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "conformal_deeponet",
+      "name": "Conformalized-DeepONet",
+      "categories": [
+        "uncertainty",
+        "surrogate"
+      ],
+      "architecture": "Conformalized-DeepONet architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Conformalized-DeepONet",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "uncertainty",
+        "3d"
+      ]
+    },
+    {
+      "id": "tante",
+      "name": "TANTE",
+      "categories": [
+        "surrogate",
+        "general_pde_solver"
+      ],
+      "architecture": "TANTE architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "autoregressive",
+        "unsteady",
+        "steady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "TANTE",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "long_rollout",
+        "3d"
+      ]
+    },
+    {
+      "id": "riemannonet",
+      "name": "RiemannONet",
+      "categories": [
+        "physics_informed",
+        "specialized",
+        "surrogate"
+      ],
+      "architecture": "RiemannONet architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "RiemannONet",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": []
+    },
+    {
+      "id": "energy_transformer",
+      "name": "Energy Transformer Flow Reconstruction",
+      "categories": [
+        "inverse",
+        "surrogate",
+        "specialized"
+      ],
+      "architecture": "Energy Transformer Flow Reconstruction architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Energy Transformer Flow Reconstruction",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    },
+    {
+      "id": "fun_diff",
+      "name": "FunDiff",
+      "categories": [
+        "generative",
+        "physics_informed",
+        "general_pde_solver"
+      ],
+      "architecture": "FunDiff architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "FunDiff",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "uncertainty",
+        "3d"
+      ]
+    },
+    {
+      "id": "flow_matching_pde",
+      "name": "Flow Matching for PDEs",
+      "categories": [
+        "generative",
+        "physics_informed",
+        "general_pde_solver"
+      ],
+      "architecture": "Flow Matching for PDEs architecture",
+      "tasks": [
+        "surrogate",
+        "forecasting"
+      ],
+      "physics": [
+        "general_pde",
+        "fluid_dynamics"
+      ],
+      "mesh_types": [
+        "structured",
+        "meshfree"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "parameterized"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "strengths": [
+        "registered in the uniform NAVIER-CFD model taxonomy"
+      ],
+      "limitations": [
+        "verify claims on the selected CFD benchmark and discretization"
+      ],
+      "reference": "Flow Matching for PDEs",
+      "year": null,
+      "repository": null,
+      "integration": "native",
+      "min_memory_gb": 8,
+      "framework": "pytorch",
+      "tags": [
+        "3d"
+      ]
+    }
+  ],
+  "datasets": [
+    {
+      "id": "pdebench",
+      "name": "PDEBench",
+      "description": "Scientific HDF5 provider family for time-dependent PDE benchmarks",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "mesh_types": [
+        "structured"
+      ],
+      "geometry_modes": [
+        "fixed"
+      ],
+      "temporal_modes": [
+        "autoregressive"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": "https://huggingface.co/pdebench",
+      "license": "CC-BY-4.0; verify selected repository card",
+      "size": null,
+      "scenarios": [
+        "burgers",
+        "advection",
+        "navier_stokes",
+        "reaction_diffusion"
+      ],
+      "notes": [
+        "PDEBench Hub repositories contain scientific HDF5 files, not a tabular datasets.load_dataset schema.",
+        "Small-compute loading selectively downloads one HDF5 file and splits by trajectory."
+      ],
+      "provider": "pdebench",
+      "access_backend": "NAVIER-CFD PDEBench HDF5 adapter",
+      "access_base_path": "hf://datasets/pdebench/<configuration>",
+      "requires_configuration": true,
+      "official_splits": []
+    },
+    {
+      "id": "cfdbench",
+      "name": "CFDBench",
+      "description": "Case-archive provider for CFD boundary, property, and geometry shifts",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        2
+      ],
+      "mesh_types": [
+        "structured",
+        "point_cloud"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "varying"
+      ],
+      "temporal_modes": [
+        "steady",
+        "autoregressive"
+      ],
+      "hf_repo_id": "chen-yingfa/CFDBench-raw",
+      "hf_config": null,
+      "source_url": "https://huggingface.co/datasets/chen-yingfa/CFDBench-raw",
+      "license": "Apache-2.0",
+      "size": null,
+      "scenarios": [
+        "cavity",
+        "tube",
+        "dam",
+        "cylinder"
+      ],
+      "notes": [
+        "The raw Hub repository stores scenario case ZIP archives; generic datasets.load_dataset is not the execution path.",
+        "NAVIER-CFD downloads one selected case archive and never executes pickle payloads."
+      ],
+      "provider": "cfdbench",
+      "access_backend": "NAVIER-CFD CFDBench archive adapter",
+      "access_base_path": null,
+      "requires_configuration": true,
+      "official_splits": []
+    },
+    {
+      "id": "realpdebench",
+      "name": "RealPDEBench",
+      "description": "Paired real and simulated trajectories stored as scenario-level Arrow shards",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        2
+      ],
+      "mesh_types": [
+        "structured"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "varying"
+      ],
+      "temporal_modes": [
+        "autoregressive"
+      ],
+      "hf_repo_id": "AI4Science-WestlakeU/RealPDEBench",
+      "hf_config": null,
+      "source_url": "https://huggingface.co/datasets/AI4Science-WestlakeU/RealPDEBench",
+      "license": "CC-BY-NC-4.0",
+      "size": null,
+      "scenarios": [
+        "cylinder",
+        "fsi",
+        "controlled_cylinder",
+        "foil",
+        "combustion"
+      ],
+      "notes": [
+        "The Hub release uses saved Arrow trajectories and JSON indexes under scenario folders.",
+        "Small-compute mode downloads selected Arrow shards and labels its splits as subset splits, not official full-data splits."
+      ],
+      "provider": "realpdebench",
+      "access_backend": "NAVIER-CFD RealPDEBench Arrow adapter",
+      "access_base_path": null,
+      "requires_configuration": true,
+      "official_splits": []
+    },
+    {
+      "id": "airfrans",
+      "name": "AirfRANS",
+      "description": "RANS airfoil geometry and operating-condition benchmark",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        2
+      ],
+      "mesh_types": [
+        "unstructured",
+        "point_cloud"
+      ],
+      "geometry_modes": [
+        "varying"
+      ],
+      "temporal_modes": [
+        "steady"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": null,
+      "license": null,
+      "size": null,
+      "scenarios": [
+        "airfoil"
+      ],
+      "notes": [
+        "Pin dataset revisions and record provider-specific subset rules."
+      ],
+      "provider": "external",
+      "access_backend": null,
+      "access_base_path": null,
+      "requires_configuration": false,
+      "official_splits": []
+    },
+    {
+      "id": "drivaernetpp",
+      "name": "DrivAerNet++",
+      "description": "Large multimodal vehicle CFD dataset",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        3
+      ],
+      "mesh_types": [
+        "point_cloud",
+        "unstructured"
+      ],
+      "geometry_modes": [
+        "varying"
+      ],
+      "temporal_modes": [
+        "steady"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": null,
+      "license": null,
+      "size": null,
+      "scenarios": [
+        "vehicle_aerodynamics"
+      ],
+      "notes": [
+        "Pin dataset revisions and record provider-specific subset rules."
+      ],
+      "provider": "external",
+      "access_backend": null,
+      "access_base_path": null,
+      "requires_configuration": false,
+      "official_splits": []
+    },
+    {
+      "id": "drivaerml",
+      "name": "DrivAerML",
+      "description": "High-fidelity road-car aerodynamic CFD",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        3
+      ],
+      "mesh_types": [
+        "unstructured"
+      ],
+      "geometry_modes": [
+        "varying"
+      ],
+      "temporal_modes": [
+        "steady",
+        "unsteady"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": null,
+      "license": null,
+      "size": null,
+      "scenarios": [
+        "vehicle_aerodynamics"
+      ],
+      "notes": [
+        "Pin dataset revisions and record provider-specific subset rules."
+      ],
+      "provider": "external",
+      "access_backend": null,
+      "access_base_path": null,
+      "requires_configuration": false,
+      "official_splits": []
+    },
+    {
+      "id": "the_well",
+      "name": "The Well",
+      "description": "Provider family for diverse large-scale physics simulations",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        2,
+        3
+      ],
+      "mesh_types": [
+        "structured"
+      ],
+      "geometry_modes": [
+        "fixed",
+        "varying"
+      ],
+      "temporal_modes": [
+        "autoregressive"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": "https://polymathic-ai.org/the_well/api/",
+      "license": "BSD-3-Clause",
+      "size": "15 TB collection; individual datasets vary",
+      "scenarios": [
+        "fluid",
+        "multiphysics"
+      ],
+      "notes": [
+        "The Well is a provider family, not one datasets.load_dataset repository.",
+        "Supply an individual well_dataset_name and preserve official train/valid/test splits."
+      ],
+      "provider": "the_well",
+      "access_backend": "the_well.data.WellDataset",
+      "access_base_path": "hf://datasets/polymathic-ai/",
+      "requires_configuration": true,
+      "official_splits": [
+        "train",
+        "valid",
+        "test"
+      ]
+    },
+    {
+      "id": "apebench",
+      "name": "APEBench",
+      "description": "Autoregressive PDE emulator benchmark",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        1,
+        2,
+        3
+      ],
+      "mesh_types": [
+        "structured"
+      ],
+      "geometry_modes": [
+        "fixed"
+      ],
+      "temporal_modes": [
+        "autoregressive"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": null,
+      "license": null,
+      "size": null,
+      "scenarios": [
+        "46_pde_configurations"
+      ],
+      "notes": [
+        "Pin dataset revisions and record provider-specific subset rules."
+      ],
+      "provider": "external",
+      "access_backend": null,
+      "access_base_path": null,
+      "requires_configuration": false,
+      "official_splits": []
+    },
+    {
+      "id": "scalarflow",
+      "name": "ScalarFlow",
+      "description": "Real volumetric scalar transport flows",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        3
+      ],
+      "mesh_types": [
+        "structured"
+      ],
+      "geometry_modes": [
+        "fixed"
+      ],
+      "temporal_modes": [
+        "autoregressive"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": null,
+      "license": null,
+      "size": null,
+      "scenarios": [
+        "scalar_transport"
+      ],
+      "notes": [
+        "Pin dataset revisions and record provider-specific subset rules."
+      ],
+      "provider": "external",
+      "access_backend": null,
+      "access_base_path": null,
+      "requires_configuration": false,
+      "official_splits": []
+    },
+    {
+      "id": "shapenet_car",
+      "name": "ShapeNet-Car",
+      "description": "Vehicle-shape design benchmark",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        3
+      ],
+      "mesh_types": [
+        "point_cloud"
+      ],
+      "geometry_modes": [
+        "varying"
+      ],
+      "temporal_modes": [
+        "steady"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": null,
+      "license": null,
+      "size": null,
+      "scenarios": [
+        "vehicle_design"
+      ],
+      "notes": [
+        "Pin dataset revisions and record provider-specific subset rules."
+      ],
+      "provider": "external",
+      "access_backend": null,
+      "access_base_path": null,
+      "requires_configuration": false,
+      "official_splits": []
+    },
+    {
+      "id": "eagle",
+      "name": "EAGLE",
+      "description": "Fluid and geometry learning benchmark",
+      "tasks": [
+        "surrogate",
+        "benchmark"
+      ],
+      "physics": [
+        "fluid_dynamics",
+        "general_pde"
+      ],
+      "dimensions": [
+        2,
+        3
+      ],
+      "mesh_types": [
+        "structured",
+        "unstructured"
+      ],
+      "geometry_modes": [
+        "varying"
+      ],
+      "temporal_modes": [
+        "autoregressive"
+      ],
+      "hf_repo_id": null,
+      "hf_config": null,
+      "source_url": null,
+      "license": null,
+      "size": null,
+      "scenarios": [
+        "fluid"
+      ],
+      "notes": [
+        "Pin dataset revisions and record provider-specific subset rules."
+      ],
+      "provider": "external",
+      "access_backend": null,
+      "access_base_path": null,
+      "requires_configuration": false,
+      "official_splits": []
+    }
+  ],
+  "runtime": {
+    "native_reference_models": 52,
+    "catalog_models": 55,
+    "dataset_profiles": 11
+  }
+}

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="NAVIER-CFD: dataset-configured neural CFD models, official data providers, physical metrics, training, checkpoints, and evidence-aware recommendation.">
+  <title>NAVIER-CFD | Dataset-configured Neural CFD Platform</title>
+  <link rel="icon" href="./assets/navier-cfd-icon.svg">
+  <link rel="stylesheet" href="./assets/site.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="./"><img src="./assets/navier-cfd-icon.svg" alt="">NAVIER-CFD</a>
+    <nav class="nav-links">
+      <a href="#native-models">Native models</a><a href="#dataset-api">Dataset API</a><a href="#metrics">Metrics</a><a href="#workflow">Workflow</a>
+      <a href="./docs/">Documentation</a><a class="button" href="./recommender/">Open recommender</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <section class="container hero">
+    <div>
+      <span class="eyebrow">NAVIER-CFD 0.6 · executable scientific ML</span>
+      <h1>Pass the dataset. Import the model. Evaluate the physics.</h1>
+      <p class="lead">NAVIER-CFD connects 52 executable native reference models, 11 dataset profiles, official provider adapters, unified training and checkpoints, physical metric suites, and evidence-aware recommendation for CFD and chemical-engineering surrogate modelling.</p>
+      <div class="hero-actions">
+        <a class="button" href="#dataset-api">See the Python API</a>
+        <a class="button secondary" href="./docs/METRICS/">Explore metrics</a>
+        <a class="button ghost" href="https://github.com/Samsomyajit/NAVIER-CFD">View GitHub</a>
+      </div>
+      <div class="badges">
+        <span class="badge">52 native reference models</span>
+        <span class="badge">55 catalog models</span>
+        <span class="badge">11 dataset profiles</span>
+        <span class="badge">4 metric suites</span>
+        <span class="badge">The Well provider</span>
+      </div>
+    </div>
+    <div><img class="hero-logo" src="./assets/navier-cfd-logo.svg" alt="NAVIER-CFD logo combining fluid streamlines, a neural mesh, and the letter N"></div>
+  </section>
+
+  <section id="dataset-api" class="section alt">
+    <div class="container two-column">
+      <div>
+        <div class="kicker">Dataset-aware import</div>
+        <h2>The dataset determines the model configuration.</h2>
+        <p class="lead">The loader resolves dimension, channels, coordinates, representation, spectral modes, graph or attention settings, and forward dispatch. A real sample overrides static defaults.</p>
+        <div class="notice">
+          <strong>Official The Well access:</strong> NAVIER-CFD uses <code>the_well.data.WellDataset</code> with <code>hf://datasets/polymathic-ai/</code> and an individual <code>well_dataset_name</code>. It is not treated as one monolithic Hugging Face dataset repository.
+        </div>
+      </div>
+      <pre class="codebox code-large"><code>from navier_cfd import load_cfd_dataset, load_model
+
+well = load_cfd_dataset(
+    "the_well",
+    configuration="active_matter",
+    split="train",
+    streaming=True,
+    n_steps_input=4,
+    n_steps_output=1,
+)
+
+sample = well[0]
+fno, plan = load_model(
+    "fno",
+    dataset="the_well",
+    sample=sample,
+    return_plan=True,
+)</code></pre>
+    </div>
+  </section>
+
+  <section id="native-models" class="section">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker">Native model coverage</div>
+        <h2>Neural operators, deep learning, and physics-informed ML under one API.</h2>
+        <p class="lead">Every native reference model is executable, trainable, shape-tested, backward-tested, and connected to the same dataset, trainer, checkpoint, and evaluation layers.</p>
+      </div>
+      <div class="grid model-grid">
+        <article class="card"><strong class="metric">21</strong><h3>Operator learning</h3><p>DeepONet, FNO/PINO, Geo-FNO, GINO, U-NO, GNOT, Transolver, spectral and transformer operators.</p></article>
+        <article class="card"><strong class="metric">9</strong><h3>Physics-informed ML</h3><p>PINN, NSFnets, PINNsFormer, PINO, PIBERT, PI-MFM, RiemannONet, DeepM&amp;Mnet and related variants.</p></article>
+        <article class="card"><strong class="metric">11</strong><h3>Geometry and foundation models</h3><p>MeshGraphNets, GINO, DoMINO, UPT, DPOT, Poseidon, PROSE-FD, PDEformer, P3D and AeroTransformer.</p></article>
+        <article class="card"><strong class="metric">13</strong><h3>Generative, correction and UQ</h3><p>PDE-Refiner, FourierFlow, solver correctors, preconditioners, conformal prediction, adaptation and flow matching.</p></article>
+      </div>
+      <div class="notice"><strong>Scientific scope:</strong> these are working NAVIER-CFD reference architectures, not automatic claims of bit-for-bit reproduction of every author repository, private checkpoint or paper table.</div>
+    </div>
+  </section>
+
+  <section id="metrics" class="section alt">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker">Physical evaluation</div>
+        <h2>Accuracy, spectrum, dynamics and physics—not one global error number.</h2>
+        <p class="lead">Named suites combine standard field metrics with ideas adopted from The Well and RealPDEBench. Each result records its equation, direction, ideal value, requirements, assumptions and evaluation space.</p>
+      </div>
+      <div class="grid model-grid">
+        <article class="card"><h3>Data standard</h3><p>MSE, RMSE, MAE, L∞, relative L1/L2, NMSE, NRMSE, R², Pearson correlation and cosine similarity.</p></article>
+        <article class="card"><h3>The Well compatible</h3><p>Variance-scaled errors and Parseval-consistent low-, middle- and high-frequency spectral MSE.</p></article>
+        <article class="card"><h3>RealPDEBench style</h3><p>fRMSE, temporal frequency error, turbulent kinetic-energy error, mean velocity-profile error and Update Ratio.</p></article>
+        <article class="card"><h3>Fluid physics</h3><p>Divergence, vorticity, kinetic-energy and spectral errors with explicit velocity, grid and axis metadata.</p></article>
+      </div>
+      <pre class="codebox code-large"><code>from navier_cfd import MetricContext, MetricSuite
+
+context = MetricContext(
+    time_axis=1,
+    spatial_axes=(2, 3),
+    velocity_channels=(0, 1),
+    spacing=(dx, dy),
+    profile_axis=2,
+)
+
+suite = MetricSuite.combine([
+    "data_standard",
+    "the_well",
+    "fluid_standard",
+])
+results = suite.evaluate(prediction, target, context=context)</code></pre>
+    </div>
+  </section>
+
+  <section id="workflow" class="section">
+    <div class="container">
+      <div class="section-head"><div class="kicker">Unified experiment system</div><h2>One reproducible path from provider data to physically evaluated results.</h2></div>
+      <div class="workflow-strip">
+        <span>Provider or raw dataset</span><b>→</b><span>Canonical adapter</span><b>→</b><span>Model configuration</span><b>→</b><span>Trainer</span><b>→</b><span>Checkpoint</span><b>→</b><span>Metric suites</span><b>→</b><span>Manifest</span>
+      </div>
+      <img class="pipeline" src="./docs/assets/navier_pipeline.svg" alt="NAVIER-CFD scientific pipeline">
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container callout">
+      <div><h2 style="margin:0;color:#fff">Choose the right model before spending compute.</h2><p>Use the evidence-aware recommender, then train and evaluate the selected model with the target dataset and physics-aware metric suite.</p></div>
+      <a class="button secondary" href="./recommender/">Launch recommender</a>
+    </div>
+  </section>
+</main>
+<footer class="footer"><div class="container footer-row"><span>© 2026 NAVIER-CFD</span><span>Apache License 2.0 · Shanghai Jiao Tong University</span></div></footer>
+</body></html>
